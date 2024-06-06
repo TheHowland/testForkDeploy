@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="http://localhost:8000/pyodide.js"></script>
+  </head>
+
+  <body>
+    <p id="title">My first Pyodide app</p>
+    <div id="simplification"></div>
+
+    <script>
+      async function fetchDirectoryListing(url, extension = "") {
+        try {
+          // Fetch the directory listing HTML
+          const response = await fetch(url);
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          const htmlText = await response.text();
+
+          // Parse the HTML
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(htmlText, 'text/html');
+
+          // Extract file names from the parsed HTML
+          const fileLinks = doc.querySelectorAll('a'); // Assuming files are listed as <a> tags
+          const fileNames = [];
+          fileLinks.forEach(link => {
+            const fileName = link.getAttribute('href');
+            if (fileName && !fileName.endsWith('/')) { // Filter out directories if needed
+              if(extension === "" || (extension !== "" && fileName.endsWith(extension))) {
+                fileNames.push(fileName);
+              }
+            }
+          });
+
+          return fileNames;
+        }
+        catch (error) {
+          console.error('Error fetching directory listing:', error);
+          return [];
+        }
+      }
+
+      function display_steps(pyodide, jsonFilePath, svgFilePath, contentDivName = 'simplification'){
+        console.log(jsonFilePath)
+        console.log(svgFilePath)
+        const contentDiv = document.getElementById(contentDivName);
+
+        try {
+          // Fetch JSON data
+          console.log("fetch json file");
+          let jsonDataString = pyodide.FS.readFile(jsonFilePath, { encoding: "utf8" });
+          console.log(jsonDataString)
+          const jsonData = JSON.parse(jsonDataString);
+
+          // Fetch SVG data
+          console.log("fetch svg file");
+          const svgData = pyodide.FS.readFile(svgFilePath, { encoding: "utf8" });
+
+          // Create a paragraph element to hold the JSON data
+          console.log("create paragraph");
+          const paragraph = document.createElement('p');
+          paragraph.innerHTML = `Die Elemente ${jsonData.name1} und ${jsonData.name2}<br>
+           wurden zu ${jsonData.newName} zusammengefasst\r\n<br>
+           Wert Element 1 = ${jsonData.value1}${jsonData.unit}\r\n<br>
+           Wert Element 2 = ${jsonData.value2}${jsonData.unit}\r\n<br>
+           Ergebnis = ${jsonData.result}${jsonData.unit}\r\n<br>
+           Die Elemente sind in ${jsonData.relation}`;
+
+          console.log("create div")
+          // Create a div element to hold the SVG data
+          const svgDiv = document.createElement('div');
+          svgDiv.innerHTML = svgData;
+
+          console.log("append content")
+          // Append the paragraph and SVG div to the content div
+          contentDiv.appendChild(paragraph);
+          contentDiv.appendChild(svgDiv);
+        } catch (error) {
+          console.error('Error fetching data:', error);
+          contentDiv.textContent = 'Error loading content';
+        }
+      }
+
+      async function load_packages(pyodide){
+
+        let packageAddress = "http://localhost:8000/Packages/";
+        let packages = await fetchDirectoryListing(packageAddress, ".whl")
+
+        for(const pyPackage of packages){
+          await pyodide.loadPackage(packageAddress + pyPackage);
+        }
+
+      }
+
+      async function main() {
+        let pyodide = await loadPyodide();
+
+        await load_packages(pyodide);
+
+        await pyodide.runPythonAsync(`
+          from pyodide.http import pyfetch
+          response = await pyfetch("http://localhost:8000/solve.py")
+          with open("solve.py", "wb") as f:
+              f.write(await response.bytes())
+
+          response = await pyfetch("http://localhost:8000/Circuits.zip") # .zip, .whl, ...
+          await response.unpack_archive() # by default, unpacks to the current dir
+          print("loaded and unpacked")
+        `);
+        let solve = pyodide.pyimport("solve");
+        solve.solve_circuit("Circuit_resistors.txt")
+
+
+        let files = await pyodide.FS.readdir("Solutions")
+
+        //remove '.' and '..' from file list
+        while (files[0] === "." || files[0] === ".."){
+          files.splice(0, 1);
+        }
+
+        let jsonFiles = [];
+        let svgFiles = [];
+        files.forEach((file) => {
+          if(file.search(".+\.json") >= 0){
+            jsonFiles.push(file);
+          }
+          if(file.search(".+\.svg") >= 0){
+            svgFiles.push(file);
+          }
+        })
+
+        for(let i = 0; i < jsonFiles.length; i++){
+          if(jsonFiles[i].replace(".json","") !== svgFiles[i].replace(".svg","")){
+            pyodide.FS.rmdir("Solutions")
+            throw new Error("Files did not match, Solutions cleared please try again")
+          }
+          display_steps(pyodide, "Solutions/"+jsonFiles[i], "Solutions/"+svgFiles[i])
+        }
+
+      }
+      main();
+    </script>
+  </body>
+</html>
