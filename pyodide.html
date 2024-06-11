@@ -97,7 +97,9 @@
       async function main() {
         let pyodide = await loadPyodide();
 
+        await pyodide.loadPackage("sqlite3")
         await load_packages(pyodide);
+
 
         await pyodide.runPythonAsync(`
           from pyodide.http import pyfetch
