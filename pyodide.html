@@ -43,23 +43,19 @@
       }
 
       function display_steps(pyodide, jsonFilePath, svgFilePath, contentDivName = 'simplification'){
-        console.log(jsonFilePath)
-        console.log(svgFilePath)
+
         const contentDiv = document.getElementById(contentDivName);
 
         try {
           // Fetch JSON data
-          console.log("fetch json file");
           let jsonDataString = pyodide.FS.readFile(jsonFilePath, { encoding: "utf8" });
-          console.log(jsonDataString)
+          console.log("Solution from Json:" + jsonDataString)
           const jsonData = JSON.parse(jsonDataString);
 
           // Fetch SVG data
-          console.log("fetch svg file");
           const svgData = pyodide.FS.readFile(svgFilePath, { encoding: "utf8" });
 
           // Create a paragraph element to hold the JSON data
-          console.log("create paragraph");
           const paragraph = document.createElement('p');
           paragraph.innerHTML = `Die Elemente ${jsonData.name1} und ${jsonData.name2}<br>
            wurden zu ${jsonData.newName} zusammengefasst\r\n<br>
@@ -68,12 +64,11 @@
            Ergebnis = ${jsonData.result}${jsonData.unit}\r\n<br>
            Die Elemente sind in ${jsonData.relation}`;
 
-          console.log("create div")
           // Create a div element to hold the SVG data
           const svgDiv = document.createElement('div');
+          console.log("svg-Data:" + svgData)
           svgDiv.innerHTML = svgData;
 
-          console.log("append content")
           // Append the paragraph and SVG div to the content div
           contentDiv.appendChild(paragraph);
           contentDiv.appendChild(svgDiv);
