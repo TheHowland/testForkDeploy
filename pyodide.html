@@ -99,10 +99,12 @@
       async function load_packages(pyodide){
 
         let packageAddress = "http://localhost:8000/Packages/";
-        let packages = await fetchDirectoryListing(packageAddress, ".whl")
 
-        for(const pyPackage of packages){
-          await pyodide.loadPackage(packageAddress + pyPackage);
+        let packages = await fetchDirectoryListing(packageAddress, ".whl")
+        for(const pyPackage of packages) {
+          console.log("Insalling:" + pyPackage)
+          let pkgArrBuff = await (await fetch("http://localhost:8000/Packages/" + pyPackage)).arrayBuffer();
+          pyodide.unpackArchive(pkgArrBuff, "whl")
         }
 
       }
@@ -110,9 +112,11 @@
       async function main() {
         let pyodide = await loadPyodide();
 
-        await pyodide.loadPackage("sqlite3")
-        await load_packages(pyodide);
+        console.log("Installing: sqlite3")
+        let pkgArrBuff = await (await fetch("http://localhost:8000/sqlite3-1.0.0.zip")).arrayBuffer();
+        await pyodide.unpackArchive(pkgArrBuff, "zip")
 
+        await load_packages(pyodide)
 
         await pyodide.runPythonAsync(`
           from pyodide.http import pyfetch
