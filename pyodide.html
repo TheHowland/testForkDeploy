@@ -2,10 +2,25 @@
 <html>
   <head>
     <script src="http://localhost:8000/pyodide.js"></script>
+    <style>
+      #progress-container {
+        width: 100%;
+        max-width: 200px;
+        background-color: #f3f3f3;
+      }
+      #progress-bar {
+        width: 0;
+        max-width: 200px;
+        height: 20px;
+        background-color: #4caf50;
+        text-align: center;
+        line-height: 20px;
+        color: white;
+      }
+    </style>
   </head>
 
   <body>
-    <p id="title">My first Pyodide app</p>
     <div id="simplification"></div>
 
     <script>
@@ -58,10 +73,10 @@
           // Create a paragraph element to hold the JSON data
           const paragraph = document.createElement('p');
           paragraph.innerHTML = `Die Elemente ${jsonData.name1} und ${jsonData.name2}<br>
-           wurden zu ${jsonData.newName} zusammengefasst\r\n<br>
-           Wert Element 1 = ${jsonData.value1}${jsonData.unit}\r\n<br>
-           Wert Element 2 = ${jsonData.value2}${jsonData.unit}\r\n<br>
-           Ergebnis = ${jsonData.result}${jsonData.unit}\r\n<br>
+           wurden zu ${jsonData.newName} zusammengefasst<br>
+           Wert Element 1 = ${jsonData.value1}${jsonData.unit}<br>
+           Wert Element 2 = ${jsonData.value2}${jsonData.unit}<br>
+           Ergebnis = ${jsonData.result}${jsonData.unit}<br>
            Die Elemente sind in ${jsonData.relation}`;
 
           // Create a div element to hold the SVG data
@@ -96,28 +111,70 @@
         }
       }
 
-      async function load_packages(pyodide){
+      function createProgressBar(infoText) {
+        const container = document.createElement('div');
+        container.id = 'progress-container';
 
+        const bar = document.createElement('div');
+        bar.id = 'progress-bar';
+        bar.textContent = '0%';
+
+        container.appendChild(bar);
+        document.body.appendChild(container);
+
+        // Show the progress bar
+        container.style.display = 'block';
+      }
+
+      function updateProgressBar(percentage) {
+        const progressBar = document.getElementById('progress-bar');
+        progressBar.style.width = percentage + '%';
+        progressBar.textContent = percentage + '%';
+      }
+
+      function removeProgressBar() {
+        const container = document.getElementById('progress-container');
+        if (container) {
+          container.remove();
+        }
+      }
+
+      async function load_packages(pyodide){
+        createProgressBar("Loading Pyodide packages, please wait ...");
+        updateProgressBar(0)
         let packageAddress = "http://localhost:8000/Packages/";
 
         let packages = await fetchDirectoryListing(packageAddress, ".whl")
+        let i = 0;
         for(const pyPackage of packages) {
           console.log("Insalling:" + pyPackage)
           let pkgArrBuff = await (await fetch("http://localhost:8000/Packages/" + pyPackage)).arrayBuffer();
           pyodide.unpackArchive(pkgArrBuff, "whl")
+          updateProgressBar(Math.floor((i / packages.length) * 100))
+          i++;
         }
-
+        removeProgressBar()
       }
 
       async function main() {
-        let pyodide = await loadPyodide();
+        const infoText = document.createElement('div')
+        infoText.textContent = ""
+        document.body.appendChild(infoText)
+        infoText.setAttribute('style', 'white-space: pre;')
 
+        infoText.textContent = "Loading Pyodide environment... "
+        let pyodide = await loadPyodide();
+        infoText.textContent += "done\r\n"
+
+        infoText.textContent += "Loading necessary python packages, this may take a while... "
         console.log("Installing: sqlite3")
         let pkgArrBuff = await (await fetch("http://localhost:8000/sqlite3-1.0.0.zip")).arrayBuffer();
         await pyodide.unpackArchive(pkgArrBuff, "zip")
 
         await load_packages(pyodide)
+        infoText.textContent += "done\r\n"
 
+        infoText.textContent += "calculating solution ..."
         await pyodide.runPythonAsync(`
           from pyodide.http import pyfetch
           response = await pyfetch("http://localhost:8000/solve.py")
@@ -157,7 +214,8 @@
           }
           display_steps(pyodide, "Solutions/"+jsonFiles[i], "Solutions/"+svgFiles[i])
         }
-
+        infoText.textContent += "done\r\n"
+        document.body.removeChild(infoText)
       }
       main();
     </script>
