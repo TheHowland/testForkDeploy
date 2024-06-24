@@ -141,20 +141,29 @@
       }
 
       async function load_packages(pyodide){
+        let timeLoadPackages = "Load packages"
+        console.time(timeLoadPackages)
         createProgressBar("Loading Pyodide packages, please wait ...");
         updateProgressBar(0)
         let packageAddress = "http://localhost:8000/Packages/";
-
         let packages = await fetchDirectoryListing(packageAddress, ".whl")
-        let i = 0;
-        for(const pyPackage of packages) {
-          console.log("Insalling:" + pyPackage)
-          let pkgArrBuff = await (await fetch("http://localhost:8000/Packages/" + pyPackage)).arrayBuffer();
-          pyodide.unpackArchive(pkgArrBuff, "whl")
-          updateProgressBar(Math.floor((i / packages.length) * 100))
-          i++;
-        }
+
+        let progress = 0;
+        const updateProgress = () => {
+          progress += 1;
+          updateProgressBar(Math.floor((progress / packages.length) * 100));
+        };
+
+        let packagePromise = packages.map(async function(packageName) {
+          console.log("Install:" + packageName)
+          let pkgArrBuff = await (await fetch("http://localhost:8000/Packages/" + packageName)).arrayBuffer();
+          await pyodide.unpackArchive(pkgArrBuff, "whl")
+          updateProgress();
+        })
+
+        await Promise.all(packagePromise)
         removeProgressBar()
+        console.timeEnd(timeLoadPackages)
       }
 
       async function main() {
@@ -175,6 +184,8 @@
         await load_packages(pyodide)
         infoText.textContent += "done\r\n"
 
+        let timeSolving = "Calculate solution"
+        console.time(timeSolving)
         infoText.textContent += "calculating solution ..."
         await pyodide.runPythonAsync(`
           from pyodide.http import pyfetch
@@ -217,6 +228,7 @@
         }
         infoText.textContent += "done\r\n"
         document.body.removeChild(infoText)
+        console.timeEnd(timeSolving)
       }
       main();
     </script>
