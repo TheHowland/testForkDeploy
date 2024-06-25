@@ -65,7 +65,7 @@
         try {
           // Fetch JSON data
           let jsonDataString = pyodide.FS.readFile(jsonFilePath, { encoding: "utf8" });
-          console.log("Solution from Json:" + jsonDataString)
+          //console.log("Solution from Json:" + jsonDataString)
           const jsonData = JSON.parse(jsonDataString);
 
           // Fetch SVG data
@@ -82,16 +82,12 @@
 
           // Create a div element to hold the SVG data
           const svgDiv = document.createElement('div');
-          console.log("svg-Data:" + svgData)
+          //console.log("svg-Data:" + svgData)
           svgDiv.innerHTML = svgData;
 
           // Append the paragraph and SVG div to the content div
           contentDiv.appendChild(paragraph);
           contentDiv.appendChild(svgDiv);
-          console.log("log svg elements");
-          svgDiv.querySelectorAll('*').forEach(element => {
-            console.log(element.outerHTML);
-          });
 
           svgDiv.querySelectorAll('path').forEach(pathElement => {
             pathElement.style.pointerEvents = 'bounding-box';
@@ -140,7 +136,7 @@
         }
       }
 
-      async function load_packages(pyodide){
+      async function load_packages(pyodide, optAddNames){
         let timeLoadPackages = "Load packages"
         console.time(timeLoadPackages)
         createProgressBar("Loading Pyodide packages, please wait ...");
@@ -148,20 +144,27 @@
         let packageAddress = "http://localhost:8000/Packages/";
         let packages = await fetchDirectoryListing(packageAddress, ".whl")
 
+        if(Array.isArray(optAddNames)){
+          for(let i = 0; i < optAddNames.length; i++){
+            packages.push(optAddNames[0])
+          }
+        }
+
         let progress = 0;
         const updateProgress = () => {
           progress += 1;
           updateProgressBar(Math.floor((progress / packages.length) * 100));
         };
 
-        let packagePromise = packages.map(async function(packageName) {
-          console.log("Install:" + packageName)
+        let packagePromises = packages.map(async function(packageName) {
           let pkgArrBuff = await (await fetch("http://localhost:8000/Packages/" + packageName)).arrayBuffer();
-          await pyodide.unpackArchive(pkgArrBuff, "whl")
+          let packageExtension = packageName.slice(packageName.lastIndexOf("."), packageName.length)
+          await pyodide.unpackArchive(pkgArrBuff, packageExtension)
           updateProgress();
         })
 
-        await Promise.all(packagePromise)
+        await Promise.all(packagePromises)
+        console.log("Installed:" + packages)
         removeProgressBar()
         console.timeEnd(timeLoadPackages)
       }
@@ -177,29 +180,22 @@
         infoText.textContent += "done\r\n"
 
         infoText.textContent += "Loading necessary python packages, this may take a while... "
-        console.log("Installing: sqlite3")
-        let pkgArrBuff = await (await fetch("http://localhost:8000/sqlite3-1.0.0.zip")).arrayBuffer();
-        await pyodide.unpackArchive(pkgArrBuff, "zip")
-
-        await load_packages(pyodide)
+        await load_packages(pyodide, ["sqlite3-1.0.0.zip"])
         infoText.textContent += "done\r\n"
+
+        // fetch netlist files from server
+        let cirArrBuff = await (await fetch("http://localhost:8000/Circuits.zip")).arrayBuffer();
+        await pyodide.unpackArchive(cirArrBuff, ".zip")
+
+        // fetch simplification script from server
+        pyodide.FS.writeFile("/home/pyodide/solve.py", await (await fetch("http://localhost:8000/solve.py")).text())
 
         let timeSolving = "Calculate solution"
         console.time(timeSolving)
         infoText.textContent += "calculating solution ..."
-        await pyodide.runPythonAsync(`
-          from pyodide.http import pyfetch
-          response = await pyfetch("http://localhost:8000/solve.py")
-          with open("solve.py", "wb") as f:
-              f.write(await response.bytes())
 
-          response = await pyfetch("http://localhost:8000/Circuits.zip") # .zip, .whl, ...
-          await response.unpack_archive() # by default, unpacks to the current dir
-          print("loaded and unpacked")
-        `);
         let solve = pyodide.pyimport("solve");
         solve.solve_circuit("Circuit_resistors.txt")
-
 
         let files = await pyodide.FS.readdir("Solutions")
 
