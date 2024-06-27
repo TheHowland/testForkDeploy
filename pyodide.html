@@ -23,8 +23,87 @@
 
   <body>
     <div id="simplification"></div>
-
     <script>
+      class SolutionObject{
+        constructor(name1, name2, newName, value1, value2, result, relation, latexEquation) {
+          this._name1 = name1;
+          this._name2 = name2;
+          this._newName = newName;
+          this._value1 = value1;
+          this._value2 = value2;
+          this._result = result;
+          this._relation = relation;
+          this._latexEquation = latexEquation;
+
+          this._inlineReturnFunc = (string) => `\\(${string}\\)`;
+          this._blockReturnFunc = (string) => `$$${string}$$`;
+
+          this._returnFunction = this._inlineReturnFunc;
+        }
+
+        set returnFunction(func) {
+          this._returnFunction = func;
+        }
+
+        inline() {
+          this._returnFunction = this._inlineReturnFunc;
+          return this;
+        }
+
+        block() {
+          this._returnFunction = this._blockReturnFunc;
+          return this;
+        }
+
+        noFormat() {
+          this._returnFunction = (string) => string;
+          return this;
+        }
+
+        _format(string) {
+          return this._returnFunction(string);
+        }
+
+        isNull(){
+          return (!this._name1) && (!this._name2) && (!this._newName) &&
+                  (!this._value1) && (!this._value2) && (!this._result) &&
+                  (!this._relation) && (!this._latexEquation);
+        }
+
+        get name1() {
+          return this._format(this._name1);
+        }
+
+        get name2() {
+          return this._format(this._name2);
+        }
+
+        get newName() {
+          return this._format(this._newName);
+        }
+
+        get value1() {
+          return this._format(this._value1);
+        }
+
+        get value2() {
+          return this._format(this._value2);
+        }
+
+        get result() {
+          return this._format(this._result);
+        }
+
+        get relation() {
+          return this._format(this._relation);
+        }
+
+        get latexEquation() {
+          return this._format(this._latexEquation);
+        }
+
+      }
+
       async function fetchDirectoryListing(url, extension = "") {
         try {
           // Fetch the directory listing HTML
@@ -65,20 +144,43 @@
         try {
           // Fetch JSON data
           let jsonDataString = pyodide.FS.readFile(jsonFilePath, { encoding: "utf8" });
+
           //console.log("Solution from Json:" + jsonDataString)
           const jsonData = JSON.parse(jsonDataString);
+          let data = new SolutionObject(jsonData.name1, jsonData.name2, jsonData.newName, jsonData.value1, jsonData.value2,
+                  jsonData.result, jsonData.relation, jsonData.latexEquation);
 
           // Fetch SVG data
           const svgData = pyodide.FS.readFile(svgFilePath, { encoding: "utf8" });
 
-          // Create a paragraph element to hold the JSON data
-          const paragraph = document.createElement('p');
-          paragraph.innerHTML = `Die Elemente ${jsonData.name1} und ${jsonData.name2}<br>
-           wurden zu ${jsonData.newName} zusammengefasst<br>
-           Wert Element 1 = ${"\\(" + jsonData.value1 + "\\)"}<br>
-           Wert Element 2 = ${jsonData.value2}<br>
-           Ergebnis = ${jsonData.result}<br>
-           Die Elemente sind in ${jsonData.relation}`;
+          if (!data.isNull()) {
+            let relationText = ""
+            if (data.noFormat().relation === "parallel") {
+              relationText = "Die Elemente sind parallel zueinander";
+            }
+            else if (data.noFormat().relation === "series") {
+              relationText = "Die Elemente sind in Reihe zueinander";
+            }
+            else if (data.noFormat().relation === null) {
+              relationText = "Keine Beziehung zwischen den Elementen";
+            }
+            else {
+              throw Error("Unknown relation type");
+            }
+
+            // Create a paragraph element to hold the JSON data
+            const paragraph = document.createElement('p');
+            paragraph.innerHTML = `Die Elemente ${data.inline().name1} und ${data.inline().name2}<br>
+            wurden zu ${data.inline().newName} zusammengefasst<br>
+            ${data.inline().name1}&nbsp= ${data.inline().value1}<br>
+            ${data.inline().name2}&nbsp= ${data.inline().value2}<br>
+            ${data.inline().newName}&nbsp= ${data.inline().result}<br>
+            ${relationText}<br>
+            Rechnung:<br>
+            ${data.inline().latexEquation}`;
+
+            contentDiv.appendChild(paragraph);
+          }
 
           // Create a div element to hold the SVG data
           const svgDiv = document.createElement('div');
@@ -86,7 +188,6 @@
           svgDiv.innerHTML = svgData;
 
           // Append the paragraph and SVG div to the content div
-          contentDiv.appendChild(paragraph);
           contentDiv.appendChild(svgDiv);
 
           svgDiv.querySelectorAll('path').forEach(pathElement => {
