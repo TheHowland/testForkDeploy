@@ -137,7 +137,7 @@
         }
       }
 
-      function display_steps(pyodide, jsonFilePath, svgFilePath, contentDivName = 'simplification'){
+      function display_step(pyodide, jsonFilePath, svgFilePath, contentDivName = 'simplification'){
 
         const contentDiv = document.getElementById(contentDivName);
 
@@ -209,6 +209,36 @@
         }
       }
 
+      async function display_steps(pyodide){
+        let files = await pyodide.FS.readdir("Solutions")
+
+        //remove '.' and '..' from file list
+        while (files[0] === "." || files[0] === ".."){
+          files.splice(0, 1);
+        }
+
+        let jsonFiles = [];
+        let svgFiles = [];
+        files.forEach((file) => {
+          if(file.search(".+\.json") >= 0){
+            jsonFiles.push(file);
+          }
+          if(file.search(".+\.svg") >= 0){
+            svgFiles.push(file);
+          }
+        })
+
+        for(let i = 0; i < jsonFiles.length; i++){
+          if(jsonFiles[i].replace(".json","") !== svgFiles[i].replace(".svg","")){
+            pyodide.FS.rmdir("Solutions")
+            throw new Error("Files did not match, Solutions cleared please try again")
+          }
+          display_step(pyodide, "Solutions/"+jsonFiles[i], "Solutions/"+svgFiles[i])
+        }
+
+        MathJax.typeset()
+      }
+
       function createProgressBar(infoText) {
         const container = document.createElement('div');
         container.id = 'progress-container';
@@ -238,8 +268,6 @@
       }
 
       async function load_packages(pyodide, optAddNames){
-        let timeLoadPackages = "Load packages"
-        console.time(timeLoadPackages)
         createProgressBar("Loading Pyodide packages, please wait ...");
         updateProgressBar(0)
         let packageAddress = "http://localhost:8000/Packages/";
@@ -267,12 +295,14 @@
         await Promise.all(packagePromises)
         console.log("Installed:" + packages)
         removeProgressBar()
-        console.timeEnd(timeLoadPackages)
       }
 
       async function main() {
         const infoText = document.createElement('div')
+        infoText.id = "infoText"
         infoText.textContent = ""
+
+        // setup pyodide environment -----------------------------------------------------------------------------------
         document.body.appendChild(infoText)
         infoText.setAttribute('style', 'white-space: pre;')
 
@@ -280,11 +310,14 @@
         let pyodide = await loadPyodide();
         infoText.textContent += "done\r\n"
 
+        let timeLoadPackages = "Load packages"
+        console.time(timeLoadPackages)
         infoText.textContent += "Loading necessary python packages, this may take a while... "
         await load_packages(pyodide, ["sqlite3-1.0.0.zip"])
         infoText.textContent += "done\r\n"
+        console.timeEnd(timeLoadPackages)
 
-
+        // Load files from server --------------------------------------------------------------------------------------
         let loadCircuits = "Load Circuits"
         infoText.textContent += "Loading circuits from server... "
         console.time(loadCircuits)
@@ -298,42 +331,29 @@
         infoText.textContent += "done\r\n"
         console.timeEnd(loadCircuits)
 
-        let timeSolving = "Calculate solution"
-        console.time(timeSolving)
-        infoText.textContent += "calculating solution ..."
-
-        let solve = pyodide.pyimport("solve");
-        solve.solve_circuit("Circuit_resistors.txt")
-
-        let files = await pyodide.FS.readdir("Solutions")
-
-        //remove '.' and '..' from file list
-        while (files[0] === "." || files[0] === ".."){
-          files.splice(0, 1);
-        }
-
-        let jsonFiles = [];
-        let svgFiles = [];
-        files.forEach((file) => {
-          if(file.search(".+\.json") >= 0){
-            jsonFiles.push(file);
-          }
-          if(file.search(".+\.svg") >= 0){
-            svgFiles.push(file);
-          }
-        })
-
-        for(let i = 0; i < jsonFiles.length; i++){
-          if(jsonFiles[i].replace(".json","") !== svgFiles[i].replace(".svg","")){
-            pyodide.FS.rmdir("Solutions")
-            throw new Error("Files did not match, Solutions cleared please try again")
-          }
-          display_steps(pyodide, "Solutions/"+jsonFiles[i], "Solutions/"+svgFiles[i])
-        }
+        // Calculate solution with python script -----------------------------------------------------------------------
+        let timeImporting = "Import Python script"
+        console.time(timeImporting)
+        infoText.textContent += "Importing Python script ..."
+        let solve = await pyodide.pyimport("solve");
+        console.timeEnd(timeImporting)
         infoText.textContent += "done\r\n"
-        document.body.removeChild(infoText)
-        console.timeEnd(timeSolving)
-        MathJax.typeset()
+
+        let timeSolve = "Solve circuit"
+        console.time(timeSolve)
+        infoText.textContent += "Solving circuit..."
+        solve.solve_circuit("Circuit_resistors.txt")
+        console.timeEnd(timeSolve)
+        infoText.textContent += "done\r\n"
+
+        // display calculated simplification steps ---------------------------------------------------------------------
+        let timeDislpaying = "Display steps"
+        console.time(timeDislpaying)
+        infoText.textContent += "Displaying steps ..."
+        await display_steps(pyodide)
+        console.timeEnd(timeDislpaying)
+        infoText.textContent += "done\r\n"
+
       }
       main();
     </script>
