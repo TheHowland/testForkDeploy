@@ -3,27 +3,202 @@
   <head>
     <script src="http://localhost:8000/pyodide.js"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      <title>Circuit Simplification</title>
+      <!-- Load Google Fonts -->
+      <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+      <!-- Load the Pyodide JavaScript library -->
+      <script src="http://localhost:8000/pyodide.js"></script>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-      #progress-container {
-        width: 100%;
-        max-width: 200px;
-        background-color: #f3f3f3;
+    /* Global styles */
+       body, html {
+         height: 100%;
+         margin: 0;
+         font-family: 'Roboto', sans-serif;
+         background: linear-gradient(to right, #ece9e6, #ffffff);
+         color: #333;
+         display: flex;
+         flex-direction: column;
+         align-items: center;
+         justify-content: center;
+       }
+
+      /* Main container */
+      #simplification {
+        width: 90vw;
+        max-width: 1200px;
+        background: #fff;
+        padding: 2vw;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
       }
+
+      /* Flex container for circuit and description */
+      .content-container {
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
+        align-items: center;
+        gap: 2vw;
+      }
+
+      /* Circuit container */
+      .circuit-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        flex: 1;
+        margin-bottom: 2vh;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 2vw;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        background: #fff;
+        height: 60vh;
+        overflow: hidden;
+      }
+
+      /* SVG container */
+      .svg-container {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      svg {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      /* Description container */
+      .description-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 60vh;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 2vw;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        background: #fff;
+      }
+
+      /* Bounding boxes */
+      .bounding-box {
+        fill: red;
+        stroke: black;
+        stroke-width: 1;
+        fill-opacity: .1;
+        pointer-events: none;
+      }
+
+      /* Progress bar container */
+      #progress-container {
+        width: 80%;
+        max-width: 300px;
+        background-color: #f3f3f3;
+        border-radius: 25px;
+        overflow: hidden;
+        margin: 2vh auto;
+      }
+
+      /* Progress bar */
       #progress-bar {
         width: 0;
-        max-width: 200px;
-        height: 20px;
+        height: 2vh;
         background-color: #4caf50;
         text-align: center;
-        line-height: 20px;
+        line-height: 2vh;
         color: white;
+        transition: width 0.3s;
+      }
+
+      /* Container for clicked elements */
+      .clicked-elements-container {
+        border: 1px solid #ddd;
+        padding: 1vh;
+        margin-top: 2vh;
+        display: inline-block;
+        vertical-align: top;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        width: 80%;
+      }
+
+      /* Button styles */
+      .reset-button,
+      .check-button,
+      .nav-button {
+        margin-top: 1vh;
+        padding: 1vh 2vw;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 2vh;
+        transition: background 0.3s, transform 0.2s;
+      }
+
+      .reset-button {
+        background-color: #f44336;
+        color: white;
+      }
+
+      .check-button {
+        background-color: #4caf50;
+        color: white;
+      }
+
+      .nav-button {
+        background-color: #2196f3;
+        color: white;
+        display: none;
+        /* Initially hide the buttons */
+        margin-right: 1vw;
+      }
+
+      /* Button hover effect */
+      .reset-button:hover,
+      .check-button:hover,
+      .nav-button:hover {
+        transform: scale(1.05);
+      }
+
+      /* Navigation buttons container */
+      .nav-buttons-container {
+        margin-top: 2vh;
+        display: flex;
+        justify-content: center;
+        gap: 2vw;
       }
     </style>
   </head>
 
   <body>
     <div id="simplification"></div>
+    <div>
+      <label for="circuit-selector">Select Circuit:</label>
+      <select id="circuit-selector"></select>
+    </div>
+    <div class="nav-buttons-container">
+      <button id="prev-button" class="nav-button">Previous</button>
+      <button id="next-button" class="nav-button">Next</button>
+    </div>
     <script>
+      let currentStep = 0; // Track the current step
+      let jsonFiles = [];
+      let svgFiles = [];
+      let circuitFiles = []; // Array to hold circuit files
+
       class SolutionObject{
         constructor(name1, name2, newName, value1, value2, result, relation, latexEquation) {
           this._name1 = name1;
@@ -104,6 +279,23 @@
 
       }
 
+      //ToDo remove function
+      function sanitizeSelector(selector) {
+        return selector.replace(/[^\w-]/g, '_');
+      }
+
+      function populateCircuitSelector() {
+        const circuitSelector = document.getElementById('circuit-selector');
+        circuitSelector.innerHTML = '';
+
+        circuitFiles.forEach(file => {
+          const option = document.createElement('option');
+          option.value = file;
+          option.text = file.replace('.txt', '');
+          circuitSelector.appendChild(option);
+        });
+      }
+
       async function fetchDirectoryListing(url, extension = "") {
         try {
           // Fetch the directory listing HTML
@@ -138,8 +330,8 @@
       }
 
       function display_step(pyodide, jsonFilePath, svgFilePath, contentDivName = 'simplification'){
-
         const contentDiv = document.getElementById(contentDivName);
+        contentDiv.innerHTML = ''; // Clear previous content
 
         try {
           // Fetch JSON data
@@ -153,53 +345,121 @@
           // Fetch SVG data
           const svgData = pyodide.FS.readFile(svgFilePath, { encoding: "utf8" });
 
+          let relationText = "";
           if (!data.isNull()) {
-            let relationText = ""
             if (data.noFormat().relation === "parallel") {
               relationText = "Die Elemente sind parallel zueinander";
-            }
-            else if (data.noFormat().relation === "series") {
+            } else if (data.noFormat().relation === "series") {
               relationText = "Die Elemente sind in Reihe zueinander";
-            }
-            else if (data.noFormat().relation === null) {
+            } else if (data.noFormat().relation === null) {
               relationText = "Keine Beziehung zwischen den Elementen";
-            }
-            else {
+            } else {
               throw Error("Unknown relation type");
             }
-
-            // Create a paragraph element to hold the JSON data
-            const paragraph = document.createElement('p');
-            paragraph.innerHTML = `Die Elemente ${data.inline().name1} und ${data.inline().name2}<br>
-            wurden zu ${data.inline().newName} zusammengefasst<br>
-            ${data.inline().name1}&nbsp= ${data.inline().value1}<br>
-            ${data.inline().name2}&nbsp= ${data.inline().value2}<br>
-            ${data.inline().newName}&nbsp= ${data.inline().result}<br>
-            ${relationText}<br>
-            Rechnung:<br>
-            ${data.inline().latexEquation}`;
-
-            contentDiv.appendChild(paragraph);
           }
+
+          const circuitContainer = document.createElement('div');
+          circuitContainer.className = 'circuit-container';
 
           // Create a div element to hold the SVG data
           const svgDiv = document.createElement('div');
+          svgDiv.className = 'svg-container';
           //console.log("svg-Data:" + svgData)
           svgDiv.innerHTML = svgData;
 
-          // Append the paragraph and SVG div to the content div
-          contentDiv.appendChild(svgDiv);
+          const sanitizedSvgFilePath = sanitizeSelector(svgFilePath);
+          const clickedElementsContainer = document.createElement('div');
+          clickedElementsContainer.className = 'clicked-elements-container';
+          clickedElementsContainer.innerHTML = `<h3>Clicked Elements</h3><ul id="clicked-elements-list-${sanitizedSvgFilePath}"></ul>`;
+
+          const resetButton = document.createElement('button');
+          resetButton.className = 'reset-button';
+          resetButton.textContent = 'Reset';
+          resetButton.addEventListener('click', () => {
+            svgDiv.querySelectorAll('.bounding-box').forEach(box => box.remove());
+            clickedElementsList.innerHTML = '';
+          });
+
+          const checkButton = document.createElement('button');
+          checkButton.className = 'check-button';
+          checkButton.textContent = 'Check';
+          checkButton.addEventListener('click', async () => {
+            if (currentStep < jsonFiles.length - 1) {
+              const nextJsonDataString = pyodide.FS.readFile(`Solutions/${jsonFiles[currentStep + 1]}`, { encoding: "utf8" });
+              const nextJsonData = JSON.parse(nextJsonDataString);
+              const selectedElements = Array.from(clickedElementsList.querySelectorAll('li')).map(li => li.textContent);
+
+              const canSimplify = selectedElements.includes(`Clicked on path element with id: ${nextJsonData.name1}`) &&
+                      selectedElements.includes(`Clicked on path element with id: ${nextJsonData.name2}`);
+
+              if (canSimplify) {
+                alert("The selected elements can be simplified!");
+                currentStep++;
+                display_step(pyodide, `Solutions/${jsonFiles[currentStep]}`, `Solutions/${svgFiles[currentStep]}`);
+              } else {
+                alert("The selected elements cannot be simplified.");
+              }
+            }
+            MathJax.typeset()
+          });
+
+          clickedElementsContainer.appendChild(resetButton);
+          clickedElementsContainer.appendChild(checkButton);
+          circuitContainer.appendChild(svgDiv);
+
+          const descriptionContainer = document.createElement('div');
+          descriptionContainer.className = 'description-container';
+
+          // Create a paragraph element to hold the JSON data
+          const paragraph = document.createElement('p');
+          paragraph.innerHTML = `Die Elemente ${data.inline().name1} und ${data.inline().name2}<br>
+          wurden zu ${data.inline().newName} zusammengefasst<br>
+          ${data.inline().name1}&nbsp= ${data.inline().value1}<br>
+          ${data.inline().name2}&nbsp= ${data.inline().value2}<br>
+          ${data.inline().newName}&nbsp= ${data.inline().result}<br>
+          ${relationText}<br>
+          Rechnung:<br>
+          ${data.inline().latexEquation}`;
+
+          descriptionContainer.appendChild(paragraph);
+          descriptionContainer.appendChild(clickedElementsContainer);
+
+          const contentContainer = document.createElement('div');
+          contentContainer.className = 'content-container';
+          contentContainer.appendChild(circuitContainer);
+          contentContainer.appendChild(descriptionContainer);
+          contentDiv.appendChild(contentContainer);
+
+          const clickedElementsList = clickedElementsContainer.querySelector(`#clicked-elements-list-${sanitizedSvgFilePath}`);
 
           svgDiv.querySelectorAll('path').forEach(pathElement => {
             pathElement.style.pointerEvents = 'bounding-box';
             pathElement.style.cursor = 'pointer';
 
             pathElement.addEventListener('click', () => {
-              const elementId = pathElement.getAttribute('id');
-              if (elementId) {
-                alert(`Clicked on path element with id: ${elementId}`);
+              const bboxId = `bbox-${pathElement.getAttribute('id') || Math.random().toString(36).substr(2, 9)}`;
+              const existingBox = document.getElementById(bboxId);
+              if (existingBox) {
+                existingBox.remove();
+                const listItem = document.querySelector(`li[data-bbox-id="${bboxId}"]`);
+                if (listItem) {
+                  listItem.remove();
+                }
               } else {
-                alert('Clicked on a path element without an id');
+                const bbox = pathElement.getBBox();
+                const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                rect.setAttribute('x', bbox.x);
+                rect.setAttribute('y', bbox.y);
+                rect.setAttribute('width', bbox.width);
+                rect.setAttribute('height', bbox.height);
+                rect.setAttribute('id', bboxId);
+                rect.classList.add('bounding-box');
+                pathElement.parentNode.insertBefore(rect, pathElement.nextSibling);
+
+                const listItem = document.createElement('li');
+                listItem.textContent = `Clicked on path element with id: ${pathElement.getAttribute('id') || 'no id'}`;
+                listItem.setAttribute('data-bbox-id', bboxId);
+                clickedElementsList.appendChild(listItem);
               }
             });
           });
@@ -326,35 +586,55 @@
         let cirArrBuff = await (await fetch("http://localhost:8000/Circuits.zip")).arrayBuffer();
         await pyodide.unpackArchive(cirArrBuff, ".zip")
 
+        circuitFiles = pyodide.FS.readdir("Circuits")
+        //remove . and .. from cirucitFiles
+        circuitFiles = circuitFiles.filter((file) => file !== "." && file !== "..")
+        console.log("Circuits Files: " + circuitFiles)
+        populateCircuitSelector();
+
         // fetch simplification script from server
         pyodide.FS.writeFile("/home/pyodide/solve.py", await (await fetch("http://localhost:8000/solve.py")).text())
         infoText.textContent += "done\r\n"
         console.timeEnd(loadCircuits)
 
+        const circuitSelector = document.getElementById('circuit-selector');
+        let selectedCircuit = circuitSelector.value;
+
+        circuitSelector.addEventListener('change', (event) => {
+          selectedCircuit = event.target.value;
+          solveCircuit(selectedCircuit, pyodide);
+        });
+
+        infoText.textContent += "done\r\n";
+        document.body.removeChild(infoText);
+
+        // Show the navigation buttons after everything is loaded
+        document.getElementById('prev-button').style.display = 'inline-block';
+        document.getElementById('next-button').style.display = 'inline-block';
+
+        solveCircuit(selectedCircuit, pyodide);
+      }
+
+      async function solveCircuit(circuit, pyodide){
         // Calculate solution with python script -----------------------------------------------------------------------
         let timeImporting = "Import Python script"
         console.time(timeImporting)
-        infoText.textContent += "Importing Python script ..."
         let solve = await pyodide.pyimport("solve");
         console.timeEnd(timeImporting)
-        infoText.textContent += "done\r\n"
 
         let timeSolve = "Solve circuit"
         console.time(timeSolve)
-        infoText.textContent += "Solving circuit..."
-        solve.solve_circuit("Circuit_resistors.txt")
+        solve.solve_circuit(circuit)
         console.timeEnd(timeSolve)
-        infoText.textContent += "done\r\n"
 
-        // display calculated simplification steps ---------------------------------------------------------------------
-        let timeDislpaying = "Display steps"
-        console.time(timeDislpaying)
-        infoText.textContent += "Displaying steps ..."
-        await display_steps(pyodide)
-        console.timeEnd(timeDislpaying)
-        infoText.textContent += "done\r\n"
+        const files = await pyodide.FS.readdir("Solutions");
+        jsonFiles = files.filter(file => file.endsWith(".json"));
+        svgFiles = files.filter(file => file.endsWith(".svg"));
 
+        currentStep = 0; // Reset to the first step when changing circuits
+        display_step(pyodide, `Solutions/${jsonFiles[currentStep]}`, `Solutions/${svgFiles[currentStep]}`);
       }
+
       main();
     </script>
   </body>
