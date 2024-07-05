@@ -1,418 +1,395 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <script src="http://localhost:8000/pyodide.js"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-      <title>Circuit Simplification</title>
-      <!-- Load Google Fonts -->
-      <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-      <!-- Load the Pyodide JavaScript library -->
-      <script src="http://localhost:8000/pyodide.js"></script>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Circuit Simplification</title>
+    <!-- Load Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Load the Pyodide JavaScript library -->
+    <script src="http://localhost:8000/pyodide.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-    /* Global styles */
-       body, html {
-         height: 100%;
-         margin: 0;
-         font-family: 'Roboto', sans-serif;
-         background: linear-gradient(to right, #ece9e6, #ffffff);
-         color: #333;
-         display: flex;
-         flex-direction: column;
-         align-items: center;
-         justify-content: center;
-       }
+        /* Global styles */
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(to right, #ece9e6, #ffffff);
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
 
-      /* Main container */
-      #simplification {
-        width: 90vw;
-        max-width: 1200px;
-        background: #fff;
-        padding: 2vw;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
+        /* Main container */
+        #simplification {
+            width: 90vw;
+            max-width: 1200px;
+            background: #fff;
+            padding: 2vw;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
 
-      /* Flex container for circuit and description */
-      .content-container {
-        display: flex;
-        width: 100%;
-        justify-content: space-between;
-        align-items: center;
-        gap: 2vw;
-      }
+        /* Flex container for circuit and description */
+        .content-container {
+            display: flex;
+            width: 100%;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2vw;
+        }
 
-      /* Circuit container */
-      .circuit-container {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        flex: 1;
-        margin-bottom: 2vh;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        padding: 2vw;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        background: #fff;
-        height: 60vh;
-        overflow: hidden;
-      }
+        /* Circuit container */
+        .circuit-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            flex: 1;
+            margin-bottom: 2vh;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 2vw;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            background: #fff;
+            height: 60vh;
+            overflow: hidden;
+        }
 
-      /* SVG container */
-      .svg-container {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
+        /* SVG container */
+        .svg-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
-      svg {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-      }
+        svg {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
 
-      /* Description container */
-      .description-container {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: 60vh;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        padding: 2vw;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        background: #fff;
-      }
+        /* Description container */
+        .description-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 60vh;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 2vw;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            background: #fff;
+        }
 
-      /* Bounding boxes */
-      .bounding-box {
-        fill: red;
-        stroke: black;
-        stroke-width: 1;
-        fill-opacity: .1;
-        pointer-events: none;
-      }
+        /* Bounding boxes */
+        .bounding-box {
+            fill: red;
+            stroke: black;
+            stroke-width: 1;
+            fill-opacity: .1;
+            pointer-events: none;
+        }
 
-      /* Progress bar container */
-      #progress-container {
-        width: 80%;
-        max-width: 300px;
-        background-color: #f3f3f3;
-        border-radius: 25px;
-        overflow: hidden;
-        margin: 2vh auto;
-      }
+        /* Progress bar container */
+        #progress-container {
+            width: 80%;
+            max-width: 300px;
+            background-color: #f3f3f3;
+            border-radius: 25px;
+            overflow: hidden;
+            margin: 2vh auto;
+        }
 
-      /* Progress bar */
-      #progress-bar {
-        width: 0;
-        height: 2vh;
-        background-color: #4caf50;
-        text-align: center;
-        line-height: 2vh;
-        color: white;
-        transition: width 0.3s;
-      }
+        /* Progress bar */
+        #progress-bar {
+            width: 0;
+            height: 2vh;
+            background-color: #4caf50;
+            text-align: center;
+            line-height: 2vh;
+            color: white;
+            transition: width 0.3s;
+        }
 
-      /* Container for clicked elements */
-      .clicked-elements-container {
-        border: 1px solid #ddd;
-        padding: 1vh;
-        margin-top: 2vh;
-        display: inline-block;
-        vertical-align: top;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        width: 80%;
-      }
+        /* Container for clicked elements */
+        .clicked-elements-container {
+            border: 1px solid #ddd;
+            padding: 1vh;
+            margin-top: 2vh;
+            display: inline-block;
+            vertical-align: top;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 80%;
+        }
 
-      /* Button styles */
-      .reset-button,
-      .check-button,
-      .nav-button {
-        margin-top: 1vh;
-        padding: 1vh 2vw;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 2vh;
-        transition: background 0.3s, transform 0.2s;
-      }
+        /* Button styles */
+        .reset-button,
+        .check-button {
+            margin-top: 1vh;
+            padding: 1vh 2vw;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 2vh;
+            transition: background 0.3s, transform 0.2s;
+        }
 
-      .reset-button {
-        background-color: #f44336;
-        color: white;
-      }
+        .reset-button {
+            background-color: #f44336;
+            color: white;
+        }
 
-      .check-button {
-        background-color: #4caf50;
-        color: white;
-      }
+        .check-button {
+            background-color: #4caf50;
+            color: white;
+        }
 
-      .nav-button {
-        background-color: #2196f3;
-        color: white;
-        display: none;
-        /* Initially hide the buttons */
-        margin-right: 1vw;
-      }
-
-      /* Button hover effect */
-      .reset-button:hover,
-      .check-button:hover,
-      .nav-button:hover {
-        transform: scale(1.05);
-      }
-
-      /* Navigation buttons container */
-      .nav-buttons-container {
-        margin-top: 2vh;
-        display: flex;
-        justify-content: center;
-        gap: 2vw;
-      }
+        /* Button hover effect */
+        .reset-button:hover,
+        .check-button:hover {
+            transform: scale(1.05);
+        }
     </style>
-  </head>
+</head>
 
-  <body>
-    <div id="simplification"></div>
-    <div>
-      <label for="circuit-selector">Select Circuit:</label>
-      <select id="circuit-selector"></select>
-    </div>
-    <div class="nav-buttons-container">
-      <button id="prev-button" class="nav-button">Previous</button>
-      <button id="next-button" class="nav-button">Next</button>
-    </div>
-    <script>
-      let currentStep = 0; // Track the current step
-      let jsonFiles = [];
-      let svgFiles = [];
-      let circuitFiles = []; // Array to hold circuit files
+<body>
+<div id="simplification"></div>
+<div>
+    <label for="circuit-selector">Select Circuit:</label>
+    <select id="circuit-selector"></select>
+</div>
+<script>
+    let currentStep = 0; // Track the current step
+    let jsonFiles = [];
+    let svgFiles = [];
+    let circuitFiles = []; // Array to hold circuit files
 
-      class SolutionObject{
+    class SolutionObject {
         constructor(name1, name2, newName, value1, value2, result, relation, latexEquation) {
-          this._name1 = name1;
-          this._name2 = name2;
-          this._newName = newName;
-          this._value1 = value1;
-          this._value2 = value2;
-          this._result = result;
-          this._relation = relation;
-          this._latexEquation = latexEquation;
+            this._name1 = name1;
+            this._name2 = name2;
+            this._newName = newName;
+            this._value1 = value1;
+            this._value2 = value2;
+            this._result = result;
+            this._relation = relation;
+            this._latexEquation = latexEquation;
 
-          this._inlineReturnFunc = (string) => `\\(${string}\\)`;
-          this._blockReturnFunc = (string) => `$$${string}$$`;
+            this._inlineReturnFunc = (string) => `\\(${string}\\)`;
+            this._blockReturnFunc = (string) => `$$${string}$$`;
 
-          this._returnFunction = this._inlineReturnFunc;
+            this._returnFunction = this._inlineReturnFunc;
         }
 
         set returnFunction(func) {
-          this._returnFunction = func;
+            this._returnFunction = func;
         }
 
         inline() {
-          this._returnFunction = this._inlineReturnFunc;
-          return this;
+            this._returnFunction = this._inlineReturnFunc;
+            return this;
         }
 
         block() {
-          this._returnFunction = this._blockReturnFunc;
-          return this;
+            this._returnFunction = this._blockReturnFunc;
+            return this;
         }
 
         noFormat() {
-          this._returnFunction = (string) => string;
-          return this;
+            this._returnFunction = (string) => string;
+            return this;
         }
 
         _format(string) {
-          return this._returnFunction(string);
+            return this._returnFunction(string);
         }
 
-        isNull(){
-          return (!this._name1) && (!this._name2) && (!this._newName) &&
-                  (!this._value1) && (!this._value2) && (!this._result) &&
-                  (!this._relation) && (!this._latexEquation);
+        isNull() {
+            return (!this._name1) && (!this._name2) && (!this._newName) &&
+                (!this._value1) && (!this._value2) && (!this._result) &&
+                (!this._relation) && (!this._latexEquation);
         }
 
         get name1() {
-          return this._format(this._name1);
+            return this._format(this._name1);
         }
 
         get name2() {
-          return this._format(this._name2);
+            return this._format(this._name2);
         }
 
         get newName() {
-          return this._format(this._newName);
+            return this._format(this._newName);
         }
 
         get value1() {
-          return this._format(this._value1);
+            return this._format(this._value1);
         }
 
         get value2() {
-          return this._format(this._value2);
+            return this._format(this._value2);
         }
 
         get result() {
-          return this._format(this._result);
+            return this._format(this._result);
         }
 
         get relation() {
-          return this._format(this._relation);
+            return this._format(this._relation);
         }
 
         get latexEquation() {
-          return this._format(this._latexEquation);
+            return this._format(this._latexEquation);
         }
+    }
 
-      }
-
-      //ToDo remove function
-      function sanitizeSelector(selector) {
+    // ToDo remove function
+    function sanitizeSelector(selector) {
         return selector.replace(/[^\w-]/g, '_');
-      }
+    }
 
-      function populateCircuitSelector() {
+    function populateCircuitSelector() {
         const circuitSelector = document.getElementById('circuit-selector');
         circuitSelector.innerHTML = '';
 
         circuitFiles.forEach(file => {
-          const option = document.createElement('option');
-          option.value = file;
-          option.text = file.replace('.txt', '');
-          circuitSelector.appendChild(option);
+            const option = document.createElement('option');
+            option.value = file;
+            option.text = file.replace('.txt', '');
+            circuitSelector.appendChild(option);
         });
-      }
+    }
 
-      async function fetchDirectoryListing(url, extension = "") {
+    async function fetchDirectoryListing(url, extension = "") {
         try {
-          // Fetch the directory listing HTML
-          const response = await fetch(url);
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          const htmlText = await response.text();
-
-          // Parse the HTML
-          const parser = new DOMParser();
-          const doc = parser.parseFromString(htmlText, 'text/html');
-
-          // Extract file names from the parsed HTML
-          const fileLinks = doc.querySelectorAll('a'); // Assuming files are listed as <a> tags
-          const fileNames = [];
-          fileLinks.forEach(link => {
-            const fileName = link.getAttribute('href');
-            if (fileName && !fileName.endsWith('/')) { // Filter out directories if needed
-              if(extension === "" || (extension !== "" && fileName.endsWith(extension))) {
-                fileNames.push(fileName);
-              }
+            // Fetch the directory listing HTML
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
             }
-          });
+            const htmlText = await response.text();
 
-          return fileNames;
+            // Parse the HTML
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(htmlText, 'text/html');
+
+            // Extract file names from the parsed HTML
+            const fileLinks = doc.querySelectorAll('a'); // Assuming files are listed as <a> tags
+            const fileNames = [];
+            fileLinks.forEach(link => {
+                const fileName = link.getAttribute('href');
+                if (fileName && !fileName.endsWith('/')) { // Filter out directories if needed
+                    if (extension === "" || (extension !== "" && fileName.endsWith(extension))) {
+                        fileNames.push(fileName);
+                    }
+                }
+            });
+
+            return fileNames;
         }
         catch (error) {
-          console.error('Error fetching directory listing:', error);
-          return [];
+            console.error('Error fetching directory listing:', error);
+            return [];
         }
-      }
+    }
 
-      function display_step(pyodide, jsonFilePath, svgFilePath, contentDivName = 'simplification'){
+    function display_step(pyodide, jsonFilePath, svgFilePath, contentDivName = 'simplification') {
         const contentDiv = document.getElementById(contentDivName);
         contentDiv.innerHTML = ''; // Clear previous content
 
         try {
-          // Fetch JSON data
-          let jsonDataString = pyodide.FS.readFile(jsonFilePath, { encoding: "utf8" });
+            // Fetch JSON data
+            let jsonDataString = pyodide.FS.readFile(jsonFilePath, { encoding: "utf8" });
 
-          //console.log("Solution from Json:" + jsonDataString)
-          const jsonData = JSON.parse(jsonDataString);
-          let data = new SolutionObject(jsonData.name1, jsonData.name2, jsonData.newName, jsonData.value1, jsonData.value2,
-                  jsonData.result, jsonData.relation, jsonData.latexEquation);
+            //console.log("Solution from Json:" + jsonDataString)
+            const jsonData = JSON.parse(jsonDataString);
+            let data = new SolutionObject(jsonData.name1, jsonData.name2, jsonData.newName, jsonData.value1, jsonData.value2,
+                jsonData.result, jsonData.relation, jsonData.latexEquation);
 
-          // Fetch SVG data
-          const svgData = pyodide.FS.readFile(svgFilePath, { encoding: "utf8" });
+            // Fetch SVG data
+            const svgData = pyodide.FS.readFile(svgFilePath, { encoding: "utf8" });
 
-          let relationText = "";
-          if (!data.isNull()) {
-            if (data.noFormat().relation === "parallel") {
-              relationText = "Die Elemente sind parallel zueinander";
-            } else if (data.noFormat().relation === "series") {
-              relationText = "Die Elemente sind in Reihe zueinander";
-            } else if (data.noFormat().relation === null) {
-              relationText = "Keine Beziehung zwischen den Elementen";
-            } else {
-              throw Error("Unknown relation type");
+            let relationText = "";
+            if (!data.isNull()) {
+                if (data.noFormat().relation === "parallel") {
+                    relationText = "Die Elemente sind parallel zueinander";
+                } else if (data.noFormat().relation === "series") {
+                    relationText = "Die Elemente sind in Reihe zueinander";
+                } else if (data.noFormat().relation === null) {
+                    relationText = "Keine Beziehung zwischen den Elementen";
+                } else {
+                    throw Error("Unknown relation type");
+                }
             }
-          }
 
-          const circuitContainer = document.createElement('div');
-          circuitContainer.className = 'circuit-container';
+            const circuitContainer = document.createElement('div');
+            circuitContainer.className = 'circuit-container';
 
-          // Create a div element to hold the SVG data
-          const svgDiv = document.createElement('div');
-          svgDiv.className = 'svg-container';
-          //console.log("svg-Data:" + svgData)
-          svgDiv.innerHTML = svgData;
+            // Create a div element to hold the SVG data
+            const svgDiv = document.createElement('div');
+            svgDiv.className = 'svg-container';
+            //console.log("svg-Data:" + svgData)
+            svgDiv.innerHTML = svgData;
 
-          const sanitizedSvgFilePath = sanitizeSelector(svgFilePath);
-          const clickedElementsContainer = document.createElement('div');
-          clickedElementsContainer.className = 'clicked-elements-container';
-          clickedElementsContainer.innerHTML = `<h3>Clicked Elements</h3><ul id="clicked-elements-list-${sanitizedSvgFilePath}"></ul>`;
+            const sanitizedSvgFilePath = sanitizeSelector(svgFilePath);
+            const clickedElementsContainer = document.createElement('div');
+            clickedElementsContainer.className = 'clicked-elements-container';
+            clickedElementsContainer.innerHTML = `<h3>Clicked Elements</h3><ul id="clicked-elements-list-${sanitizedSvgFilePath}"></ul>`;
 
-          const resetButton = document.createElement('button');
-          resetButton.className = 'reset-button';
-          resetButton.textContent = 'Reset';
-          resetButton.addEventListener('click', () => {
-            svgDiv.querySelectorAll('.bounding-box').forEach(box => box.remove());
-            clickedElementsList.innerHTML = '';
-          });
+            const resetButton = document.createElement('button');
+            resetButton.className = 'reset-button';
+            resetButton.textContent = 'Reset';
+            resetButton.addEventListener('click', () => {
+                svgDiv.querySelectorAll('.bounding-box').forEach(box => box.remove());
+                clickedElementsList.innerHTML = '';
+            });
 
-          const checkButton = document.createElement('button');
-          checkButton.className = 'check-button';
-          checkButton.textContent = 'Check';
-          checkButton.addEventListener('click', async () => {
-            if (currentStep < jsonFiles.length - 1) {
-              const nextJsonDataString = pyodide.FS.readFile(`Solutions/${jsonFiles[currentStep + 1]}`, { encoding: "utf8" });
-              const nextJsonData = JSON.parse(nextJsonDataString);
-              const selectedElements = Array.from(clickedElementsList.querySelectorAll('li')).map(li => li.textContent);
+            const checkButton = document.createElement('button');
+            checkButton.className = 'check-button';
+            checkButton.textContent = 'Check';
+            checkButton.addEventListener('click', async () => {
+                if (currentStep < jsonFiles.length - 1) {
+                    const nextJsonDataString = pyodide.FS.readFile(`Solutions/${jsonFiles[currentStep + 1]}`, { encoding: "utf8" });
+                    const nextJsonData = JSON.parse(nextJsonDataString);
+                    const selectedElements = Array.from(clickedElementsList.querySelectorAll('li')).map(li => li.textContent);
 
-              const canSimplify = selectedElements.includes(`Clicked on path element with id: ${nextJsonData.name1}`) &&
-                      selectedElements.includes(`Clicked on path element with id: ${nextJsonData.name2}`);
+                    const canSimplify = selectedElements.includes(`Clicked on path element with id: ${nextJsonData.name1}`) &&
+                        selectedElements.includes(`Clicked on path element with id: ${nextJsonData.name2}`);
 
-              if (canSimplify) {
-                alert("The selected elements can be simplified!");
-                currentStep++;
-                display_step(pyodide, `Solutions/${jsonFiles[currentStep]}`, `Solutions/${svgFiles[currentStep]}`);
-              } else {
-                alert("The selected elements cannot be simplified.");
-              }
-            }
-            MathJax.typeset()
-          });
+                    if (canSimplify) {
+                        alert("The selected elements can be simplified!");
+                        currentStep++;
+                        display_step(pyodide, `Solutions/${jsonFiles[currentStep]}`, `Solutions/${svgFiles[currentStep]}`);
+                    } else {
+                        alert("The selected elements cannot be simplified.");
+                    }
+                }
+                MathJax.typeset()
+            });
 
-          clickedElementsContainer.appendChild(resetButton);
-          clickedElementsContainer.appendChild(checkButton);
-          circuitContainer.appendChild(svgDiv);
+            clickedElementsContainer.appendChild(resetButton);
+            clickedElementsContainer.appendChild(checkButton);
+            circuitContainer.appendChild(svgDiv);
 
-          const descriptionContainer = document.createElement('div');
-          descriptionContainer.className = 'description-container';
+            const descriptionContainer = document.createElement('div');
+            descriptionContainer.className = 'description-container';
 
-          // Create a paragraph element to hold the JSON data
-          const paragraph = document.createElement('p');
-          paragraph.innerHTML = `Die Elemente ${data.inline().name1} und ${data.inline().name2}<br>
+            // Create a paragraph element to hold the JSON data
+            const paragraph = document.createElement('p');
+            paragraph.innerHTML = `Die Elemente ${data.inline().name1} und ${data.inline().name2}<br>
           wurden zu ${data.inline().newName} zusammengefasst<br>
           ${data.inline().name1}&nbsp= ${data.inline().value1}<br>
           ${data.inline().name2}&nbsp= ${data.inline().value2}<br>
@@ -421,85 +398,85 @@
           Rechnung:<br>
           ${data.inline().latexEquation}`;
 
-          descriptionContainer.appendChild(paragraph);
-          descriptionContainer.appendChild(clickedElementsContainer);
+            descriptionContainer.appendChild(paragraph);
+            descriptionContainer.appendChild(clickedElementsContainer);
 
-          const contentContainer = document.createElement('div');
-          contentContainer.className = 'content-container';
-          contentContainer.appendChild(circuitContainer);
-          contentContainer.appendChild(descriptionContainer);
-          contentDiv.appendChild(contentContainer);
+            const contentContainer = document.createElement('div');
+            contentContainer.className = 'content-container';
+            contentContainer.appendChild(circuitContainer);
+            contentContainer.appendChild(descriptionContainer);
+            contentDiv.appendChild(contentContainer);
 
-          const clickedElementsList = clickedElementsContainer.querySelector(`#clicked-elements-list-${sanitizedSvgFilePath}`);
+            const clickedElementsList = clickedElementsContainer.querySelector(`#clicked-elements-list-${sanitizedSvgFilePath}`);
 
-          svgDiv.querySelectorAll('path').forEach(pathElement => {
-            pathElement.style.pointerEvents = 'bounding-box';
-            pathElement.style.cursor = 'pointer';
+            svgDiv.querySelectorAll('path').forEach(pathElement => {
+                pathElement.style.pointerEvents = 'bounding-box';
+                pathElement.style.cursor = 'pointer';
 
-            pathElement.addEventListener('click', () => {
-              const bboxId = `bbox-${pathElement.getAttribute('id') || Math.random().toString(36).substr(2, 9)}`;
-              const existingBox = document.getElementById(bboxId);
-              if (existingBox) {
-                existingBox.remove();
-                const listItem = document.querySelector(`li[data-bbox-id="${bboxId}"]`);
-                if (listItem) {
-                  listItem.remove();
-                }
-              } else {
-                const bbox = pathElement.getBBox();
-                const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-                rect.setAttribute('x', bbox.x);
-                rect.setAttribute('y', bbox.y);
-                rect.setAttribute('width', bbox.width);
-                rect.setAttribute('height', bbox.height);
-                rect.setAttribute('id', bboxId);
-                rect.classList.add('bounding-box');
-                pathElement.parentNode.insertBefore(rect, pathElement.nextSibling);
+                pathElement.addEventListener('click', () => {
+                    const bboxId = `bbox-${pathElement.getAttribute('id') || Math.random().toString(36).substr(2, 9)}`;
+                    const existingBox = document.getElementById(bboxId);
+                    if (existingBox) {
+                        existingBox.remove();
+                        const listItem = document.querySelector(`li[data-bbox-id="${bboxId}"]`);
+                        if (listItem) {
+                            listItem.remove();
+                        }
+                    } else {
+                        const bbox = pathElement.getBBox();
+                        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                        rect.setAttribute('x', bbox.x);
+                        rect.setAttribute('y', bbox.y);
+                        rect.setAttribute('width', bbox.width);
+                        rect.setAttribute('height', bbox.height);
+                        rect.setAttribute('id', bboxId);
+                        rect.classList.add('bounding-box');
+                        pathElement.parentNode.insertBefore(rect, pathElement.nextSibling);
 
-                const listItem = document.createElement('li');
-                listItem.textContent = `Clicked on path element with id: ${pathElement.getAttribute('id') || 'no id'}`;
-                listItem.setAttribute('data-bbox-id', bboxId);
-                clickedElementsList.appendChild(listItem);
-              }
+                        const listItem = document.createElement('li');
+                        listItem.textContent = `Clicked on path element with id: ${pathElement.getAttribute('id') || 'no id'}`;
+                        listItem.setAttribute('data-bbox-id', bboxId);
+                        clickedElementsList.appendChild(listItem);
+                    }
+                });
             });
-          });
         } catch (error) {
-          console.error('Error fetching data:', error);
-          contentDiv.textContent = 'Error loading content';
+            console.error('Error fetching data:', error);
+            contentDiv.textContent = 'Error loading content';
         }
-      }
+    }
 
-      async function display_steps(pyodide){
+    async function display_steps(pyodide) {
         let files = await pyodide.FS.readdir("Solutions")
 
         //remove '.' and '..' from file list
-        while (files[0] === "." || files[0] === ".."){
-          files.splice(0, 1);
+        while (files[0] === "." || files[0] === "..") {
+            files.splice(0, 1);
         }
 
         let jsonFiles = [];
         let svgFiles = [];
         files.forEach((file) => {
-          if(file.search(".+\.json") >= 0){
-            jsonFiles.push(file);
-          }
-          if(file.search(".+\.svg") >= 0){
-            svgFiles.push(file);
-          }
+            if (file.search(".+\.json") >= 0) {
+                jsonFiles.push(file);
+            }
+            if (file.search(".+\.svg") >= 0) {
+                svgFiles.push(file);
+            }
         })
 
-        for(let i = 0; i < jsonFiles.length; i++){
-          if(jsonFiles[i].replace(".json","") !== svgFiles[i].replace(".svg","")){
-            pyodide.FS.rmdir("Solutions")
-            throw new Error("Files did not match, Solutions cleared please try again")
-          }
-          display_step(pyodide, "Solutions/"+jsonFiles[i], "Solutions/"+svgFiles[i])
+        for (let i = 0; i < jsonFiles.length; i++) {
+            if (jsonFiles[i].replace(".json", "") !== svgFiles[i].replace(".svg", "")) {
+                pyodide.FS.rmdir("Solutions")
+                throw new Error("Files did not match, Solutions cleared please try again")
+            }
+            display_step(pyodide, "Solutions/" + jsonFiles[i], "Solutions/" + svgFiles[i])
         }
 
         MathJax.typeset()
-      }
+    }
 
-      function createProgressBar(infoText) {
+    function createProgressBar(infoText) {
         const container = document.createElement('div');
         container.id = 'progress-container';
 
@@ -512,52 +489,52 @@
 
         // Show the progress bar
         container.style.display = 'block';
-      }
+    }
 
-      function updateProgressBar(percentage) {
+    function updateProgressBar(percentage) {
         const progressBar = document.getElementById('progress-bar');
         progressBar.style.width = percentage + '%';
         progressBar.textContent = percentage + '%';
-      }
+    }
 
-      function removeProgressBar() {
+    function removeProgressBar() {
         const container = document.getElementById('progress-container');
         if (container) {
-          container.remove();
+            container.remove();
         }
-      }
+    }
 
-      async function load_packages(pyodide, optAddNames){
+    async function load_packages(pyodide, optAddNames) {
         createProgressBar("Loading Pyodide packages, please wait ...");
         updateProgressBar(0)
         let packageAddress = "http://localhost:8000/Packages/";
         let packages = await fetchDirectoryListing(packageAddress, ".whl")
 
-        if(Array.isArray(optAddNames)){
-          for(let i = 0; i < optAddNames.length; i++){
-            packages.push(optAddNames[0])
-          }
+        if (Array.isArray(optAddNames)) {
+            for (let i = 0; i < optAddNames.length; i++) {
+                packages.push(optAddNames[0])
+            }
         }
 
         let progress = 0;
         const updateProgress = () => {
-          progress += 1;
-          updateProgressBar(Math.floor((progress / packages.length) * 100));
+            progress += 1;
+            updateProgressBar(Math.floor((progress / packages.length) * 100));
         };
 
-        let packagePromises = packages.map(async function(packageName) {
-          let pkgArrBuff = await (await fetch("http://localhost:8000/Packages/" + packageName)).arrayBuffer();
-          let packageExtension = packageName.slice(packageName.lastIndexOf("."), packageName.length)
-          await pyodide.unpackArchive(pkgArrBuff, packageExtension)
-          updateProgress();
+        let packagePromises = packages.map(async function (packageName) {
+            let pkgArrBuff = await (await fetch("http://localhost:8000/Packages/" + packageName)).arrayBuffer();
+            let packageExtension = packageName.slice(packageName.lastIndexOf("."), packageName.length)
+            await pyodide.unpackArchive(pkgArrBuff, packageExtension)
+            updateProgress();
         })
 
         await Promise.all(packagePromises)
         console.log("Installed:" + packages)
         removeProgressBar()
-      }
+    }
 
-      async function main() {
+    async function main() {
         const infoText = document.createElement('div')
         infoText.id = "infoText"
         infoText.textContent = ""
@@ -601,21 +578,17 @@
         let selectedCircuit = circuitSelector.value;
 
         circuitSelector.addEventListener('change', (event) => {
-          selectedCircuit = event.target.value;
-          solveCircuit(selectedCircuit, pyodide);
+            selectedCircuit = event.target.value;
+            solveCircuit(selectedCircuit, pyodide);
         });
 
         infoText.textContent += "done\r\n";
         document.body.removeChild(infoText);
 
-        // Show the navigation buttons after everything is loaded
-        document.getElementById('prev-button').style.display = 'inline-block';
-        document.getElementById('next-button').style.display = 'inline-block';
-
         solveCircuit(selectedCircuit, pyodide);
-      }
+    }
 
-      async function solveCircuit(circuit, pyodide){
+    async function solveCircuit(circuit, pyodide) {
         // Calculate solution with python script -----------------------------------------------------------------------
         let timeImporting = "Import Python script"
         console.time(timeImporting)
@@ -633,9 +606,9 @@
 
         currentStep = 0; // Reset to the first step when changing circuits
         display_step(pyodide, `Solutions/${jsonFiles[currentStep]}`, `Solutions/${svgFiles[currentStep]}`);
-      }
+    }
 
-      main();
-    </script>
-  </body>
+    main();
+</script>
+</body>
 </html>
