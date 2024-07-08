@@ -4,13 +4,9 @@
     <script src="http://localhost:8000/pyodide.js"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <title>Circuit Simplification</title>
-    <!-- Load Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <!-- Load the Pyodide JavaScript library -->
-    <script src="http://localhost:8000/pyodide.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        /* Global styles */
         body, html {
             height: 100%;
             margin: 0;
@@ -22,8 +18,6 @@
             align-items: center;
             justify-content: center;
         }
-
-        /* Main container */
         #simplification {
             width: 90vw;
             max-width: 1200px;
@@ -36,8 +30,6 @@
             flex-direction: column;
             align-items: center;
         }
-
-        /* Flex container for circuit and description */
         .content-container {
             display: flex;
             width: 100%;
@@ -45,8 +37,6 @@
             align-items: center;
             gap: 2vw;
         }
-
-        /* Circuit container */
         .circuit-container {
             display: flex;
             flex-direction: column;
@@ -62,8 +52,6 @@
             height: 60vh;
             overflow: hidden;
         }
-
-        /* SVG container */
         .svg-container {
             width: 100%;
             height: 100%;
@@ -71,14 +59,11 @@
             justify-content: center;
             align-items: center;
         }
-
         svg {
             width: 100%;
             height: 100%;
             object-fit: contain;
         }
-
-        /* Description container */
         .description-container {
             flex: 1;
             display: flex;
@@ -92,8 +77,6 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             background: #fff;
         }
-
-        /* Bounding boxes */
         .bounding-box {
             fill: red;
             stroke: black;
@@ -101,8 +84,6 @@
             fill-opacity: .1;
             pointer-events: none;
         }
-
-        /* Progress bar container */
         #progress-container {
             width: 80%;
             max-width: 300px;
@@ -111,8 +92,6 @@
             overflow: hidden;
             margin: 2vh auto;
         }
-
-        /* Progress bar */
         #progress-bar {
             width: 0;
             height: 2vh;
@@ -122,8 +101,6 @@
             color: white;
             transition: width 0.3s;
         }
-
-        /* Container for clicked elements */
         .clicked-elements-container {
             border: 1px solid #ddd;
             padding: 1vh;
@@ -134,8 +111,6 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             width: 80%;
         }
-
-        /* Button styles */
         .reset-button,
         .check-button {
             margin-top: 1vh;
@@ -146,18 +121,14 @@
             font-size: 2vh;
             transition: background 0.3s, transform 0.2s;
         }
-
         .reset-button {
             background-color: #f44336;
             color: white;
         }
-
         .check-button {
             background-color: #4caf50;
             color: white;
         }
-
-        /* Button hover effect */
         .reset-button:hover,
         .check-button:hover {
             transform: scale(1.05);
@@ -172,12 +143,15 @@
     <select id="circuit-selector"></select>
 </div>
 <script>
-    let currentStep = 0; // Track the current step
+    let currentStep = 0;
     let jsonFiles = [];
     let svgFiles = [];
-    let circuitFiles = []; // Array to hold circuit files
+    let circuitFiles = [];
+    let selectedElements = [];
+    let currentCircuit = "";
+    let stepSolve; // Declare globally to access across functions
 
-    class SolutionObject {
+    class SolutionObject{
         constructor(name1, name2, newName, value1, value2, result, relation, latexEquation) {
             this._name1 = name1;
             this._name2 = name2;
@@ -217,7 +191,7 @@
             return this._returnFunction(string);
         }
 
-        isNull() {
+        isNull(){
             return (!this._name1) && (!this._name2) && (!this._newName) &&
                 (!this._value1) && (!this._value2) && (!this._result) &&
                 (!this._relation) && (!this._latexEquation);
@@ -254,9 +228,9 @@
         get latexEquation() {
             return this._format(this._latexEquation);
         }
+
     }
 
-    // ToDo remove function
     function sanitizeSelector(selector) {
         return selector.replace(/[^\w-]/g, '_');
     }
@@ -275,29 +249,23 @@
 
     async function fetchDirectoryListing(url, extension = "") {
         try {
-            // Fetch the directory listing HTML
             const response = await fetch(url);
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
             const htmlText = await response.text();
-
-            // Parse the HTML
             const parser = new DOMParser();
             const doc = parser.parseFromString(htmlText, 'text/html');
-
-            // Extract file names from the parsed HTML
-            const fileLinks = doc.querySelectorAll('a'); // Assuming files are listed as <a> tags
+            const fileLinks = doc.querySelectorAll('a');
             const fileNames = [];
             fileLinks.forEach(link => {
                 const fileName = link.getAttribute('href');
-                if (fileName && !fileName.endsWith('/')) { // Filter out directories if needed
-                    if (extension === "" || (extension !== "" && fileName.endsWith(extension))) {
+                if (fileName && !fileName.endsWith('/')) {
+                    if(extension === "" || (extension !== "" && fileName.endsWith(extension))) {
                         fileNames.push(fileName);
                     }
                 }
             });
-
             return fileNames;
         }
         catch (error) {
@@ -306,20 +274,16 @@
         }
     }
 
-    function display_step(pyodide, jsonFilePath, svgFilePath, contentDivName = 'simplification') {
+    function display_step(pyodide, jsonFilePath, svgFilePath, contentDivName = 'simplification'){
         const contentDiv = document.getElementById(contentDivName);
-        contentDiv.innerHTML = ''; // Clear previous content
+        contentDiv.innerHTML = '';
 
         try {
-            // Fetch JSON data
             let jsonDataString = pyodide.FS.readFile(jsonFilePath, { encoding: "utf8" });
-
-            //console.log("Solution from Json:" + jsonDataString)
             const jsonData = JSON.parse(jsonDataString);
             let data = new SolutionObject(jsonData.name1, jsonData.name2, jsonData.newName, jsonData.value1, jsonData.value2,
                 jsonData.result, jsonData.relation, jsonData.latexEquation);
 
-            // Fetch SVG data
             const svgData = pyodide.FS.readFile(svgFilePath, { encoding: "utf8" });
 
             let relationText = "";
@@ -338,10 +302,8 @@
             const circuitContainer = document.createElement('div');
             circuitContainer.className = 'circuit-container';
 
-            // Create a div element to hold the SVG data
             const svgDiv = document.createElement('div');
             svgDiv.className = 'svg-container';
-            //console.log("svg-Data:" + svgData)
             svgDiv.innerHTML = svgData;
 
             const sanitizedSvgFilePath = sanitizeSelector(svgFilePath);
@@ -353,31 +315,26 @@
             resetButton.className = 'reset-button';
             resetButton.textContent = 'Reset';
             resetButton.addEventListener('click', () => {
-                svgDiv.querySelectorAll('.bounding-box').forEach(box => box.remove());
-                clickedElementsList.innerHTML = '';
+                resetClickedElements(svgDiv, clickedElementsContainer);
             });
 
             const checkButton = document.createElement('button');
             checkButton.className = 'check-button';
             checkButton.textContent = 'Check';
             checkButton.addEventListener('click', async () => {
-                if (currentStep < jsonFiles.length - 1) {
-                    const nextJsonDataString = pyodide.FS.readFile(`Solutions/${jsonFiles[currentStep + 1]}`, { encoding: "utf8" });
-                    const nextJsonData = JSON.parse(nextJsonDataString);
-                    const selectedElements = Array.from(clickedElementsList.querySelectorAll('li')).map(li => li.textContent);
-
-                    const canSimplify = selectedElements.includes(`Clicked on path element with id: ${nextJsonData.name1}`) &&
-                        selectedElements.includes(`Clicked on path element with id: ${nextJsonData.name2}`);
-
-                    if (canSimplify) {
+                if (selectedElements.length === 2) {
+                    const canSimplify = await stepSolve.simplifyTwoCpts(selectedElements).toJs();
+                    if (canSimplify[0]) {
                         alert("The selected elements can be simplified!");
-                        currentStep++;
-                        display_step(pyodide, `Solutions/${jsonFiles[currentStep]}`, `Solutions/${svgFiles[currentStep]}`);
+                        display_step(pyodide, canSimplify[1], canSimplify[2]);
+                        resetClickedElements(svgDiv, clickedElementsContainer);
                     } else {
                         alert("The selected elements cannot be simplified.");
                     }
+                } else {
+                    alert("Please select exactly two elements.");
                 }
-                MathJax.typeset()
+                MathJax.typeset();
             });
 
             clickedElementsContainer.appendChild(resetButton);
@@ -387,7 +344,6 @@
             const descriptionContainer = document.createElement('div');
             descriptionContainer.className = 'description-container';
 
-            // Create a paragraph element to hold the JSON data
             const paragraph = document.createElement('p');
             paragraph.innerHTML = `Die Elemente ${data.inline().name1} und ${data.inline().name2}<br>
           wurden zu ${data.inline().newName} zusammengefasst<br>
@@ -421,6 +377,7 @@
                         const listItem = document.querySelector(`li[data-bbox-id="${bboxId}"]`);
                         if (listItem) {
                             listItem.remove();
+                            selectedElements = selectedElements.filter(e => e !== pathElement.getAttribute('id'));
                         }
                     } else {
                         const bbox = pathElement.getBBox();
@@ -437,43 +394,49 @@
                         listItem.textContent = `Clicked on path element with id: ${pathElement.getAttribute('id') || 'no id'}`;
                         listItem.setAttribute('data-bbox-id', bboxId);
                         clickedElementsList.appendChild(listItem);
+                        selectedElements.push(pathElement.getAttribute('id') || 'no id');
                     }
                 });
             });
+            MathJax.typeset();
         } catch (error) {
             console.error('Error fetching data:', error);
             contentDiv.textContent = 'Error loading content';
         }
     }
 
-    async function display_steps(pyodide) {
-        let files = await pyodide.FS.readdir("Solutions")
+    function resetClickedElements(svgDiv, clickedElementsContainer) {
+        svgDiv.querySelectorAll('.bounding-box').forEach(box => box.remove());
+        clickedElementsContainer.querySelector('ul').innerHTML = '';
+        selectedElements = [];
+    }
 
-        //remove '.' and '..' from file list
-        while (files[0] === "." || files[0] === "..") {
+    async function display_steps(pyodide){
+        let files = await pyodide.FS.readdir("Solutions");
+        while (files[0] === "." || files[0] === ".."){
             files.splice(0, 1);
         }
 
         let jsonFiles = [];
         let svgFiles = [];
         files.forEach((file) => {
-            if (file.search(".+\.json") >= 0) {
+            if(file.search(".+\.json") >= 0){
                 jsonFiles.push(file);
             }
-            if (file.search(".+\.svg") >= 0) {
+            if(file.search(".+\.svg") >= 0){
                 svgFiles.push(file);
             }
-        })
+        });
 
-        for (let i = 0; i < jsonFiles.length; i++) {
-            if (jsonFiles[i].replace(".json", "") !== svgFiles[i].replace(".svg", "")) {
-                pyodide.FS.rmdir("Solutions")
-                throw new Error("Files did not match, Solutions cleared please try again")
+        for(let i = 0; i < jsonFiles.length; i++){
+            if(jsonFiles[i].replace(".json","") !== svgFiles[i].replace(".svg","")){
+                pyodide.FS.rmdir("Solutions");
+                throw new Error("Files did not match, Solutions cleared please try again");
             }
-            display_step(pyodide, "Solutions/" + jsonFiles[i], "Solutions/" + svgFiles[i])
+            display_step(pyodide, "Solutions/"+jsonFiles[i], "Solutions/"+svgFiles[i]);
         }
 
-        MathJax.typeset()
+        MathJax.typeset();
     }
 
     function createProgressBar(infoText) {
@@ -487,7 +450,6 @@
         container.appendChild(bar);
         document.body.appendChild(container);
 
-        // Show the progress bar
         container.style.display = 'block';
     }
 
@@ -504,15 +466,15 @@
         }
     }
 
-    async function load_packages(pyodide, optAddNames) {
+    async function load_packages(pyodide, optAddNames){
         createProgressBar("Loading Pyodide packages, please wait ...");
-        updateProgressBar(0)
+        updateProgressBar(0);
         let packageAddress = "http://localhost:8000/Packages/";
-        let packages = await fetchDirectoryListing(packageAddress, ".whl")
+        let packages = await fetchDirectoryListing(packageAddress, ".whl");
 
-        if (Array.isArray(optAddNames)) {
-            for (let i = 0; i < optAddNames.length; i++) {
-                packages.push(optAddNames[0])
+        if(Array.isArray(optAddNames)){
+            for(let i = 0; i < optAddNames.length; i++){
+                packages.push(optAddNames[0]);
             }
         }
 
@@ -522,57 +484,52 @@
             updateProgressBar(Math.floor((progress / packages.length) * 100));
         };
 
-        let packagePromises = packages.map(async function (packageName) {
+        let packagePromises = packages.map(async function(packageName) {
             let pkgArrBuff = await (await fetch("http://localhost:8000/Packages/" + packageName)).arrayBuffer();
-            let packageExtension = packageName.slice(packageName.lastIndexOf("."), packageName.length)
-            await pyodide.unpackArchive(pkgArrBuff, packageExtension)
+            let packageExtension = packageName.slice(packageName.lastIndexOf("."), packageName.length);
+            await pyodide.unpackArchive(pkgArrBuff, packageExtension);
             updateProgress();
-        })
+        });
 
-        await Promise.all(packagePromises)
-        console.log("Installed:" + packages)
-        removeProgressBar()
+        await Promise.all(packagePromises);
+        console.log("Installed:" + packages);
+        removeProgressBar();
     }
 
     async function main() {
-        const infoText = document.createElement('div')
-        infoText.id = "infoText"
-        infoText.textContent = ""
+        const infoText = document.createElement('div');
+        infoText.id = "infoText";
+        infoText.textContent = "";
 
-        // setup pyodide environment -----------------------------------------------------------------------------------
-        document.body.appendChild(infoText)
-        infoText.setAttribute('style', 'white-space: pre;')
+        document.body.appendChild(infoText);
+        infoText.setAttribute('style', 'white-space: pre;');
 
-        infoText.textContent = "Loading Pyodide environment... "
+        infoText.textContent = "Loading Pyodide environment... ";
         let pyodide = await loadPyodide();
-        infoText.textContent += "done\r\n"
+        infoText.textContent += "done\r\n";
 
-        let timeLoadPackages = "Load packages"
-        console.time(timeLoadPackages)
-        infoText.textContent += "Loading necessary python packages, this may take a while... "
-        await load_packages(pyodide, ["sqlite3-1.0.0.zip"])
-        infoText.textContent += "done\r\n"
-        console.timeEnd(timeLoadPackages)
+        let timeLoadPackages = "Load packages";
+        console.time(timeLoadPackages);
+        infoText.textContent += "Loading necessary python packages, this may take a while... ";
+        await load_packages(pyodide, ["sqlite3-1.0.0.zip"]);
+        infoText.textContent += "done\r\n";
+        console.timeEnd(timeLoadPackages);
 
-        // Load files from server --------------------------------------------------------------------------------------
-        let loadCircuits = "Load Circuits"
-        infoText.textContent += "Loading circuits from server... "
-        console.time(loadCircuits)
+        let loadCircuits = "Load Circuits";
+        infoText.textContent += "Loading circuits from server... ";
+        console.time(loadCircuits);
 
-        // fetch netlist files from server
         let cirArrBuff = await (await fetch("http://localhost:8000/Circuits.zip")).arrayBuffer();
-        await pyodide.unpackArchive(cirArrBuff, ".zip")
+        await pyodide.unpackArchive(cirArrBuff, ".zip");
 
-        circuitFiles = pyodide.FS.readdir("Circuits")
-        //remove . and .. from cirucitFiles
-        circuitFiles = circuitFiles.filter((file) => file !== "." && file !== "..")
-        console.log("Circuits Files: " + circuitFiles)
+        circuitFiles = pyodide.FS.readdir("Circuits");
+        circuitFiles = circuitFiles.filter((file) => file !== "." && file !== "..");
+        console.log("Circuits Files: " + circuitFiles);
         populateCircuitSelector();
 
-        // fetch simplification script from server
-        pyodide.FS.writeFile("/home/pyodide/solve.py", await (await fetch("http://localhost:8000/solve.py")).text())
-        infoText.textContent += "done\r\n"
-        console.timeEnd(loadCircuits)
+        pyodide.FS.writeFile("/home/pyodide/solve.py", await (await fetch("http://localhost:8000/solve.py")).text());
+        infoText.textContent += "done\r\n";
+        console.timeEnd(loadCircuits);
 
         const circuitSelector = document.getElementById('circuit-selector');
         let selectedCircuit = circuitSelector.value;
@@ -588,23 +545,37 @@
         solveCircuit(selectedCircuit, pyodide);
     }
 
-    async function solveCircuit(circuit, pyodide) {
-        // Calculate solution with python script -----------------------------------------------------------------------
-        let timeImporting = "Import Python script"
-        console.time(timeImporting)
+    async function solveCircuit(circuit, pyodide){
+        let timeImporting = "Import Python script";
+        console.time(timeImporting);
         let solve = await pyodide.pyimport("solve");
-        console.timeEnd(timeImporting)
+        console.timeEnd(timeImporting);
 
-        let timeSolve = "Solve circuit"
-        console.time(timeSolve)
-        solve.solve_circuit(circuit)
-        console.timeEnd(timeSolve)
+        let timeSolve = "Solve circuit";
+        console.time(timeSolve);
+
+        // Clear old solution files
+        try {
+            let solutionFiles = await pyodide.FS.readdir("Solutions");
+            solutionFiles.forEach(file => {
+                if (file !== "." && file !== "..") {
+                    pyodide.FS.unlink(`Solutions/${file}`);
+                }
+            });
+        } catch (error) {
+            console.warn("Solutions directory not found or already cleared.");
+        }
+
+        stepSolve = solve.SolveInUserOrder(circuit, "Circuits/", "Solutions/");
+        let initialStep = await stepSolve.createStep0().toJs();
+        console.log("Initial Step:", initialStep);
+        console.timeEnd(timeSolve);
 
         const files = await pyodide.FS.readdir("Solutions");
         jsonFiles = files.filter(file => file.endsWith(".json"));
         svgFiles = files.filter(file => file.endsWith(".svg"));
 
-        currentStep = 0; // Reset to the first step when changing circuits
+        currentStep = 0;
         display_step(pyodide, `Solutions/${jsonFiles[currentStep]}`, `Solutions/${svgFiles[currentStep]}`);
     }
 

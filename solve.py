@@ -1,12 +1,5 @@
-from lcapy import Circuit
-from lcapy import Solution
-from lcapy import FileToImpedance
-
-# cct = Circuit(FileToImpedance("Circuits/Circuit_mixed.txt"))
-# cct = Circuit(filename="Circuits/Circuit_resistors.txt")
-# cct = Circuit(filename="Circuits/Circuit_capacitors.txt")
-# cct = Circuit(filename="Circuits/Circuit_inductors.txt")
-
+from lcapy import Circuit, Solution, FileToImpedance, DrawWithSchemdraw
+import os
 
 def solve_circuit(filename: str, filePath="Circuits/"):
     cct = Circuit(FileToImpedance(filePath+filename))
@@ -15,14 +8,8 @@ def solve_circuit(filename: str, filePath="Circuits/"):
     sol.draw(path="Solutions")
     sol.export(path="Solutions")
 
-
 class SolveInUserOrder:
     def __init__(self, filename: str, filePath=None, savePath=None):
-        """
-        :param filename: str with filename of circuit to simplify
-        :param filePath: str with path to circuit file if not in current directory
-        :param savePath: str with path to save the result svg and jason files to
-        """
         if filePath is None:
             filePath = ""
         if savePath is None:
@@ -34,13 +21,7 @@ class SolveInUserOrder:
         self.circuit = Circuit(FileToImpedance(filePath+filename))
         self.steps = [(self.circuit, None, None, None, None)]
 
-        return
-
     def simplifyTwoCpts(self, cpts: list) -> tuple[bool, str, str]:
-        """
-        :param cpts: list with two component name strings to simplify ["R1", "R2"]
-        :return: tuple with bool if simplification is possible, str with json filename, str with svg filename
-        """
         if cpts[1] in self.circuit.in_series(cpts[0]):
             newNet, newCptName = self.circuit.simplify_two_cpts(self.circuit, cpts)
             self.steps.append((newNet, cpts[0], cpts[1], newCptName, "series"))
@@ -60,11 +41,8 @@ class SolveInUserOrder:
         return True, jsonName, svgName
 
     def createInitialStep(self) -> tuple[bool, str, str]:
-        """
-        create the initial step or step0 of the circuit
-        """
-        nameStep0Svg = f"{os.path.splitext(filename)[0]}_step0.svg"
-        nameStep0Json = filename
+        nameStep0Svg = f"{os.path.splitext(self.filename)[0]}_step0.svg"
+        nameStep0Json = self.filename
 
         sol = Solution(self.steps)
         nameStep0Json = sol.exportStepAsJson("step0", path=self.savePath, filename=nameStep0Json)
@@ -77,4 +55,3 @@ class SolveInUserOrder:
 
     def getSolution(self):
         return Solution(self.steps)
-
