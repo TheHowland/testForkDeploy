@@ -2,7 +2,7 @@ from lcapy import Circuit, Solution, FileToImpedance, DrawWithSchemdraw
 import os
 
 def solve_circuit(filename: str, filePath="Circuits/"):
-    cct = Circuit(FileToImpedance(filePath+filename))
+    cct = Circuit(FileToImpedance(os.path.join(filePath, filename)))
     steps = cct.simplify_stepwise()
     sol = Solution(steps)
     sol.draw(path="Solutions")
@@ -57,7 +57,7 @@ class SolveInUserOrder:
         create the initial step or step0 of the circuit
         :return tuple with bool if simplification is possible, str with json filename, str with svg filename
         """
-        nameStep0Svg = f"{os.path.splitext(filename)[0]}_step0.svg"
+        nameStep0Svg = f"{os.path.splitext(self.filename)[0]}_step0.svg"
         nameStep0Json = self.filename
 
         sol = Solution(self.steps)
