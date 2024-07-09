@@ -29,6 +29,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            position: relative;
         }
         .content-container {
             display: flex;
@@ -133,6 +134,18 @@
         .check-button:hover {
             transform: scale(1.05);
         }
+        .message-box {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #ffc107;
+            color: #333;
+            padding: 1vh 2vw;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: none;
+            z-index: 10;
+        }
     </style>
 </head>
 
@@ -142,6 +155,7 @@
     <label for="circuit-selector">Select Circuit:</label>
     <select id="circuit-selector"></select>
 </div>
+<div class="message-box" id="message-box"></div>
 <script>
     let currentStep = 0;
     let jsonFiles = [];
@@ -325,14 +339,13 @@
                 if (selectedElements.length === 2) {
                     const canSimplify = await stepSolve.simplifyTwoCpts(selectedElements).toJs();
                     if (canSimplify[0]) {
-                        alert("The selected elements can be simplified!");
                         display_step(pyodide, canSimplify[1], canSimplify[2]);
                         resetClickedElements(svgDiv, clickedElementsContainer);
                     } else {
-                        alert("The selected elements cannot be simplified.");
+                        displayMessage("The selected elements cannot be simplified.");
                     }
                 } else {
-                    alert("Please select exactly two elements.");
+                    displayMessage("Please select exactly two elements.");
                 }
                 MathJax.typeset();
             });
@@ -409,6 +422,15 @@
         svgDiv.querySelectorAll('.bounding-box').forEach(box => box.remove());
         clickedElementsContainer.querySelector('ul').innerHTML = '';
         selectedElements = [];
+    }
+
+    function displayMessage(message, duration = 3000) {
+        const messageBox = document.getElementById('message-box');
+        messageBox.textContent = message;
+        messageBox.style.display = 'block';
+        setTimeout(() => {
+            messageBox.style.display = 'none';
+        }, duration);
     }
 
     async function display_steps(pyodide){
