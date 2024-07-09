@@ -17,6 +17,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            overflow-x: hidden; /* Prevent horizontal scrolling */
         }
         #simplification {
             width: 90vw;
@@ -29,7 +30,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            position: relative;
+            transition: width 0.3s;
         }
         .content-container {
             display: flex;
@@ -134,28 +135,69 @@
         .check-button:hover {
             transform: scale(1.05);
         }
-        .message-box {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: #ffc107;
-            color: #333;
-            padding: 1vh 2vw;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        #message-box {
             display: none;
-            z-index: 10;
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+            background-color: #333;
+            color: #fff;
+            border-radius: 5px;
+            z-index: 1000;
+        }
+        #menu-bar {
+            position: fixed;
+            top: 0;
+            left: -250px;
+            width: 250px;
+            height: 100%;
+            background-color: #fff;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            box-sizing: border-box;
+            transition: left 0.3s;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+        #menu-toggle {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            width: 30px;
+            height: 30px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 1001;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        #menu-toggle::before {
+            content: "\2630"; /* Unicode for hamburger icon */
+        }
+        .menu-item {
+            margin-top: 20px; /* Add margin to separate items */
         }
     </style>
 </head>
 
 <body>
 <div id="simplification"></div>
-<div>
-    <label for="circuit-selector">Select Circuit:</label>
-    <select id="circuit-selector"></select>
+<div id="menu-bar">
+    <div class="menu-item">
+        <label for="circuit-selector">Select Circuit:</label>
+        <select id="circuit-selector"></select>
+    </div>
 </div>
-<div class="message-box" id="message-box"></div>
+<button id="menu-toggle"></button>
+<div id="message-box"></div>
 <script>
     let currentStep = 0;
     let jsonFiles = [];
@@ -165,7 +207,7 @@
     let currentCircuit = "";
     let stepSolve; // Declare globally to access across functions
 
-    class SolutionObject{
+    class SolutionObject {
         constructor(name1, name2, newName, value1, value2, result, relation, latexEquation) {
             this._name1 = name1;
             this._name2 = name2;
@@ -205,7 +247,7 @@
             return this._returnFunction(string);
         }
 
-        isNull(){
+        isNull() {
             return (!this._name1) && (!this._name2) && (!this._newName) &&
                 (!this._value1) && (!this._value2) && (!this._result) &&
                 (!this._relation) && (!this._latexEquation);
@@ -275,20 +317,19 @@
             fileLinks.forEach(link => {
                 const fileName = link.getAttribute('href');
                 if (fileName && !fileName.endsWith('/')) {
-                    if(extension === "" || (extension !== "" && fileName.endsWith(extension))) {
+                    if (extension === "" || (extension !== "" && fileName.endsWith(extension))) {
                         fileNames.push(fileName);
                     }
                 }
             });
             return fileNames;
-        }
-        catch (error) {
+        } catch (error) {
             console.error('Error fetching directory listing:', error);
             return [];
         }
     }
 
-    function display_step(pyodide, jsonFilePath, svgFilePath, contentDivName = 'simplification'){
+    function display_step(pyodide, jsonFilePath, svgFilePath, contentDivName = 'simplification') {
         const contentDiv = document.getElementById(contentDivName);
         contentDiv.innerHTML = '';
 
@@ -342,10 +383,10 @@
                         display_step(pyodide, canSimplify[1], canSimplify[2]);
                         resetClickedElements(svgDiv, clickedElementsContainer);
                     } else {
-                        displayMessage("The selected elements cannot be simplified.");
+                        showMessage("The selected elements cannot be simplified.");
                     }
                 } else {
-                    displayMessage("Please select exactly two elements.");
+                    showMessage("Please select exactly two elements.");
                 }
                 MathJax.typeset();
             });
@@ -424,38 +465,38 @@
         selectedElements = [];
     }
 
-    function displayMessage(message, duration = 3000) {
+    function showMessage(message) {
         const messageBox = document.getElementById('message-box');
         messageBox.textContent = message;
         messageBox.style.display = 'block';
         setTimeout(() => {
             messageBox.style.display = 'none';
-        }, duration);
+        }, 3000);
     }
 
-    async function display_steps(pyodide){
+    async function display_steps(pyodide) {
         let files = await pyodide.FS.readdir("Solutions");
-        while (files[0] === "." || files[0] === ".."){
+        while (files[0] === "." || files[0] === "..") {
             files.splice(0, 1);
         }
 
         let jsonFiles = [];
         let svgFiles = [];
         files.forEach((file) => {
-            if(file.search(".+\.json") >= 0){
+            if (file.search(".+\\.json") >= 0) {
                 jsonFiles.push(file);
             }
-            if(file.search(".+\.svg") >= 0){
+            if (file.search(".+\\.svg") >= 0) {
                 svgFiles.push(file);
             }
         });
 
-        for(let i = 0; i < jsonFiles.length; i++){
-            if(jsonFiles[i].replace(".json","") !== svgFiles[i].replace(".svg","")){
+        for (let i = 0; i < jsonFiles.length; i++) {
+            if (jsonFiles[i].replace(".json", "") !== svgFiles[i].replace(".svg", "")) {
                 pyodide.FS.rmdir("Solutions");
                 throw new Error("Files did not match, Solutions cleared please try again");
             }
-            display_step(pyodide, "Solutions/"+jsonFiles[i], "Solutions/"+svgFiles[i]);
+            display_step(pyodide, "Solutions/" + jsonFiles[i], "Solutions/" + svgFiles[i]);
         }
 
         MathJax.typeset();
@@ -488,14 +529,14 @@
         }
     }
 
-    async function load_packages(pyodide, optAddNames){
+    async function load_packages(pyodide, optAddNames) {
         createProgressBar("Loading Pyodide packages, please wait ...");
         updateProgressBar(0);
         let packageAddress = "http://localhost:8000/Packages/";
         let packages = await fetchDirectoryListing(packageAddress, ".whl");
 
-        if(Array.isArray(optAddNames)){
-            for(let i = 0; i < optAddNames.length; i++){
+        if (Array.isArray(optAddNames)) {
+            for (let i = 0; i < optAddNames.length; i++) {
                 packages.push(optAddNames[0]);
             }
         }
@@ -506,7 +547,7 @@
             updateProgressBar(Math.floor((progress / packages.length) * 100));
         };
 
-        let packagePromises = packages.map(async function(packageName) {
+        let packagePromises = packages.map(async function (packageName) {
             let pkgArrBuff = await (await fetch("http://localhost:8000/Packages/" + packageName)).arrayBuffer();
             let packageExtension = packageName.slice(packageName.lastIndexOf("."), packageName.length);
             await pyodide.unpackArchive(pkgArrBuff, packageExtension);
@@ -565,9 +606,21 @@
         document.body.removeChild(infoText);
 
         solveCircuit(selectedCircuit, pyodide);
+
+        document.getElementById('menu-toggle').addEventListener('click', () => {
+            const menuBar = document.getElementById('menu-bar');
+            const simplificationDiv = document.getElementById('simplification');
+            if (menuBar.style.left === '0px') {
+                menuBar.style.left = '-250px';
+                simplificationDiv.style.width = '90vw';
+            } else {
+                menuBar.style.left = '0px';
+                simplificationDiv.style.width = 'calc(90vw - 250px)';
+            }
+        });
     }
 
-    async function solveCircuit(circuit, pyodide){
+    async function solveCircuit(circuit, pyodide) {
         let timeImporting = "Import Python script";
         console.time(timeImporting);
         let solve = await pyodide.pyimport("solve");
