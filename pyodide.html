@@ -159,8 +159,6 @@
             box-sizing: border-box;
             transition: left 0.3s;
             z-index: 1000;
-            display: flex;
-            flex-direction: column;
         }
         #menu-toggle {
             position: fixed;
@@ -182,8 +180,24 @@
         #menu-toggle::before {
             content: "\2630"; /* Unicode for hamburger icon */
         }
-        .menu-item {
-            margin-top: 20px; /* Add margin to separate items */
+        .nav-buttons-container {
+            display: flex;
+            justify-content: center;
+            gap: 2vw;
+        }
+        .nav-button {
+            margin-top: 1vh;
+            padding: 1vh 2vw;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 2vh;
+            transition: background 0.3s, transform 0.2s;
+            background-color: #2196f3;
+            color: white;
+        }
+        .nav-button:hover {
+            transform: scale(1.05);
         }
     </style>
 </head>
@@ -191,13 +205,19 @@
 <body>
 <div id="simplification"></div>
 <div id="menu-bar">
-    <div class="menu-item">
-        <label for="circuit-selector">Select Circuit:</label>
-        <select id="circuit-selector"></select>
-    </div>
+    <select id="mode">
+        <option value="user">User Based Mode</option>
+        <option value="pre_calculated">Pre Calculated Mode</option>
+    </select>
+    <label for="circuit-selector">Select Circuit:</label>
+    <select id="circuit-selector"></select>
 </div>
 <button id="menu-toggle"></button>
 <div id="message-box"></div>
+<div class="nav-buttons-container" style="display: none;">
+    <button id="prev-button" class="nav-button">Previous</button>
+    <button id="next-button" class="nav-button">Next</button>
+</div>
 <script>
     let currentStep = 0;
     let jsonFiles = [];
@@ -206,6 +226,7 @@
     let selectedElements = [];
     let currentCircuit = "";
     let stepSolve; // Declare globally to access across functions
+    let mode = 'user';
 
     class SolutionObject {
         constructor(name1, name2, newName, value1, value2, result, relation, latexEquation) {
@@ -362,37 +383,7 @@
             svgDiv.innerHTML = svgData;
 
             const sanitizedSvgFilePath = sanitizeSelector(svgFilePath);
-            const clickedElementsContainer = document.createElement('div');
-            clickedElementsContainer.className = 'clicked-elements-container';
-            clickedElementsContainer.innerHTML = `<h3>Clicked Elements</h3><ul id="clicked-elements-list-${sanitizedSvgFilePath}"></ul>`;
 
-            const resetButton = document.createElement('button');
-            resetButton.className = 'reset-button';
-            resetButton.textContent = 'Reset';
-            resetButton.addEventListener('click', () => {
-                resetClickedElements(svgDiv, clickedElementsContainer);
-            });
-
-            const checkButton = document.createElement('button');
-            checkButton.className = 'check-button';
-            checkButton.textContent = 'Check';
-            checkButton.addEventListener('click', async () => {
-                if (selectedElements.length === 2) {
-                    const canSimplify = await stepSolve.simplifyTwoCpts(selectedElements).toJs();
-                    if (canSimplify[0]) {
-                        display_step(pyodide, canSimplify[1], canSimplify[2]);
-                        resetClickedElements(svgDiv, clickedElementsContainer);
-                    } else {
-                        showMessage("The selected elements cannot be simplified.");
-                    }
-                } else {
-                    showMessage("Please select exactly two elements.");
-                }
-                MathJax.typeset();
-            });
-
-            clickedElementsContainer.appendChild(resetButton);
-            clickedElementsContainer.appendChild(checkButton);
             circuitContainer.appendChild(svgDiv);
 
             const descriptionContainer = document.createElement('div');
@@ -409,7 +400,6 @@
           ${data.inline().latexEquation}`;
 
             descriptionContainer.appendChild(paragraph);
-            descriptionContainer.appendChild(clickedElementsContainer);
 
             const contentContainer = document.createElement('div');
             contentContainer.className = 'content-container';
@@ -417,41 +407,76 @@
             contentContainer.appendChild(descriptionContainer);
             contentDiv.appendChild(contentContainer);
 
-            const clickedElementsList = clickedElementsContainer.querySelector(`#clicked-elements-list-${sanitizedSvgFilePath}`);
+            if (mode === 'user') {
+                const clickedElementsContainer = document.createElement('div');
+                clickedElementsContainer.className = 'clicked-elements-container';
+                clickedElementsContainer.innerHTML = `<h3>Clicked Elements</h3><ul id="clicked-elements-list-${sanitizedSvgFilePath}"></ul>`;
 
-            svgDiv.querySelectorAll('path').forEach(pathElement => {
-                pathElement.style.pointerEvents = 'bounding-box';
-                pathElement.style.cursor = 'pointer';
+                const resetButton = document.createElement('button');
+                resetButton.className = 'reset-button';
+                resetButton.textContent = 'Reset';
+                resetButton.addEventListener('click', () => {
+                    resetClickedElements(svgDiv, clickedElementsContainer);
+                });
 
-                pathElement.addEventListener('click', () => {
-                    const bboxId = `bbox-${pathElement.getAttribute('id') || Math.random().toString(36).substr(2, 9)}`;
-                    const existingBox = document.getElementById(bboxId);
-                    if (existingBox) {
-                        existingBox.remove();
-                        const listItem = document.querySelector(`li[data-bbox-id="${bboxId}"]`);
-                        if (listItem) {
-                            listItem.remove();
-                            selectedElements = selectedElements.filter(e => e !== pathElement.getAttribute('id'));
+                const checkButton = document.createElement('button');
+                checkButton.className = 'check-button';
+                checkButton.textContent = 'Check';
+                checkButton.addEventListener('click', async () => {
+                    if (selectedElements.length === 2) {
+                        const canSimplify = await stepSolve.simplifyTwoCpts(selectedElements).toJs();
+                        if (canSimplify[0]) {
+                            display_step(pyodide, canSimplify[1], canSimplify[2]);
+                            resetClickedElements(svgDiv, clickedElementsContainer);
+                        } else {
+                            showMessage("The selected elements cannot be simplified.");
                         }
                     } else {
-                        const bbox = pathElement.getBBox();
-                        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-                        rect.setAttribute('x', bbox.x);
-                        rect.setAttribute('y', bbox.y);
-                        rect.setAttribute('width', bbox.width);
-                        rect.setAttribute('height', bbox.height);
-                        rect.setAttribute('id', bboxId);
-                        rect.classList.add('bounding-box');
-                        pathElement.parentNode.insertBefore(rect, pathElement.nextSibling);
-
-                        const listItem = document.createElement('li');
-                        listItem.textContent = `Clicked on path element with id: ${pathElement.getAttribute('id') || 'no id'}`;
-                        listItem.setAttribute('data-bbox-id', bboxId);
-                        clickedElementsList.appendChild(listItem);
-                        selectedElements.push(pathElement.getAttribute('id') || 'no id');
+                        showMessage("Please select exactly two elements.");
                     }
+                    MathJax.typeset();
                 });
-            });
+
+                clickedElementsContainer.appendChild(resetButton);
+                clickedElementsContainer.appendChild(checkButton);
+                descriptionContainer.appendChild(clickedElementsContainer);
+
+                const clickedElementsList = clickedElementsContainer.querySelector(`#clicked-elements-list-${sanitizedSvgFilePath}`);
+
+                svgDiv.querySelectorAll('path').forEach(pathElement => {
+                    pathElement.style.pointerEvents = 'bounding-box';
+                    pathElement.style.cursor = 'pointer';
+
+                    pathElement.addEventListener('click', () => {
+                        const bboxId = `bbox-${pathElement.getAttribute('id') || Math.random().toString(36).substr(2, 9)}`;
+                        const existingBox = document.getElementById(bboxId);
+                        if (existingBox) {
+                            existingBox.remove();
+                            const listItem = document.querySelector(`li[data-bbox-id="${bboxId}"]`);
+                            if (listItem) {
+                                listItem.remove();
+                                selectedElements = selectedElements.filter(e => e !== pathElement.getAttribute('id'));
+                            }
+                        } else {
+                            const bbox = pathElement.getBBox();
+                            const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                            rect.setAttribute('x', bbox.x);
+                            rect.setAttribute('y', bbox.y);
+                            rect.setAttribute('width', bbox.width);
+                            rect.setAttribute('height', bbox.height);
+                            rect.setAttribute('id', bboxId);
+                            rect.classList.add('bounding-box');
+                            pathElement.parentNode.insertBefore(rect, pathElement.nextSibling);
+
+                            const listItem = document.createElement('li');
+                            listItem.textContent = `Clicked on path element with id: ${pathElement.getAttribute('id') || 'no id'}`;
+                            listItem.setAttribute('data-bbox-id', bboxId);
+                            clickedElementsList.appendChild(listItem);
+                            selectedElements.push(pathElement.getAttribute('id') || 'no id');
+                        }
+                    });
+                });
+            }
             MathJax.typeset();
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -602,6 +627,11 @@
             solveCircuit(selectedCircuit, pyodide);
         });
 
+        document.getElementById('mode').addEventListener('change', (event) => {
+            mode = event.target.value;
+            solveCircuit(selectedCircuit, pyodide);
+        });
+
         infoText.textContent += "done\r\n";
         document.body.removeChild(infoText);
 
@@ -616,6 +646,20 @@
             } else {
                 menuBar.style.left = '0px';
                 simplificationDiv.style.width = 'calc(90vw - 250px)';
+            }
+        });
+
+        document.getElementById('prev-button').addEventListener('click', () => {
+            if (currentStep > 0) {
+                currentStep--;
+                display_step(pyodide, `Solutions/${jsonFiles[currentStep]}`, `Solutions/${svgFiles[currentStep]}`);
+            }
+        });
+
+        document.getElementById('next-button').addEventListener('click', () => {
+            if (currentStep < jsonFiles.length - 1) {
+                currentStep++;
+                display_step(pyodide, `Solutions/${jsonFiles[currentStep]}`, `Solutions/${svgFiles[currentStep]}`);
             }
         });
     }
@@ -641,9 +685,14 @@
             console.warn("Solutions directory not found or already cleared.");
         }
 
-        stepSolve = solve.SolveInUserOrder(circuit, "Circuits/", "Solutions/");
-        let initialStep = await stepSolve.createStep0().toJs();
-        console.log("Initial Step:", initialStep);
+        if (mode === 'user') {
+            stepSolve = solve.SolveInUserOrder(circuit, "Circuits/", "Solutions/");
+            let initialStep = await stepSolve.createStep0().toJs();
+            console.log("Initial Step:", initialStep);
+        } else {
+            await solve.solve_circuit(circuit);
+        }
+
         console.timeEnd(timeSolve);
 
         const files = await pyodide.FS.readdir("Solutions");
@@ -652,6 +701,12 @@
 
         currentStep = 0;
         display_step(pyodide, `Solutions/${jsonFiles[currentStep]}`, `Solutions/${svgFiles[currentStep]}`);
+
+        if (mode === 'pre_calculated') {
+            document.querySelector('.nav-buttons-container').style.display = 'flex';
+        } else {
+            document.querySelector('.nav-buttons-container').style.display = 'none';
+        }
     }
 
     main();
