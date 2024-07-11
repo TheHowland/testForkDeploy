@@ -17,7 +17,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            overflow-x: hidden; /* Prevent horizontal scrolling */
+            overflow-x: hidden;
         }
         #simplification {
             width: 90vw;
@@ -184,6 +184,7 @@
             display: flex;
             justify-content: center;
             gap: 2vw;
+            margin-top: 10px;
         }
         .nav-button {
             margin-top: 1vh;
@@ -206,11 +207,14 @@
 <div id="simplification"></div>
 <div id="menu-bar">
     <select id="mode">
+        <option value="" disabled selected>Select Mode</option>
         <option value="user">User Based Mode</option>
         <option value="pre_calculated">Pre Calculated Mode</option>
     </select>
     <label for="circuit-selector">Select Circuit:</label>
-    <select id="circuit-selector"></select>
+    <select id="circuit-selector">
+        <option value="" disabled selected>Select Circuit</option>
+    </select>
 </div>
 <button id="menu-toggle"></button>
 <div id="message-box"></div>
@@ -218,6 +222,7 @@
     <button id="prev-button" class="nav-button">Previous</button>
     <button id="next-button" class="nav-button">Next</button>
 </div>
+<div id="initial-message" style="display: none;">Please select a mode and circuit</div>
 <script>
     let currentStep = 0;
     let jsonFiles = [];
@@ -226,7 +231,7 @@
     let selectedElements = [];
     let currentCircuit = "";
     let stepSolve; // Declare globally to access across functions
-    let mode = 'user';
+    let mode = '';
 
     class SolutionObject {
         constructor(name1, name2, newName, value1, value2, result, relation, latexEquation) {
@@ -314,7 +319,7 @@
 
     function populateCircuitSelector() {
         const circuitSelector = document.getElementById('circuit-selector');
-        circuitSelector.innerHTML = '';
+        circuitSelector.innerHTML = '<option value="" disabled selected>Select Circuit</option>';
 
         circuitFiles.forEach(file => {
             const option = document.createElement('option');
@@ -619,23 +624,10 @@
         infoText.textContent += "done\r\n";
         console.timeEnd(loadCircuits);
 
-        const circuitSelector = document.getElementById('circuit-selector');
-        let selectedCircuit = circuitSelector.value;
-
-        circuitSelector.addEventListener('change', (event) => {
-            selectedCircuit = event.target.value;
-            solveCircuit(selectedCircuit, pyodide);
-        });
-
-        document.getElementById('mode').addEventListener('change', (event) => {
-            mode = event.target.value;
-            solveCircuit(selectedCircuit, pyodide);
-        });
-
-        infoText.textContent += "done\r\n";
         document.body.removeChild(infoText);
 
-        solveCircuit(selectedCircuit, pyodide);
+        document.getElementById('menu-toggle').style.display = 'block';
+        document.getElementById('initial-message').style.display = 'block';
 
         document.getElementById('menu-toggle').addEventListener('click', () => {
             const menuBar = document.getElementById('menu-bar');
@@ -647,6 +639,16 @@
                 menuBar.style.left = '0px';
                 simplificationDiv.style.width = 'calc(90vw - 250px)';
             }
+        });
+
+        document.getElementById('mode').addEventListener('change', (event) => {
+            mode = event.target.value;
+            loadSelectedCircuit(pyodide);
+        });
+
+        document.getElementById('circuit-selector').addEventListener('change', (event) => {
+            currentCircuit = event.target.value;
+            loadSelectedCircuit(pyodide);
         });
 
         document.getElementById('prev-button').addEventListener('click', () => {
@@ -662,6 +664,13 @@
                 display_step(pyodide, `Solutions/${jsonFiles[currentStep]}`, `Solutions/${svgFiles[currentStep]}`);
             }
         });
+    }
+
+    async function loadSelectedCircuit(pyodide) {
+        if (mode && currentCircuit) {
+            document.getElementById('initial-message').style.display = 'none';
+            solveCircuit(currentCircuit, pyodide);
+        }
     }
 
     async function solveCircuit(circuit, pyodide) {
