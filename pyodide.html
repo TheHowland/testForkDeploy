@@ -232,6 +232,7 @@
     let currentCircuit = "";
     let stepSolve; // Declare globally to access across functions
     let mode = '';
+    let packagesLoaded = false; // Flag to check if packages are loaded
 
     class SolutionObject {
         constructor(name1, name2, newName, value1, value2, result, relation, latexEquation) {
@@ -587,6 +588,8 @@
         await Promise.all(packagePromises);
         console.log("Installed:" + packages);
         removeProgressBar();
+        packagesLoaded = true; // Mark packages as loaded
+        loadSolveScript(pyodide); // Load the solve.py script after packages are loaded
     }
 
     async function main() {
@@ -601,13 +604,6 @@
         let pyodide = await loadPyodide();
         infoText.textContent += "done\r\n";
 
-        let timeLoadPackages = "Load packages";
-        console.time(timeLoadPackages);
-        infoText.textContent += "Loading necessary python packages, this may take a while... ";
-        await load_packages(pyodide, ["sqlite3-1.0.0.zip"]);
-        infoText.textContent += "done\r\n";
-        console.timeEnd(timeLoadPackages);
-
         let loadCircuits = "Load Circuits";
         infoText.textContent += "Loading circuits from server... ";
         console.time(loadCircuits);
@@ -619,9 +615,6 @@
         circuitFiles = circuitFiles.filter((file) => file !== "." && file !== "..");
         console.log("Circuits Files: " + circuitFiles);
         populateCircuitSelector();
-
-        pyodide.FS.writeFile("/home/pyodide/solve.py", await (await fetch("http://localhost:8000/solve.py")).text());
-        infoText.textContent += "done\r\n";
         console.timeEnd(loadCircuits);
 
         document.body.removeChild(infoText);
@@ -664,12 +657,25 @@
                 display_step(pyodide, `Solutions/${jsonFiles[currentStep]}`, `Solutions/${svgFiles[currentStep]}`);
             }
         });
+
+        load_packages(pyodide, ["sqlite3-1.0.0.zip"]).then(() => {
+            document.getElementById('menu-toggle').style.display = 'block';
+            document.getElementById('initial-message').style.display = 'block';
+        });
+    }
+
+    async function loadSolveScript(pyodide) {
+        let solveScript = await fetch("http://localhost:8000/solve.py");
+        let solveScriptText = await solveScript.text();
+        pyodide.FS.writeFile("/home/pyodide/solve.py", solveScriptText);
     }
 
     async function loadSelectedCircuit(pyodide) {
         if (mode && currentCircuit) {
-            document.getElementById('initial-message').style.display = 'none';
-            solveCircuit(currentCircuit, pyodide);
+            if (packagesLoaded) {
+                document.getElementById('initial-message').style.display = 'none';
+                solveCircuit(currentCircuit, pyodide);
+            }
         }
     }
 
