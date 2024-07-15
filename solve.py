@@ -3,6 +3,7 @@ import os
 
 def solve_circuit(filename: str, filePath="Circuits/"):
     cct = Circuit(FileToImpedance(os.path.join(filePath, filename)))
+    cct.namer.reset()
     steps = cct.simplify_stepwise()
     sol = Solution(steps)
     sol.draw(path="Solutions")
@@ -26,6 +27,7 @@ class SolveInUserOrder:
         self.savePath = savePath
         self.circuit = Circuit(FileToImpedance(os.path.join(filePath, filename)))
         self.steps = [(self.circuit, None, None, None, None)]
+        self.circuit.namer.reset()
 
         return
 
