@@ -159,7 +159,20 @@
             box-sizing: border-box;
             transition: left 0.3s;
             z-index: 1000;
+            display:flex;
+            flex-direction: column;
         }
+        #menu-bar select {
+            width: 100%; /* Adjust the width as needed */
+            margin: 50px 0; /* Adjust the margin as needed */
+            padding: 10px; /* Adjust the padding as needed */
+            font-size: 16px; /* Adjust the font size as needed */
+            border: 1px solid #ccc; /* Adjust the border color as needed */
+            border-radius: 5px; /* Adjust the border radius as needed */
+            background-color: #fff; /* Adjust the background color as needed */
+            color: #333; /* Adjust the text color as needed */
+        }
+
         #menu-toggle {
             position: fixed;
             top: 10px;
@@ -179,6 +192,24 @@
         }
         #menu-toggle::before {
             content: "\2630"; /* Unicode for hamburger icon */
+        }
+
+        #start-button {
+            width: 100%;
+            margin-top: auto;
+            padding: 10px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        #start-button:hover {
+            background-color: #45a049;
+            transform: scale(1.05);
         }
         .nav-buttons-container {
             display: flex;
@@ -211,9 +242,9 @@
         <option value="user">User Based Mode</option>
         <option value="pre_calculated">Pre Calculated Mode</option>
     </select>
-    <label for="circuit-selector">Select Circuit:</label>
+    <label for="circuit-selector"></label>
     <select id="circuit-selector">
-        <option value="" disabled selected>Select Circuit</option>
+        <option value="" disabled selected></option>
     </select>
     <button id="start-button" disabled>Start</button>
 </div>
@@ -224,6 +255,7 @@
     <button id="next-button" class="nav-button">Next</button>
 </div>
 <div id="initial-message" style="display: none;">Please select a mode and circuit</div>
+<div id="loading-message" style="display:none;">Thank you! Your selection is being loaded...</div>
 <script>
     let currentStep = 0;
     let jsonFiles = [];
@@ -661,8 +693,13 @@
 
         document.getElementById('start-button').addEventListener('click', () => {
             if (mode && currentCircuit && pyodideReady) {
+                document.getElementById('menu-toggle').click();
                 document.getElementById('initial-message').style.display = 'none';
-                solveCircuit(currentCircuit, pyodide);
+                document.getElementById('loading-message').style.display='block';
+                setTimeout(()=>{
+                    solveCircuit(currentCircuit, pyodide);
+                },300);
+
             }
         });
 
@@ -706,7 +743,7 @@
         const files = await pyodide.FS.readdir("Solutions");
         jsonFiles = files.filter(file => file.endsWith(".json"));
         svgFiles = files.filter(file => file.endsWith(".svg"));
-
+        document.getElementById('loading-message').style.display='none';
         currentStep = 0;
         display_step(pyodide, `Solutions/${jsonFiles[currentStep]}`, `Solutions/${svgFiles[currentStep]}`);
 
