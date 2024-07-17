@@ -1,11 +1,189 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns="http://www.w3.org/1999/html">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="0; url=http://localhost:8000/MathJaxTest.html">
-    <title>Redirect</title>
-</head>
-<body>
+    <title>Circuit Simplification</title>
 
+    <script src="http://localhost:8000/pyodide.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="solutionObject.js"></script>
+    <script src="fetchDirectoryListing.js"></script>
+    <script src="progressbar.js"></script>
+    <script src="loadPackages.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="allStyles.css">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+<div id="simplification"></div>
+<div id="menu-bar">
+    <select id="mode">
+        <option value="" disabled selected>Select Mode</option>
+        <option value="user">User Based Mode</option>
+        <option value="pre_calculated">Pre Calculated Mode</option>
+    </select>
+    <label for="circuit-selector"></label>
+    <select id="circuit-selector">
+        <option value="" disabled selected></option>
+    </select>
+    <button id="start-button" disabled>Start</button>
+</div>
+<button id="menu-toggle"></button>
+<div id="message-box"></div>
+<div class="nav-buttons-container" style="display: none;">
+    <button id="prev-button" class="nav-button">Previous</button>
+    <button id="next-button" class="nav-button">Next</button>
+</div>
+<div id="initial-message" style="display: none;">Please select a mode and circuit</div>
+<div id="loading-message" style="display:none;">Thank you! Your selection is being loaded...</div>
+<script>
+    //ToDo this could be an Object better than global variables
+    //--------------------------------------------------------------
+    let currentStep = 0;
+    let jsonFiles = [];
+    let svgFiles = [];
+    let circuitFiles = [];
+    let selectedElements = [];
+    let currentCircuit = "";
+    let stepSolve; // Declare globally to access across functions
+    let mode = '';
+    //--------------------------------------------------------------
+    let pyodideReady = false;
+    let serverAddress = "http://localhost:8000"
+
+
+    async function main() {
+        const infoText = document.createElement('div');
+        infoText.id = "infoText";
+        infoText.textContent = "";
+
+        document.body.appendChild(infoText);
+        infoText.setAttribute('style', 'white-space: pre;');
+
+        infoText.textContent = "Loading Pyodide environment... ";
+        let pyodide = await loadPyodide();
+        infoText.textContent += "done\r\n";
+
+        let loadCircuits = "Load Circuits";
+        infoText.textContent += "Loading circuits from server... ";
+        console.time(loadCircuits);
+
+        let cirArrBuff = await (await fetch(serverAddress + "/Circuits.zip")).arrayBuffer();
+        await pyodide.unpackArchive(cirArrBuff, ".zip");
+
+        circuitFiles = pyodide.FS.readdir("Circuits");
+        circuitFiles = circuitFiles.filter((file) => file !== "." && file !== "..");
+        console.log("Circuits Files: " + circuitFiles);
+        populateCircuitSelector();
+        console.timeEnd(loadCircuits);
+
+        pyodide.FS.writeFile("/home/pyodide/solve.py", await (await fetch(serverAddress + "/solve.py")).text());
+
+        document.body.removeChild(infoText);
+
+        document.getElementById('menu-toggle').style.display = 'block';
+        document.getElementById('initial-message').style.display = 'block';
+
+        document.getElementById('menu-toggle').addEventListener('click', () => {
+            const menuBar = document.getElementById('menu-bar');
+            const simplificationDiv = document.getElementById('simplification');
+            if (menuBar.style.left === '0px') {
+                menuBar.style.left = '-250px';
+                simplificationDiv.style.width = '90vw';
+            } else {
+                menuBar.style.left = '0px';
+                simplificationDiv.style.width = 'calc(90vw - 250px)';
+            }
+        });
+
+        document.getElementById('mode').addEventListener('change', (event) => {
+            mode = event.target.value;
+        });
+
+        document.getElementById('circuit-selector').addEventListener('change', (event) => {
+            currentCircuit = event.target.value;
+        });
+
+        document.getElementById('prev-button').addEventListener('click', () => {
+            if (currentStep > 0) {
+                currentStep--;
+                display_step(pyodide, `Solutions/${jsonFiles[currentStep]}`, `Solutions/${svgFiles[currentStep]}`);
+            }
+        });
+
+        document.getElementById('next-button').addEventListener('click', () => {
+            if (currentStep < jsonFiles.length - 1) {
+                currentStep++;
+                display_step(pyodide, `Solutions/${jsonFiles[currentStep]}`, `Solutions/${svgFiles[currentStep]}`);
+            }
+        });
+
+        document.getElementById('start-button').addEventListener('click', () => {
+            if (mode && currentCircuit && pyodideReady) {
+                document.getElementById('menu-toggle').click();
+                document.getElementById('initial-message').style.display = 'none';
+                document.getElementById('loading-message').style.display='block';
+                setTimeout(()=>{
+                    solveCircuit(currentCircuit, pyodide);
+                },300);
+
+            }
+        });
+
+        load_packages(pyodide, ["sqlite3-1.0.0.zip"]).then(() => {
+            document.getElementById('menu-toggle').style.display = 'block';
+            document.getElementById('initial-message').style.display = 'block';
+        });
+    }
+
+    async function solveCircuit(circuit, pyodide) {
+        let timeImporting = "Import Python script";
+        console.time(timeImporting);
+        let solve = await pyodide.pyimport("solve");
+        console.timeEnd(timeImporting);
+
+        let timeSolve = "Solve circuit";
+        console.time(timeSolve);
+
+        // Clear old solution files
+        try {
+            let solutionFiles = await pyodide.FS.readdir("Solutions");
+            solutionFiles.forEach(file => {
+                if (file !== "." && file !== "..") {
+                    pyodide.FS.unlink(`Solutions/${file}`);
+                }
+            });
+        } catch (error) {
+            console.warn("Solutions directory not found or already cleared.");
+        }
+
+        if (mode === 'user') {
+            stepSolve = solve.SolveInUserOrder(circuit, "Circuits/", "Solutions/");
+            let initialStep = await stepSolve.createStep0().toJs();
+            console.log("Initial Step:", initialStep);
+        } else {
+            await solve.solve_circuit(circuit);
+        }
+
+        console.timeEnd(timeSolve);
+
+        const files = await pyodide.FS.readdir("Solutions");
+        jsonFiles = files.filter(file => file.endsWith(".json"));
+        svgFiles = files.filter(file => file.endsWith(".svg"));
+        document.getElementById('loading-message').style.display='none';
+        currentStep = 0;
+        display_step(pyodide, `Solutions/${jsonFiles[currentStep]}`, `Solutions/${svgFiles[currentStep]}`);
+
+        if (mode === 'pre_calculated') {
+            document.querySelector('.nav-buttons-container').style.display = 'flex';
+        } else {
+            document.querySelector('.nav-buttons-container').style.display = 'none';
+        }
+    }
+
+    main();
+</script>
 </body>
 </html>
