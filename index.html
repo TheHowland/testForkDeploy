@@ -128,7 +128,12 @@
                 setTimeout(()=>{
                     solveCircuit(currentCircuit, pyodide);
                 },300);
-
+                // Reset clicked elements when the changes are applied
+                const svgDiv = document.querySelector('.svg-container');
+                const clickedElementsContainer = document.querySelector('.clicked-elements-container');
+                if (svgDiv && clickedElementsContainer) {
+                    resetClickedElements(svgDiv, clickedElementsContainer);
+                }
             }
         });
 
