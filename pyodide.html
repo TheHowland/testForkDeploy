@@ -367,6 +367,7 @@
         try {
             const response = await fetch(url);
             if (!response.ok) {
+                console.log(response)
                 throw new Error('Network response was not ok');
             }
             const htmlText = await response.text();
@@ -599,9 +600,9 @@
         let packageAddress = "http://localhost:8000/Packages/";
         let packages = await fetchDirectoryListing(packageAddress, ".whl");
 
-        if (Array.isArray(optAddNames)) {
-            for (let i = 0; i < optAddNames.length; i++) {
-                packages.push(optAddNames[0]);
+        if(Array.isArray(optAddNames)){
+            for(let i = 0; i < optAddNames.length; i++){
+                packages.push(optAddNames[i]);
             }
         }
 
