@@ -87,6 +87,15 @@
 
         document.getElementById('menu-toggle').style.display = 'block';
         document.getElementById('initial-message').style.display = 'block';
+        const menuBar = document.getElementById('menu-bar');
+        const simplificationDiv = document.getElementById('simplification');
+        if (menuBar.style.left === '0px') {
+            menuBar.style.left = '-250px';
+            simplificationDiv.style.width = '90vw';
+        } else {
+            menuBar.style.left = '0px';
+            simplificationDiv.style.width = 'calc(90vw - 250px)';
+        }
 
         document.getElementById('menu-toggle').addEventListener('click', () => {
             const menuBar = document.getElementById('menu-bar');
