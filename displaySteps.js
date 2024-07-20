@@ -37,17 +37,20 @@ function display_step(pyodide, jsonFilePath, svgFilePath, contentDivName = 'simp
         const descriptionContainer = document.createElement('div');
         descriptionContainer.className = 'description-container';
 
-        const paragraph = document.createElement('p');
-        paragraph.innerHTML = `Die Elemente ${data.inline().name1} und ${data.inline().name2}<br>
-          wurden zu ${data.inline().newName} zusammengefasst<br>
-          ${data.inline().name1}&nbsp= ${data.inline().value1}<br>
-          ${data.inline().name2}&nbsp= ${data.inline().value2}<br>
-          ${data.inline().newName}&nbsp= ${data.inline().result}<br>
-          ${relationText}<br>
-          Rechnung:<br>
-          ${data.inline().latexEquation}`;
+        // Only append the paragraph if it's not a step0.json file
+        if (!jsonFilePath.toLowerCase().includes('step0.json')) {
+            const paragraph = document.createElement('p');
+            paragraph.innerHTML = `Die Elemente ${data.inline().name1} und ${data.inline().name2}<br>
+              wurden zu ${data.inline().newName} zusammengefasst<br>
+              ${data.inline().name1}&nbsp= ${data.inline().value1}<br>
+              ${data.inline().name2}&nbsp= ${data.inline().value2}<br>
+              ${data.inline().newName}&nbsp= ${data.inline().result}<br>
+              ${relationText}<br>
+              Rechnung:<br>
+              ${data.inline().latexEquation}`;
 
-        descriptionContainer.appendChild(paragraph);
+            descriptionContainer.appendChild(paragraph);
+        }
 
         const contentContainer = document.createElement('div');
         contentContainer.className = 'content-container';
