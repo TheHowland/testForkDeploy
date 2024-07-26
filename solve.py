@@ -36,6 +36,11 @@ class SolveInUserOrder:
         :param cpts: list with two component name strings to simplify ["R1", "R2"]
         :return tuple with bool if simplification is possible, str with json filename, str with svg filename
         """
+        # ToDo rsiki only works aslong as only simplifieable components are selected wich are represented as a
+        # impedance internally in the cirucuit
+        cpts[0] = "Z" + cpts[0][1::]
+        cpts[1] = "Z" + cpts[1][1::]
+
         if cpts[1] in self.circuit.in_series(cpts[0]):
             newNet, newCptName = self.circuit.simplify_two_cpts(self.circuit, cpts)
             self.steps.append((newNet, cpts[0], cpts[1], newCptName, "series"))
