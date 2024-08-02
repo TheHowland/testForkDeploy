@@ -1,4 +1,4 @@
-V1 0 2 dc {10}; up
+V1 0 2 dc {10} {0} {omega_0}; up
 W 2 3; up
 W 3 4; right
 C1 4 5 {100}; down
