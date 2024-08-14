@@ -29,7 +29,6 @@ function display_step(pyodide, jsonFilePath, svgFilePath, contentDivName = 'simp
         const svgDiv = document.createElement('div');
         svgDiv.className = 'svg-container';
         svgDiv.innerHTML = svgData;
-        console.log(svgData);
 
         const sanitizedSvgFilePath = sanitizeSelector(svgFilePath);
 
@@ -120,12 +119,14 @@ function display_step(pyodide, jsonFilePath, svgFilePath, contentDivName = 'simp
                         rect.classList.add('bounding-box');
                         pathElement.parentNode.insertBefore(rect, pathElement.nextSibling);
 
+                        const value = pathElement.getAttribute('class') || 'na';
                         const listItem = document.createElement('li');
-                        listItem.textContent = `Clicked on path element with id: ${pathElement.getAttribute('id') || 'no id'} = ${pathElement.getAttribute('class')||'na'}`;
+                        listItem.innerHTML = `Clicked on path element with id: ${pathElement.getAttribute('id') || 'no id'} = \\(${value}\\)`;
                         listItem.setAttribute('data-bbox-id', bboxId);
                         clickedElementsList.appendChild(listItem);
                         selectedElements.push(pathElement.getAttribute('id') || 'no id');
                     }
+                    MathJax.typeset();
                 });
             });
         }
