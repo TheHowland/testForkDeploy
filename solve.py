@@ -1,13 +1,14 @@
 from lcapy import Circuit, Solution, FileToImpedance, DrawWithSchemdraw
 import os
 
-def solve_circuit(filename: str, filePath="Circuits/"):
+
+def solve_circuit(filename: str, filePath="Circuits/", savePath="Solutions/"):
     cct = Circuit(FileToImpedance(os.path.join(filePath, filename)))
     cct.namer.reset()
     steps = cct.simplify_stepwise()
     sol = Solution(steps)
-    sol.draw(path="Solutions")
-    sol.export(path="Solutions")
+    sol.draw(path=savePath)
+    sol.export(path=savePath)
 
 
 class SolveInUserOrder:
