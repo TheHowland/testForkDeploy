@@ -31,7 +31,6 @@ function display_step(pyodide, jsonFilePath, svgFilePath, contentDivName = 'simp
         svgDiv.innerHTML = svgData;
 
         const sanitizedSvgFilePath = sanitizeSelector(svgFilePath);
-
         circuitContainer.appendChild(svgDiv);
 
         const descriptionContainer = document.createElement('div');
@@ -48,7 +47,6 @@ function display_step(pyodide, jsonFilePath, svgFilePath, contentDivName = 'simp
               ${relationText}<br>
               Rechnung:<br>
               ${data.inline().latexEquation}`;
-
             descriptionContainer.appendChild(paragraph);
         }
 
@@ -62,6 +60,17 @@ function display_step(pyodide, jsonFilePath, svgFilePath, contentDivName = 'simp
             const clickedElementsContainer = document.createElement('div');
             clickedElementsContainer.className = 'clicked-elements-container';
             clickedElementsContainer.innerHTML = `<h3>Ausgew&auml;hlte Elemente</h3><ul id="clicked-elements-list-${sanitizedSvgFilePath}"></ul>`;
+
+            // Count path elements with id different from 'default_id'
+            const pathElements = svgDiv.querySelectorAll('path');
+            const filteredPaths = Array.from(pathElements).filter(path => path.getAttribute('class') !== 'na');
+
+            if (filteredPaths.length === 1) {
+                // If there is only one path element left, display a congratulatory message
+                const congratsMessage = document.createElement('p');
+                congratsMessage.innerHTML = 'Herzlichen Gl\u00FCckwunsch! Sie haben den Schaltkreis vollst&auml;ndig vereinfacht.';
+                clickedElementsContainer.appendChild(congratsMessage);
+            }
 
             const resetButton = document.createElement('button');
             resetButton.className = 'reset-button';
@@ -88,47 +97,51 @@ function display_step(pyodide, jsonFilePath, svgFilePath, contentDivName = 'simp
                 MathJax.typeset();
             });
 
+            // Append the buttons after the congratulatory message
             clickedElementsContainer.appendChild(resetButton);
             clickedElementsContainer.appendChild(checkButton);
+
             descriptionContainer.appendChild(clickedElementsContainer);
 
-            const clickedElementsList = clickedElementsContainer.querySelector(`#clicked-elements-list-${sanitizedSvgFilePath}`);
+            if (filteredPaths.length > 1) {
+                const clickedElementsList = clickedElementsContainer.querySelector(`#clicked-elements-list-${sanitizedSvgFilePath}`);
 
-            svgDiv.querySelectorAll('path').forEach(pathElement => {
-                pathElement.style.pointerEvents = 'bounding-box';
-                pathElement.style.cursor = 'pointer';
+                pathElements.forEach(pathElement => {
+                    pathElement.style.pointerEvents = 'bounding-box';
+                    pathElement.style.cursor = 'pointer';
 
-                pathElement.addEventListener('click', () => {
-                    const bboxId = `bbox-${pathElement.getAttribute('id') || Math.random().toString(36).substr(2, 9)}`;
-                    const existingBox = document.getElementById(bboxId);
-                    if (existingBox) {
-                        existingBox.remove();
-                        const listItem = document.querySelector(`li[data-bbox-id="${bboxId}"]`);
-                        if (listItem) {
-                            listItem.remove();
-                            selectedElements = selectedElements.filter(e => e !== pathElement.getAttribute('id'));
+                    pathElement.addEventListener('click', () => {
+                        const bboxId = `bbox-${pathElement.getAttribute('id') || Math.random().toString(36).substr(2, 9)}`;
+                        const existingBox = document.getElementById(bboxId);
+                        if (existingBox) {
+                            existingBox.remove();
+                            const listItem = document.querySelector(`li[data-bbox-id="${bboxId}"]`);
+                            if (listItem) {
+                                listItem.remove();
+                                selectedElements = selectedElements.filter(e => e !== pathElement.getAttribute('id'));
+                            }
+                        } else {
+                            const bbox = pathElement.getBBox();
+                            const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                            rect.setAttribute('x', bbox.x);
+                            rect.setAttribute('y', bbox.y);
+                            rect.setAttribute('width', bbox.width);
+                            rect.setAttribute('height', bbox.height);
+                            rect.setAttribute('id', bboxId);
+                            rect.classList.add('bounding-box');
+                            pathElement.parentNode.insertBefore(rect, pathElement.nextSibling);
+
+                            const value = pathElement.getAttribute('class') || 'na';
+                            const listItem = document.createElement('li');
+                            listItem.innerHTML = `${pathElement.getAttribute('id') || 'no id'} = \\(${value}\\)`;
+                            listItem.setAttribute('data-bbox-id', bboxId);
+                            clickedElementsList.appendChild(listItem);
+                            selectedElements.push(pathElement.getAttribute('id') || 'no id');
                         }
-                    } else {
-                        const bbox = pathElement.getBBox();
-                        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-                        rect.setAttribute('x', bbox.x);
-                        rect.setAttribute('y', bbox.y);
-                        rect.setAttribute('width', bbox.width);
-                        rect.setAttribute('height', bbox.height);
-                        rect.setAttribute('id', bboxId);
-                        rect.classList.add('bounding-box');
-                        pathElement.parentNode.insertBefore(rect, pathElement.nextSibling);
-
-                        const value = pathElement.getAttribute('class') || 'na';
-                        const listItem = document.createElement('li');
-                        listItem.innerHTML = `${pathElement.getAttribute('id') || 'no id'} = \\(${value}\\)`;
-                        listItem.setAttribute('data-bbox-id', bboxId);
-                        clickedElementsList.appendChild(listItem);
-                        selectedElements.push(pathElement.getAttribute('id') || 'no id');
-                    }
-                    MathJax.typeset();
+                        MathJax.typeset();
+                    });
                 });
-            });
+            }
         }
         MathJax.typeset();
     } catch (error) {
