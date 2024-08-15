@@ -38,8 +38,8 @@
     <button id="prev-button" class="nav-button">Previous</button>
     <button id="next-button" class="nav-button">Next</button>
 </div>
-<div id="initial-message" style="display: none;">Please select a mode and circuit</div>
-<div id="loading-message" style="display:none;">Thank you! Your selection is being loaded...</div>
+<div id="initial-message" style="display: none;">Bitte w&auml;hlen Sie einen Modus und Schaltkreis aus</div>
+<div id="loading-message" style="display:none;">Vielen Dank! Ihre Auswahl wird geladen</div>
 <script>
     //ToDo this could be an Object better than global variables
     //--------------------------------------------------------------
@@ -64,12 +64,12 @@
         document.body.appendChild(infoText);
         infoText.setAttribute('style', 'white-space: pre;');
 
-        infoText.textContent = "Loading Pyodide environment... ";
+        infoText.textContent = "Lade Pyodide Umgebung... ";
         let pyodide = await loadPyodide();
-        infoText.textContent += "done\r\n";
+        infoText.textContent += "fertig\r\n";
 
-        let loadCircuits = "Load Circuits";
-        infoText.textContent += "Loading circuits from server... ";
+        let loadCircuits = "Lade Schaltkreise";
+        infoText.textContent += "Lade Schaltkreise vom Server... ";
         console.time(loadCircuits);
 
         let cirArrBuff = await (await fetch(serverAddress + "/Circuits.zip")).arrayBuffer();
@@ -155,7 +155,7 @@
     }
 
     async function solveCircuit(circuit, pyodide) {
-        let timeImporting = "Import Python script";
+        let timeImporting = "Importiere Python Skript";
         console.time(timeImporting);
         let solve = await pyodide.pyimport("solve");
         console.timeEnd(timeImporting);

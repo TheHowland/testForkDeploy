@@ -61,7 +61,7 @@ function display_step(pyodide, jsonFilePath, svgFilePath, contentDivName = 'simp
         if (mode === 'user') {
             const clickedElementsContainer = document.createElement('div');
             clickedElementsContainer.className = 'clicked-elements-container';
-            clickedElementsContainer.innerHTML = `<h3>Clicked Elements</h3><ul id="clicked-elements-list-${sanitizedSvgFilePath}"></ul>`;
+            clickedElementsContainer.innerHTML = `<h3>Ausgew&auml;hlte Elemente</h3><ul id="clicked-elements-list-${sanitizedSvgFilePath}"></ul>`;
 
             const resetButton = document.createElement('button');
             resetButton.className = 'reset-button';
@@ -80,10 +80,10 @@ function display_step(pyodide, jsonFilePath, svgFilePath, contentDivName = 'simp
                         display_step(pyodide, canSimplify[1], canSimplify[2]);
                         resetClickedElements(svgDiv, clickedElementsContainer);
                     } else {
-                        showMessage("The selected elements cannot be simplified.");
+                        showMessage("Die ausgew\u00E4hlten Elemente k\u00F6nnen nicht vereinfacht werden.");
                     }
                 } else {
-                    showMessage("Please select exactly two elements.");
+                    showMessage('Bitte w\u00E4hlen Sie genau zwei Elemente aus!');
                 }
                 MathJax.typeset();
             });
@@ -121,7 +121,7 @@ function display_step(pyodide, jsonFilePath, svgFilePath, contentDivName = 'simp
 
                         const value = pathElement.getAttribute('class') || 'na';
                         const listItem = document.createElement('li');
-                        listItem.innerHTML = `Clicked on path element with id: ${pathElement.getAttribute('id') || 'no id'} = \\(${value}\\)`;
+                        listItem.innerHTML = `${pathElement.getAttribute('id') || 'no id'} = \\(${value}\\)`;
                         listItem.setAttribute('data-bbox-id', bboxId);
                         clickedElementsList.appendChild(listItem);
                         selectedElements.push(pathElement.getAttribute('id') || 'no id');
