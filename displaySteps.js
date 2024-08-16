@@ -83,11 +83,13 @@ function display_step(pyodide, jsonFilePath, svgFilePath, contentDivName = 'simp
             checkButton.className = 'check-button';
             checkButton.textContent = 'Check';
             checkButton.addEventListener('click', async () => {
+                setTimeout(() => {
+                    resetClickedElements(svgDiv, clickedElementsContainer);
+                }, 100);  // Kurze Verzögerung, um sicherzustellen, dass das DOM bereit ist
                 if (selectedElements.length === 2) {
                     const canSimplify = await stepSolve.simplifyTwoCpts(selectedElements).toJs();
                     if (canSimplify[0]) {
                         display_step(pyodide, canSimplify[1], canSimplify[2]);
-                        resetClickedElements(svgDiv, clickedElementsContainer);
                     } else {
                         showMessage("Die ausgew\u00E4hlten Elemente k\u00F6nnen nicht vereinfacht werden.");
                     }

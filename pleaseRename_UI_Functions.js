@@ -15,11 +15,19 @@ function populateCircuitSelector() {
 }
 
 function resetClickedElements(svgDiv, clickedElementsContainer) {
-    svgDiv.querySelectorAll('.bounding-box').forEach(box => box.remove());
-    clickedElementsContainer.querySelector('ul').innerHTML = '';
+    const boundingBoxes = svgDiv.querySelectorAll('.bounding-box');
+    if (boundingBoxes.length > 0) {
+        boundingBoxes.forEach(box => box.remove());
+    }
+
+    const clickedElementsList = clickedElementsContainer.querySelector('ul');
+    if (clickedElementsList) {
+        clickedElementsList.innerHTML = '';
+    } else {
+        console.warn('clickedElementsContainer ul-Liste nicht gefunden');
+    }
     selectedElements = [];
 }
-
 function showMessage(message) {
     const messageBox = document.getElementById('message-box');
     messageBox.textContent = message;
