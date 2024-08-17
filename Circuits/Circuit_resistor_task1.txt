@@ -1,0 +1,13 @@
+V1 0 2 dc {200}; up
+W 2 3; right
+R1 3 4 {3}; down
+R2 4 5 {6}; down
+R3 5 6 {2}; down
+W 6 7; right
+R4 7 8 {20}; down
+R5 8 9 {30}; down
+W 9 10; right
+R6 10 11 {7}; down
+W 11 6; left
+W 6 7; left
+W 7 0; up
