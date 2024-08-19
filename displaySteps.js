@@ -146,6 +146,18 @@ function display_step(pyodide, jsonFilePath, svgFilePath, contentDivName = 'simp
             }
         }
         MathJax.typeset();
+        if(mode==='pre_calculated')
+        {
+            // Count path elements with id different from 'default_id'
+            const pathElements = svgDiv.querySelectorAll('path');
+            const filteredPaths = Array.from(pathElements).filter(path => path.getAttribute('class') !== 'na');
+            const congratsMessage = document.createElement('p');
+            if (filteredPaths.length === 1) {
+                // If there is only one path element left, display a congratulatory message
+                congratsMessage.innerHTML = 'Die Komponenten sind nun vollst&auml;ndig vereinfacht. Es folgt nun die Berechnung der Spannungen und Str&ouml;me.';
+                descriptionContainer.appendChild(congratsMessage);
+            }
+        }
     } catch (error) {
         console.error('Error fetching data:', error);
         contentDiv.textContent = 'Error loading content';
