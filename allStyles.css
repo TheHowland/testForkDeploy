@@ -222,3 +222,19 @@ svg {
 .nav-button:hover {
     transform: scale(1.05);
 }
+
+#continue-button{
+    margin-top: 1vh;
+    padding: 1vh 2vw;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 2vh;
+    transition: background 0.3s, transform 0.2s;
+    background-color: #2196f3;
+    color: white;
+}
+
+#continue-button:hover {
+    transform: scale(1.05);
+}

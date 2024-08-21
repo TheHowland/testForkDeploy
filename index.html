@@ -33,10 +33,11 @@
     <button id="start-button" disabled>Start</button>
 </div>
 <button id="menu-toggle"></button>
+<button id="continue-button" style="display: none;">Weiter</button>
 <div id="message-box"></div>
 <div class="nav-buttons-container" style="display: none;">
-    <button id="prev-button" class="nav-button">Previous</button>
-    <button id="next-button" class="nav-button">Next</button>
+    <button id="prev-button" class="nav-button">Zur&uuml;ck</button>
+    <button id="next-button" class="nav-button">Vor</button>
 </div>
 <div id="initial-message" style="display: none;">Bitte w&auml;hlen Sie einen Modus und Schaltkreis aus</div>
 <div id="loading-message" style="display:none;">Vielen Dank! Ihre Auswahl wird geladen</div>
@@ -131,11 +132,19 @@
             }
         });
 
+        document.getElementById('continue-button').addEventListener('click',()=>{
+            if(currentStep>0){
+                currentStep--;
+                display_step(pyodide,`Solutions/${jsonFiles[currentStep]}`,`Solutions/${svgFiles[currentStep]}`);
+            }
+        });
+
         document.getElementById('start-button').addEventListener('click', () => {
             if (mode && currentCircuit && pyodideReady) {
                 document.getElementById('menu-toggle').click();
                 document.getElementById('initial-message').style.display = 'none';
                 document.getElementById('loading-message').style.display='block';
+                document.getElementById('continue-button').style.display='none';
                 setTimeout(()=>{
                     solveCircuit(currentCircuit, pyodide);
                 },300);

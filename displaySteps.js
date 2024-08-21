@@ -156,6 +156,8 @@ function display_step(pyodide, jsonFilePath, svgFilePath, contentDivName = 'simp
                 // If there is only one path element left, display a congratulatory message
                 congratsMessage.innerHTML = 'Die Komponenten sind nun vollst&auml;ndig vereinfacht. Es folgt nun die Berechnung der Spannungen und Str&ouml;me.';
                 descriptionContainer.appendChild(congratsMessage);
+                document.querySelector('.nav-buttons-container').style.display = 'none';
+                document.getElementById('continue-button').style.display='flex';
             }
         }
     } catch (error) {
