@@ -10,19 +10,6 @@ function display_step(pyodide, jsonFilePath, svgFilePath, contentDivName = 'simp
 
         const svgData = pyodide.FS.readFile(svgFilePath, { encoding: "utf8" });
 
-        let relationText = "";
-        if (!data.isNull()) {
-            if (data.noFormat().relation === "parallel") {
-                relationText = "Die Elemente sind parallel zueinander";
-            } else if (data.noFormat().relation === "series") {
-                relationText = "Die Elemente sind in Reihe zueinander";
-            } else if (data.noFormat().relation === null) {
-                relationText = "Keine Beziehung zwischen den Elementen";
-            } else {
-                throw Error("Unknown relation type");
-            }
-        }
-
         const circuitContainer = document.createElement('div');
         circuitContainer.className = 'circuit-container';
 
@@ -36,19 +23,7 @@ function display_step(pyodide, jsonFilePath, svgFilePath, contentDivName = 'simp
         const descriptionContainer = document.createElement('div');
         descriptionContainer.className = 'description-container';
 
-        // Only append the paragraph if it's not a step0.json file
-        if (!jsonFilePath.toLowerCase().includes('step0.json')) {
-            const paragraph_Z = document.createElement('p');
-            paragraph_Z.innerHTML = `Die Elemente ${data.inline().name1} und ${data.inline().name2}<br>
-              wurden zu ${data.inline().newName} zusammengefasst<br>
-              ${data.inline().name1}&nbsp= ${data.inline().value1}<br>
-              ${data.inline().name2}&nbsp= ${data.inline().value2}<br>
-              ${data.inline().newName}&nbsp= ${data.inline().result}<br>
-              ${relationText}<br>
-              Rechnung:<br>
-              ${data.inline().latexEquation}`;
-            descriptionContainer.appendChild(paragraph_Z);
-        }
+        paragraph_Z(data,jsonFilePath,descriptionContainer);
         const contentContainer = document.createElement('div');
         contentContainer.className = 'content-container';
         contentContainer.appendChild(circuitContainer);
