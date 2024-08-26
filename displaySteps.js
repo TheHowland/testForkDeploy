@@ -23,7 +23,6 @@ function display_step(pyodide, jsonFilePath, svgFilePath, contentDivName = 'simp
         const descriptionContainer = document.createElement('div');
         descriptionContainer.className = 'description-container';
 
-        paragraph_Z(data,jsonFilePath,descriptionContainer);
         const contentContainer = document.createElement('div');
         contentContainer.className = 'content-container';
         contentContainer.appendChild(circuitContainer);
@@ -34,7 +33,7 @@ function display_step(pyodide, jsonFilePath, svgFilePath, contentDivName = 'simp
             const clickedElementsContainer = document.createElement('div');
             clickedElementsContainer.className = 'clicked-elements-container';
             clickedElementsContainer.innerHTML = `<h3>Ausgew&auml;hlte Elemente</h3><ul id="clicked-elements-list-${sanitizedSvgFilePath}"></ul>`;
-
+            paragraph_Z(data,jsonFilePath,descriptionContainer);
             // Count path elements with id different from 'default_id'
             const pathElements = svgDiv.querySelectorAll('path');
             const filteredPaths = Array.from(pathElements).filter(path => path.getAttribute('class') !== 'na');
@@ -126,6 +125,7 @@ function display_step(pyodide, jsonFilePath, svgFilePath, contentDivName = 'simp
             const pathElements = svgDiv.querySelectorAll('path');
             const filteredPaths = Array.from(pathElements).filter(path => path.getAttribute('class') !== 'na');
             const congratsMessage = document.createElement('p');
+            paragraph_Z(data,jsonFilePath,descriptionContainer);
             if (filteredPaths.length === 1) {
                 // If there is only one path element left, display a congratulatory message
                 congratsMessage.innerHTML = 'Die Komponenten sind nun vollst&auml;ndig vereinfacht. Es folgt nun die Berechnung der Spannungen und Str&ouml;me.';
