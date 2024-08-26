@@ -67,3 +67,7 @@ function paragraph_Z(data, jsonFilePath,descriptionContainer) {
         descriptionContainer.appendChild(paragraph_Z);
     }
 }
+
+function resetCongratsDisplayed() {
+    congratsDisplayed = false;
+}

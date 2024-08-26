@@ -52,6 +52,7 @@
     let currentCircuit = "";
     let stepSolve; // Declare globally to access across functions
     let mode = '';
+    let congratsDisplayed = false;
     //--------------------------------------------------------------
     let pyodideReady = false;
     let serverAddress = "http://localhost:8000"
@@ -145,6 +146,7 @@
                 document.getElementById('initial-message').style.display = 'none';
                 document.getElementById('loading-message').style.display='block';
                 document.getElementById('continue-button').style.display='none';
+                resetCongratsDisplayed();
                 setTimeout(()=>{
                     solveCircuit(currentCircuit, pyodide);
                 },300);

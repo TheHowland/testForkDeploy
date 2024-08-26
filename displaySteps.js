@@ -1,6 +1,8 @@
+
 function display_step(pyodide, jsonFilePath, svgFilePath, contentDivName = 'simplification') {
     const contentDiv = document.getElementById(contentDivName);
     contentDiv.innerHTML = '';
+
 
     try {
         let jsonDataString = pyodide.FS.readFile(jsonFilePath, { encoding: "utf8" });
@@ -125,15 +127,21 @@ function display_step(pyodide, jsonFilePath, svgFilePath, contentDivName = 'simp
             const pathElements = svgDiv.querySelectorAll('path');
             const filteredPaths = Array.from(pathElements).filter(path => path.getAttribute('class') !== 'na');
             const congratsMessage = document.createElement('p');
-            paragraph_Z(data,jsonFilePath,descriptionContainer);
             if (filteredPaths.length === 1) {
                 // If there is only one path element left, display a congratulatory message
                 congratsMessage.innerHTML = 'Die Komponenten sind nun vollst&auml;ndig vereinfacht. Es folgt nun die Berechnung der Spannungen und Str&ouml;me.';
                 descriptionContainer.appendChild(congratsMessage);
+                congratsDisplayed=true;
+                paragraph_Z(data,jsonFilePath,descriptionContainer);
                 document.querySelector('.nav-buttons-container').style.display = 'none';
                 document.getElementById('continue-button').style.display='flex';
             }
+            else if(congratsDisplayed===false)
+            {
+                paragraph_Z(data,jsonFilePath,descriptionContainer);
+            }
         }
+        MathJax.typeset();
     } catch (error) {
         console.error('Error fetching data:', error);
         contentDiv.textContent = 'Error loading content';
