@@ -68,6 +68,35 @@ function paragraph_Z(data, jsonFilePath,descriptionContainer) {
     }
 }
 
+function paragraph_UI(data, jsonFilePath, descriptionContainer) {
+
+    let relationText = "";
+    if (!data.isNull()) {
+        if (data.noFormat().relation === "parallel") {
+            relationText = `Die Elemente sind parallel zueinander. Die Spannung (${data.inline().oldValue[1]}) bleibt gleich. <br>
+                            Die Stromstärke (${data.inline().oldValue[2]}) teilt sich auf.`;
+        } else if (data.noFormat().relation === "series") {
+            relationText = `Die Elemente sind in Reihe zueinander. Die Stromstärke (${data.inline().oldValue[2]}) bleibt gleich. <br>
+                            Die Spannung (${data.inline().oldValue[1]}) teilt sich auf.`;
+        } else if (data.noFormat().relation === null) {
+            relationText = "Keine Beziehung zwischen den Elementen";
+        } else {
+            throw Error("Unknown relation type");
+        }
+    }
+
+    const paragraph_UI=document.createElement('p');
+    paragraph_UI.innerHTML=`Das Element ${data.inline().oldName} setzt sich aus den Elementen ${data.inline().name1} und ${data.inline().name2} zusammen.<br>
+    ${data.inline().oldName}&nbsp= (${data.inline().oldValue[0]},${data.inline().oldValue[1]},${data.inline().oldValue[2]})<br>
+    ${data.inline().name1}&nbsp= ${data.inline().value1[0]}<br>
+    ${data.inline().name2}&nbsp= ${data.inline().value2[0]}<br>
+    ${relationText}<br>
+    Rechnung:<br>
+    ${data.inline().name1}&nbsp:${data.inline().equation[0]}<br>
+    ${data.inline().name2}&nbsp:${data.inline().equation[1]}<br>`;
+    descriptionContainer.appendChild(paragraph_UI);
+}
+
 function resetCongratsDisplayed() {
     congratsDisplayed = false;
 }
