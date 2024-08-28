@@ -1,14 +1,22 @@
-
 function display_step(pyodide, jsonFilePath, svgFilePath, contentDivName = 'simplification') {
     const contentDiv = document.getElementById(contentDivName);
     contentDiv.innerHTML = '';
 
-
     try {
         let jsonDataString = pyodide.FS.readFile(jsonFilePath, { encoding: "utf8" });
         const jsonData = JSON.parse(jsonDataString);
-        let data = new SolutionObject(jsonData.name1, jsonData.name2, jsonData.newName, jsonData.value1, jsonData.value2,
-            jsonData.result, jsonData.relation, jsonData.latexEquation);
+
+        let data = new SolutionObject(
+            jsonData.name1, jsonData.name2, jsonData.newName,
+            jsonData.value1, jsonData.value2, jsonData.result,
+            jsonData.relation, jsonData.latexEquation
+        );
+
+        let data_ui = new SolutionObject_UI(
+            jsonData.oldName, jsonData.name1, jsonData.name2,
+            jsonData.oldValue, jsonData.value1, jsonData.value2,
+            jsonData.relation, jsonData.result, jsonData.equation
+        );
 
         const svgData = pyodide.FS.readFile(svgFilePath, { encoding: "utf8" });
 
@@ -35,15 +43,15 @@ function display_step(pyodide, jsonFilePath, svgFilePath, contentDivName = 'simp
             const clickedElementsContainer = document.createElement('div');
             clickedElementsContainer.className = 'clicked-elements-container';
             clickedElementsContainer.innerHTML = `<h3>Ausgew&auml;hlte Elemente</h3><ul id="clicked-elements-list-${sanitizedSvgFilePath}"></ul>`;
-            paragraph_Z(data,jsonFilePath,descriptionContainer);
-            // Count path elements with id different from 'default_id'
+
+            paragraph_Z(data, jsonFilePath, descriptionContainer);
+
             const pathElements = svgDiv.querySelectorAll('path');
             const filteredPaths = Array.from(pathElements).filter(path => path.getAttribute('class') !== 'na');
 
             if (filteredPaths.length === 1) {
-                // If there is only one path element left, display a congratulatory message
                 const congratsMessage = document.createElement('p');
-                congratsMessage.innerHTML = 'Herzlichen Gl\u00FCckwunsch! Sie haben den Schaltkreis vollst&auml;ndig vereinfacht.';
+                congratsMessage.innerHTML = 'Herzlichen Gl&uuml;ckwunsch! Sie haben den Schaltkreis vollst&auml;ndig vereinfacht.';
                 clickedElementsContainer.appendChild(congratsMessage);
             }
 
@@ -60,21 +68,21 @@ function display_step(pyodide, jsonFilePath, svgFilePath, contentDivName = 'simp
             checkButton.addEventListener('click', async () => {
                 setTimeout(() => {
                     resetClickedElements(svgDiv, clickedElementsContainer);
-                }, 100);  // Kurze Verzögerung, um sicherzustellen, dass das DOM bereit ist
+                }, 100);
+
                 if (selectedElements.length === 2) {
                     const canSimplify = await stepSolve.simplifyTwoCpts(selectedElements).toJs();
                     if (canSimplify[0]) {
                         display_step(pyodide, canSimplify[1], canSimplify[2]);
                     } else {
-                        showMessage("Die ausgew\u00E4hlten Elemente k\u00F6nnen nicht vereinfacht werden.");
+                        showMessage("Die ausgew&auml;hlten Elemente k&ouml;nnen nicht vereinfacht werden.");
                     }
                 } else {
-                    showMessage('Bitte w\u00E4hlen Sie genau zwei Elemente aus!');
+                    showMessage('Bitte w&auml;hlen Sie genau zwei Elemente aus!');
                 }
                 MathJax.typeset();
             });
 
-            // Append the buttons after the congratulatory message
             clickedElementsContainer.appendChild(resetButton);
             clickedElementsContainer.appendChild(checkButton);
 
@@ -120,28 +128,30 @@ function display_step(pyodide, jsonFilePath, svgFilePath, contentDivName = 'simp
                 });
             }
         }
+
         MathJax.typeset();
-        if(mode==='pre_calculated')
-        {
-            // Count path elements with id different from 'default_id'
+
+        if (mode === 'pre_calculated') {
             const pathElements = svgDiv.querySelectorAll('path');
             const filteredPaths = Array.from(pathElements).filter(path => path.getAttribute('class') !== 'na');
             const congratsMessage = document.createElement('p');
+
             if (filteredPaths.length === 1) {
-                // If there is only one path element left, display a congratulatory message
                 congratsMessage.innerHTML = 'Die Komponenten sind nun vollst&auml;ndig vereinfacht. Es folgt nun die Berechnung der Spannungen und Str&ouml;me.';
                 descriptionContainer.appendChild(congratsMessage);
-                congratsDisplayed=true;
-                paragraph_Z(data,jsonFilePath,descriptionContainer);
+                congratsDisplayed = true;
+                paragraph_Z(data, jsonFilePath, descriptionContainer);
                 document.querySelector('.nav-buttons-container').style.display = 'none';
-                document.getElementById('continue-button').style.display='flex';
-            }
-            else if(congratsDisplayed===false)
-            {
-                paragraph_Z(data,jsonFilePath,descriptionContainer);
-            }
+                document.getElementById('continue-button').style.display = 'flex';
+            } else if (congratsDisplayed === false) {
+                paragraph_Z(data, jsonFilePath, descriptionContainer);
+            } else {
+                paragraph_UI(data_ui, jsonFilePath, descriptionContainer);
+            }MathJax.typeset();
         }
+
         MathJax.typeset();
+
     } catch (error) {
         console.error('Error fetching data:', error);
         contentDiv.textContent = 'Error loading content';

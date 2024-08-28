@@ -69,31 +69,51 @@ function paragraph_Z(data, jsonFilePath,descriptionContainer) {
 }
 
 function paragraph_UI(data, jsonFilePath, descriptionContainer) {
-
     let relationText = "";
-    if (!data.isNull()) {
-        if (data.noFormat().relation === "parallel") {
-            relationText = `Die Elemente sind parallel zueinander. Die Spannung (${data.inline().oldValue[1]}) bleibt gleich. <br>
-                            Die Stromstärke (${data.inline().oldValue[2]}) teilt sich auf.`;
-        } else if (data.noFormat().relation === "series") {
-            relationText = `Die Elemente sind in Reihe zueinander. Die Stromstärke (${data.inline().oldValue[2]}) bleibt gleich. <br>
-                            Die Spannung (${data.inline().oldValue[1]}) teilt sich auf.`;
-        } else if (data.noFormat().relation === null) {
-            relationText = "Keine Beziehung zwischen den Elementen";
-        } else {
-            throw Error("Unknown relation type");
-        }
+
+    const inlineData = data.inline();
+    const noFormatData = data.noFormat();
+
+    if (!inlineData || !noFormatData) {
+        console.error("Missing or incorrect data structure.");
+        throw new Error("Data structure does not match expected format.");
     }
 
-    const paragraph_UI=document.createElement('p');
-    paragraph_UI.innerHTML=`Das Element ${data.inline().oldName} setzt sich aus den Elementen ${data.inline().name1} und ${data.inline().name2} zusammen.<br>
-    ${data.inline().oldName}&nbsp= (${data.inline().oldValue[0]},${data.inline().oldValue[1]},${data.inline().oldValue[2]})<br>
-    ${data.inline().name1}&nbsp= ${data.inline().value1[0]}<br>
-    ${data.inline().name2}&nbsp= ${data.inline().value2[0]}<br>
-    ${relationText}<br>
-    Rechnung:<br>
-    ${data.inline().name1}&nbsp:${data.inline().equation[0]}<br>
-    ${data.inline().name2}&nbsp:${data.inline().equation[1]}<br>`;
+    const oldValueExists = Array.isArray(inlineData.oldValue) && inlineData.oldValue.length > 2;
+    if (noFormatData.relation === "parallel" && oldValueExists) {
+        relationText = `Die Elemente sind parallel zueinander. Die Spannung (${inlineData.oldValue[1]}) bleibt gleich. <br>
+                        Die Stromstärke (${inlineData.oldValue[2]}) teilt sich auf.`;
+    } else if (noFormatData.relation === "series" && oldValueExists) {
+        relationText = `Die Elemente sind in Reihe zueinander. Die Stromstärke (${inlineData.oldValue[2]}) bleibt gleich. <br>
+                        Die Spannung (${inlineData.oldValue[1]}) teilt sich auf.`;
+    } else if (noFormatData.relation === null) {
+        relationText = "Keine Beziehung zwischen den Elementen";
+    } else {
+        console.error("Unknown relation type or oldValue data is insufficient.");
+        throw new Error("Unknown relation type or oldValue data is insufficient.");
+    }
+
+    const name1Exists = Array.isArray(inlineData.name1) && inlineData.name1.length > 0;
+    const name2Exists = Array.isArray(inlineData.name2) && inlineData.name2.length > 0;
+    const value1Exists = Array.isArray(inlineData.value1) && inlineData.value1.length > 0;
+    const value2Exists = Array.isArray(inlineData.value2) && inlineData.value2.length > 0;
+    const equationExists = Array.isArray(inlineData.equation) && inlineData.equation.length > 1;
+
+    if (!name1Exists || !name2Exists || !value1Exists || !value2Exists || !equationExists) {
+        console.error("Required array properties are missing or insufficient.");
+        throw new Error("Required array properties are missing or insufficient.");
+    }
+
+    const paragraph_UI = document.createElement('p');
+    paragraph_UI.innerHTML = `
+        Das Element ${inlineData.oldName[0]} setzt sich aus den Elementen ${inlineData.name1[0]} und ${inlineData.name2[0]} zusammen.<br>
+        ${inlineData.oldName[0]}&nbsp= (${inlineData.oldValue[0]}, ${inlineData.oldValue[1]}, ${inlineData.oldValue[2]})<br>
+        ${inlineData.name1[0]}&nbsp= ${inlineData.value1[0]}<br>
+        ${inlineData.name2[0]}&nbsp= ${inlineData.value2[0]}<br>
+        ${relationText}<br>
+        Rechnung:<br>
+        ${inlineData.name1[0]}&nbsp: ${inlineData.equation[0]}<br>
+        ${inlineData.name2[0]}&nbsp: ${inlineData.equation[1]}<br>`;
     descriptionContainer.appendChild(paragraph_UI);
 }
 
