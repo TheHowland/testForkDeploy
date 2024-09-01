@@ -74,12 +74,23 @@ function paragraph_UI(data, jsonFilePath, descriptionContainer) {
     const inlineData = data.inline();
     const noFormatData = data.noFormat();
 
+    // Log the data to ensure correctness
+    console.log("inlineData:", inlineData);
+    console.log("noFormatData:", noFormatData);
+
     if (!inlineData || !noFormatData) {
         console.error("Missing or incorrect data structure.");
         throw new Error("Data structure does not match expected format.");
     }
 
+    // Ensure arrays have the correct length
     const oldValueExists = Array.isArray(inlineData.oldValue) && inlineData.oldValue.length > 2;
+    if (!oldValueExists) {
+        console.error("oldValue is either not an array or does not contain enough values.");
+        throw new Error("oldValue is either not an array or does not contain enough values.");
+    }
+
+    // Handle relationText generation based on relation type
     if (noFormatData.relation === "parallel" && oldValueExists) {
         relationText = `Die Elemente sind parallel zueinander. Die Spannung (${inlineData.oldValue[1]}) bleibt gleich. <br>
                         Die Stromstärke (${inlineData.oldValue[2]}) teilt sich auf.`;
@@ -91,17 +102,6 @@ function paragraph_UI(data, jsonFilePath, descriptionContainer) {
     } else {
         console.error("Unknown relation type or oldValue data is insufficient.");
         throw new Error("Unknown relation type or oldValue data is insufficient.");
-    }
-
-    const name1Exists = Array.isArray(inlineData.name1) && inlineData.name1.length > 0;
-    const name2Exists = Array.isArray(inlineData.name2) && inlineData.name2.length > 0;
-    const value1Exists = Array.isArray(inlineData.value1) && inlineData.value1.length > 0;
-    const value2Exists = Array.isArray(inlineData.value2) && inlineData.value2.length > 0;
-    const equationExists = Array.isArray(inlineData.equation) && inlineData.equation.length > 1;
-
-    if (!name1Exists || !name2Exists || !value1Exists || !value2Exists || !equationExists) {
-        console.error("Required array properties are missing or insufficient.");
-        throw new Error("Required array properties are missing or insufficient.");
     }
 
     const paragraph_UI = document.createElement('p');
@@ -116,6 +116,7 @@ function paragraph_UI(data, jsonFilePath, descriptionContainer) {
         ${inlineData.name2[0]}&nbsp: ${inlineData.equation[1]}<br>`;
     descriptionContainer.appendChild(paragraph_UI);
 }
+
 
 function resetCongratsDisplayed() {
     congratsDisplayed = false;

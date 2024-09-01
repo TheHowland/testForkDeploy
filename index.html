@@ -46,9 +46,11 @@
     //ToDo this could be an Object better than global variables
     //--------------------------------------------------------------
     let currentStep = 0;
-    let jsonFiles = [];
+    let jsonFiles_Z = [];
+    let jsonFiles_UI = [];
     let svgFiles = [];
     let circuitFiles = [];
+    let solutionsUIFiles = [];
     let selectedElements = [];
     let currentCircuit = "";
     let stepSolve; // Declare globally to access across functions
@@ -78,11 +80,18 @@
         let cirArrBuff = await (await fetch(serverAddress + "/Circuits.zip")).arrayBuffer();
         await pyodide.unpackArchive(cirArrBuff, ".zip");
 
+        let solArrBuff = await (await fetch(serverAddress + "/Solutions_UI.zip")).arrayBuffer();
+        await pyodide.unpackArchive(solArrBuff, ".zip");
+
         circuitFiles = pyodide.FS.readdir("Circuits");
         circuitFiles = circuitFiles.filter((file) => file !== "." && file !== "..");
         console.log("Circuits Files: " + circuitFiles);
         populateCircuitSelector();
         console.timeEnd(loadCircuits);
+
+        solutionsUIFiles = pyodide.FS.readdir("Solutions_UI");
+        solutionsUIFiles = solutionsUIFiles.filter((file) => file !== "." && file !== "..");
+        console.log("Solutions UI Files: " + solutionsUIFiles);
 
         pyodide.FS.writeFile("/home/pyodide/solve.py", await (await fetch(serverAddress + "/solve.py")).text());
 
@@ -123,21 +132,21 @@
         document.getElementById('prev-button').addEventListener('click', () => {
             if (currentStep > 0) {
                 currentStep--;
-                display_step(pyodide, `Solutions/${jsonFiles[currentStep]}`, `Solutions/${svgFiles[currentStep]}`);
+                display_step(pyodide, `Solutions/${jsonFiles_Z[currentStep]}`, `Solutions/${svgFiles[currentStep]}`);
             }
         });
 
         document.getElementById('next-button').addEventListener('click', () => {
-            if (currentStep < jsonFiles.length - 1) {
+            if (currentStep < jsonFiles_Z.length - 1) {
                 currentStep++;
-                display_step(pyodide, `Solutions/${jsonFiles[currentStep]}`, `Solutions/${svgFiles[currentStep]}`);
+                display_step(pyodide, `Solutions/${jsonFiles_Z[currentStep]}`,`Solutions_UI/${jsonFiles_UI[currentStep]}`, `Solutions/${svgFiles[currentStep]}`);
             }
         });
 
         document.getElementById('continue-button').addEventListener('click',()=>{
             if(currentStep>0){
                 currentStep--;
-                display_step(pyodide,`Solutions/${jsonFiles[currentStep]}`,`Solutions/${svgFiles[currentStep]}`);
+                display_step(pyodide,`Solutions/${jsonFiles_Z[currentStep]}`,`Solutions_UI/${jsonFiles_UI[currentStep]}`,`Solutions/${svgFiles[currentStep]}`);
             }
         });
 
@@ -197,12 +206,14 @@
 
         console.timeEnd(timeSolve);
 
-        const files = await pyodide.FS.readdir("Solutions");
-        jsonFiles = files.filter(file => file.endsWith(".json"));
-        svgFiles = files.filter(file => file.endsWith(".svg"));
+        const files_Z = await pyodide.FS.readdir("Solutions");
+        const files_UI= await pyodide.FS.readdir("Solutions_UI");
+        jsonFiles_Z = files_Z.filter(file => file.endsWith(".json"));
+        jsonFiles_UI = files_UI.filter(file => file.endsWith(".json"));
+        svgFiles = files_Z.filter(file => file.endsWith(".svg"));
         document.getElementById('loading-message').style.display='none';
         currentStep = 0;
-        display_step(pyodide, `Solutions/${jsonFiles[currentStep]}`, `Solutions/${svgFiles[currentStep]}`);
+        display_step(pyodide, `Solutions/${jsonFiles_Z[currentStep]}`,`Solutions_UI/${jsonFiles_UI[currentStep]}`, `Solutions/${svgFiles[currentStep]}`);
 
         if (mode === 'pre_calculated') {
             document.querySelector('.nav-buttons-container').style.display = 'flex';

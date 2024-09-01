@@ -1,17 +1,17 @@
 class SolutionObject_UI {
-    constructor(oldName, name1, name2, oldValue, value1, value2, relation, result, equation) {
-        this._oldName = Array.isArray(oldName) ? oldName : [oldName || 'N/A'];
-        this._name1 = Array.isArray(name1) ? name1 : [name1 || 'N/A'];
-        this._name2 = Array.isArray(name2) ? name2 : [name2 || 'N/A'];
-        this._oldValue = Array.isArray(oldValue) ? oldValue : ['N/A', 'N/A', 'N/A'];
-        this._value1 = Array.isArray(value1) ? value1 : [value1 || 'N/A'];
-        this._value2 = Array.isArray(value2) ? value2 : [value2 || 'N/A'];
-        this._relation = relation || 'N/A';
-        this._result = result || 'N/A';
-        this._equation = Array.isArray(equation) ? equation : ['N/A', 'N/A'];
+    constructor(oldName = ["N/A", "N/A", "N/A"], name1 = ["N/A"], name2 = ["N/A"],
+                oldValue = ["N/A", "N/A", "N/A"], value1 = ["N/A"], value2 = ["N/A"],
+                relation = "none", result = ["N/A"], equation = ["N/A", "N/A"]) {
 
-        // Debugging: Log the initialization
-        console.log("Initialized SolutionObject_UI:", this);
+        this._oldName = Array.isArray(oldName) && oldName.length ? oldName : ["N/A", "N/A", "N/A"];
+        this._name1 = Array.isArray(name1) && name1.length ? name1 : ["N/A"];
+        this._name2 = Array.isArray(name2) && name2.length ? name2 : ["N/A"];
+        this._oldValue = Array.isArray(oldValue) && oldValue.length ? oldValue : ["N/A", "N/A", "N/A"];
+        this._value1 = Array.isArray(value1) && value1.length ? value1 : ["N/A"];
+        this._value2 = Array.isArray(value2) && value2.length ? value2 : ["N/A"];
+        this._relation = relation;
+        this._result = Array.isArray(result) && result.length ? result : ["N/A"];
+        this._equation = Array.isArray(equation) && equation.length ? equation : ["N/A", "N/A"];
 
         this._inlineReturnFunc = (string) => `\\(${string}\\)`;
         this._blockReturnFunc = (string) => `$$${string}$$`;
@@ -19,7 +19,7 @@ class SolutionObject_UI {
         this._returnFunction = this._inlineReturnFunc;
     }
 
-set returnFunction(func) {
+    set returnFunction(func) {
         this._returnFunction = func;
     }
 
@@ -43,20 +43,21 @@ set returnFunction(func) {
     }
 
     isNull() {
-        return (!this._oldName)&&(!this._name1) && (!this._name2) && (!this._oldValue) &&
-            (!this._value1) && (!this._value2) && (!this._result) &&
-            (!this._relation) && (!this._equation);
+        return (!this._oldName && !this._name1 && !this._name2 && !this._oldValue &&
+            !this._value1 && !this._value2 && !this._result &&
+            !this._relation && !this._equation);
     }
-    get oldName(){
-        return this._format(this._oldName);
+
+    get oldName() {
+        return this._format(this._oldName[0]);
     }
 
     get name1() {
-        return this._format(this._name1);
+        return this._format(this._name1[0]);
     }
 
     get name2() {
-        return this._format(this._name2);
+        return this._format(this._name2[0]);
     }
 
     get oldValue() {
@@ -64,15 +65,15 @@ set returnFunction(func) {
     }
 
     get value1() {
-        return this._format(this._value1);
+        return this._format(this._value1[0]);
     }
 
     get value2() {
-        return this._format(this._value2);
+        return this._format(this._value2[0]);
     }
 
     get result() {
-        return this._format(this._result);
+        return this._format(this._result[0]);
     }
 
     get relation() {

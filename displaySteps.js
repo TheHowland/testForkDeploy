@@ -1,25 +1,36 @@
-function display_step(pyodide, jsonFilePath, svgFilePath, contentDivName = 'simplification') {
+function display_step(pyodide, jsonFilePath_Z,jsonFilePath_UI=null, svgFilePath, contentDivName = 'simplification') {
     const contentDiv = document.getElementById(contentDivName);
     contentDiv.innerHTML = '';
 
     try {
-        let jsonDataString = pyodide.FS.readFile(jsonFilePath, { encoding: "utf8" });
+        // Lade die JSON-Datei und logge den Inhalt
+        let jsonDataString = pyodide.FS.readFile(jsonFilePath_Z, { encoding: "utf8" });
         const jsonData = JSON.parse(jsonDataString);
+        console.log("Loaded JSON Data:", jsonData);
+        //Lade UI-JSON-Datei und logge den Inhalt
+        let jsonDataString_UI = pyodide.FS.readFile(jsonFilePath_UI, { encoding: "utf8" });
+        const jsonData_UI = JSON.parse(jsonDataString_UI);
+        console.log("Loaded JSON Data UI:", jsonData_UI);
 
+        // Instanziiere SolutionObject und SolutionObject_UI
         let data = new SolutionObject(
             jsonData.name1, jsonData.name2, jsonData.newName,
             jsonData.value1, jsonData.value2, jsonData.result,
             jsonData.relation, jsonData.latexEquation
         );
+        console.log("Initialized SolutionObject:", data);
 
         let data_ui = new SolutionObject_UI(
-            jsonData.oldName, jsonData.name1, jsonData.name2,
-            jsonData.oldValue, jsonData.value1, jsonData.value2,
-            jsonData.relation, jsonData.result, jsonData.equation
+            jsonData_UI.oldName, jsonData_UI.name1, jsonData_UI.name2,
+            jsonData_UI.oldValue, jsonData_UI.value1, jsonData_UI.value2,
+            jsonData_UI.relation, jsonData_UI.result, jsonData_UI.equation
         );
+        console.log("Initialized SolutionObject_UI:", data_ui);
 
+        // Lade die SVG-Datei
         const svgData = pyodide.FS.readFile(svgFilePath, { encoding: "utf8" });
 
+        // Baue das UI auf
         const circuitContainer = document.createElement('div');
         circuitContainer.className = 'circuit-container';
 
@@ -44,7 +55,7 @@ function display_step(pyodide, jsonFilePath, svgFilePath, contentDivName = 'simp
             clickedElementsContainer.className = 'clicked-elements-container';
             clickedElementsContainer.innerHTML = `<h3>Ausgew&auml;hlte Elemente</h3><ul id="clicked-elements-list-${sanitizedSvgFilePath}"></ul>`;
 
-            paragraph_Z(data, jsonFilePath, descriptionContainer);
+            paragraph_Z(data, jsonFilePath_Z, descriptionContainer);
 
             const pathElements = svgDiv.querySelectorAll('path');
             const filteredPaths = Array.from(pathElements).filter(path => path.getAttribute('class') !== 'na');
@@ -140,14 +151,14 @@ function display_step(pyodide, jsonFilePath, svgFilePath, contentDivName = 'simp
                 congratsMessage.innerHTML = 'Die Komponenten sind nun vollst&auml;ndig vereinfacht. Es folgt nun die Berechnung der Spannungen und Str&ouml;me.';
                 descriptionContainer.appendChild(congratsMessage);
                 congratsDisplayed = true;
-                paragraph_Z(data, jsonFilePath, descriptionContainer);
+                paragraph_Z(data, jsonFilePath_Z, descriptionContainer);
                 document.querySelector('.nav-buttons-container').style.display = 'none';
                 document.getElementById('continue-button').style.display = 'flex';
             } else if (congratsDisplayed === false) {
-                paragraph_Z(data, jsonFilePath, descriptionContainer);
+                paragraph_Z(data, jsonFilePath_Z, descriptionContainer);
             } else {
-                paragraph_UI(data_ui, jsonFilePath, descriptionContainer);
-            }MathJax.typeset();
+                paragraph_UI(data_ui, jsonFilePath_UI, descriptionContainer);
+            }
         }
 
         MathJax.typeset();
