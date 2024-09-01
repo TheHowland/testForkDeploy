@@ -1,0 +1,41 @@
+{
+  "oldName": [
+    "Rsim1",
+    "Usim1",
+    "Isim1"
+  ],
+  "name1": [
+    "R4",
+    "U4",
+    "I4"
+  ],
+  "name2": [
+    "R5",
+    "U5",
+    "I5"
+  ],
+  "oldValue": [
+    "12 \\omega",
+    "120 \\text{V}",
+    "10 \\text{A}"
+  ],
+  "value1": [
+    "20 \\omega",
+    "120 \\text{V}",
+    "6 \\text{A}"
+  ],
+  "value2": [
+    "30 \\omega",
+    "120 \\text{V}",
+    "4 \\text{A}"
+  ],
+  "relation": "parallel",
+  "result": [
+    "6 \\text{A}",
+    "4 \\text{A}"
+  ],
+  "equation": [
+    "120 \\text{V} / 20 \\omega = 6 \\text{A}",
+    "120 \\text{V} / 30 \\omega = 4 \\text{A}"
+  ]
+}

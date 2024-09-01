@@ -1,0 +1,41 @@
+{
+  "oldName": [
+    "Rsim4",
+    "Usim4",
+    "Isim4"
+  ],
+  "name1": [
+    "Rsim1",
+    "Usim1",
+    "Isim1"
+  ],
+  "name2": [
+    "Rsim2",
+    "Usim2",
+    "Isim2"
+  ],
+  "oldValue": [
+    "5.74 \\omega",
+    "91.91 \\text{V}",
+    "16.01 \\text{A}"
+  ],
+  "value1": [
+    "13 \\omega",
+    "91.91 \\text{V}",
+    "7.07 \\text{A}"
+  ],
+  "value2": [
+    "10.28 \\omega",
+    "91.91 \\text{V}",
+    "8.94 \\text{A}"
+  ],
+  "relation": "parallel",
+  "result": [
+    "7.07 \\text{A}",
+    "8.94 \\text{A}"
+  ],
+  "equation": [
+    "91.91 \\text{V} / 13 \\omega = 7.07 \\text{A}",
+    "91.91 \\text{V} / 10.28 \\omega = 8.94 \\text{A}"
+  ]
+}

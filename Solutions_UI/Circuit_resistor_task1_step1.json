@@ -1,0 +1,41 @@
+{
+  "oldName": [
+    "Rsim2",
+    "Usim2",
+    "Isim2"
+  ],
+  "name1": [
+    "Rsim1",
+    "Usim1",
+    "Isim1"
+  ],
+  "name2": [
+    "R6",
+    "U6",
+    "I6"
+  ],
+  "oldValue": [
+    "19 \\omega",
+    "190 \\text{V}",
+    "10 \\text{A}"
+  ],
+  "value1": [
+    "12 \\omega",
+    "120 \\text{V}",
+    "10 \\text{A}"
+  ],
+  "value2": [
+    "7 \\omega",
+    "70 \\text{V}",
+    "10 \\text{A}"
+  ],
+  "relation": "series",
+  "result": [
+    "120 \\text{V}",
+    "70 \\text{V}"
+  ],
+  "equation": [
+    "12 \\omega * 10 \\text{A} = 120 \\text{V}",
+    "7 \\omega * 10 \\text{A} = 70 \\text{V}"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "oldName": [
+    "Rsim1",
+    "Usim1",
+    "Isim1"
+  ],
+  "name1": [
+    "R3",
+    "U3",
+    "I3"
+  ],
+  "name2": [
+    "R4",
+    "U4",
+    "I4"
+  ],
+  "oldValue": [
+    "13 \\omega",
+    "91.91 \\text{V}",
+    "7.07 \\text{A}"
+  ],
+  "value1": [
+    "5 \\omega",
+    "35.35 \\text{V}",
+    "7.07 \\text{A}"
+  ],
+  "value2": [
+    "8 \\omega",
+    "56.56 \\text{V}",
+    "7.07 \\text{A}"
+  ],
+  "relation": "series",
+  "result": [
+    "35.35 \\text{V}",
+    "56.56 \\text{V}"
+  ],
+  "equation": [
+    "5 \\omega * 7.07 \\text{A} = 35.35 \\text{V}",
+    "8 \\omega * 7.07 \\text{A} = 56.56 \\text{V}"
+  ]
+}

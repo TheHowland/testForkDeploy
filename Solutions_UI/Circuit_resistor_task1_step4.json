@@ -1,0 +1,41 @@
+{
+  "oldName": [
+    "Rsim5",
+    "Usim5",
+    "Isim5"
+  ],
+  "name1": [
+    "Rsim2",
+    "Usim2",
+    "Isim2"
+  ],
+  "name2": [
+    "Rsim4",
+    "Usim4",
+    "Isim4"
+  ],
+  "oldValue": [
+    "20 \\omega",
+    "200 \\text{V}",
+    "10 \\text{A}"
+  ],
+  "value1": [
+    "19 \\omega",
+    "190 \\text{V}",
+    "10 \\text{A}"
+  ],
+  "value2": [
+    "1 \\omega",
+    "10 \\text{V}",
+    "10 \\text{A}"
+  ],
+  "relation": "series",
+  "result": [
+    "190 \\text{V}",
+    "10 \\text{V}"
+  ],
+  "equation": [
+    "19 \\omega * 10 \\text{A} = 190 \\text{V}",
+    "1 \\omega * 10 \\text{A} = 10 \\text{V}"
+  ]
+}

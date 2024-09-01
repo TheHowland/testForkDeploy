@@ -1,0 +1,41 @@
+{
+  "oldName": [
+    "Rsim2",
+    "Usim2",
+    "Isim2"
+  ],
+  "name1": [
+    "R5",
+    "U5",
+    "I5"
+  ],
+  "name2": [
+    "R6",
+    "U6",
+    "I6"
+  ],
+  "oldValue": [
+    "10.28 \\omega",
+    "91.91 \\text{V}",
+    "8.94 \\text{A}"
+  ],
+  "value1": [
+    "17 \\omega",
+    "91.91 \\text{V}",
+    "5.41 \\text{A}"
+  ],
+  "value2": [
+    "26 \\omega",
+    "91.91 \\text{V}",
+    "3.53 \\text{A}"
+  ],
+  "relation": "parallel",
+  "result": [
+    "5.41 \\text{A}",
+    "3.53 \\text{A}"
+  ],
+  "equation": [
+    "91.91 \\text{V} / 17 \\omega = 5.41 \\text{A}",
+    "91.91 \\text{V} / 26 \\omega = 3.53 \\text{A}"
+  ]
+}
