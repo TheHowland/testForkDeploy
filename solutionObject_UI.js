@@ -1,16 +1,16 @@
 class SolutionObject_UI {
-    constructor(oldName = ["N/A", "N/A", "N/A"], name1 = ["N/A"], name2 = ["N/A"],
-                oldValue = ["N/A", "N/A", "N/A"], value1 = ["N/A"], value2 = ["N/A"],
-                relation = "none", result = ["N/A"], equation = ["N/A", "N/A"]) {
+    constructor(oldName = ["N/A", "N/A", "N/A"], name1 = ["N/A", "N/A","N/A"], name2 = ["N/A","N/A","N/A"],
+                oldValue = ["N/A", "N/A", "N/A"], value1 = ["N/A","N/A","N/A"], value2 = ["N/A","N/A","N/A"],
+                relation = "none", result = ["N/A","N/A"], equation = ["N/A", "N/A"]) {
 
         this._oldName = Array.isArray(oldName) && oldName.length ? oldName : ["N/A", "N/A", "N/A"];
-        this._name1 = Array.isArray(name1) && name1.length ? name1 : ["N/A"];
-        this._name2 = Array.isArray(name2) && name2.length ? name2 : ["N/A"];
+        this._name1 = Array.isArray(name1) && name1.length ? name1 : ["N/A","N/A","N/A"];
+        this._name2 = Array.isArray(name2) && name2.length ? name2 : ["N/A","N/A","N/A"];
         this._oldValue = Array.isArray(oldValue) && oldValue.length ? oldValue : ["N/A", "N/A", "N/A"];
-        this._value1 = Array.isArray(value1) && value1.length ? value1 : ["N/A"];
-        this._value2 = Array.isArray(value2) && value2.length ? value2 : ["N/A"];
+        this._value1 = Array.isArray(value1) && value1.length ? value1 : ["N/A", "N/A", "N/A"];
+        this._value2 = Array.isArray(value2) && value2.length ? value2 : ["N/A", "N/A", "N/A"];
         this._relation = relation;
-        this._result = Array.isArray(result) && result.length ? result : ["N/A"];
+        this._result = Array.isArray(result) && result.length ? result : ["N/A", "N/A"];
         this._equation = Array.isArray(equation) && equation.length ? equation : ["N/A", "N/A"];
 
         this._inlineReturnFunc = (string) => `\\(${string}\\)`;

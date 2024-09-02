@@ -106,14 +106,14 @@ function paragraph_UI(data, jsonFilePath, descriptionContainer) {
 
     const paragraph_UI = document.createElement('p');
     paragraph_UI.innerHTML = `
-        Das Element ${inlineData.oldName[0]} setzt sich aus den Elementen ${inlineData.name1[0]} und ${inlineData.name2[0]} zusammen.<br>
-        ${inlineData.oldName[0]}&nbsp= (${inlineData.oldValue[0]}, ${inlineData.oldValue[1]}, ${inlineData.oldValue[2]})<br>
-        ${inlineData.name1[0]}&nbsp= ${inlineData.value1[0]}<br>
-        ${inlineData.name2[0]}&nbsp= ${inlineData.value2[0]}<br>
+        Das Element ${noFormatData.oldName} setzt sich aus den Elementen ${noFormatData.name1} und ${noFormatData.name2} zusammen.<br>
+        ${noFormatData.oldName}&nbsp= (${inlineData.oldValue[0]}, ${inlineData.oldValue[1]}, ${inlineData.oldValue[2]})<br>
+        ${noFormatData.name1}&nbsp= ${inlineData.value1}<br>
+        ${noFormatData.name2}&nbsp= ${inlineData.value2}<br>
         ${relationText}<br>
         Rechnung:<br>
-        ${inlineData.name1[0]}&nbsp: ${inlineData.equation[0]}<br>
-        ${inlineData.name2[0]}&nbsp: ${inlineData.equation[1]}<br>`;
+        ${noFormatData.name1}&nbsp: ${inlineData.equation[0]}<br>
+        ${noFormatData.name2}&nbsp: ${inlineData.equation[1]}<br>`;
     descriptionContainer.appendChild(paragraph_UI);
 }
 
