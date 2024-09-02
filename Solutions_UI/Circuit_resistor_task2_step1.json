@@ -15,17 +15,17 @@
     "I6"
   ],
   "oldValue": [
-    "10.28 \\omega",
+    "10.28 \\text{\\Omega}",
     "91.91 \\text{V}",
     "8.94 \\text{A}"
   ],
   "value1": [
-    "17 \\omega",
+    "17.0 \\text{\\Omega}",
     "91.91 \\text{V}",
     "5.41 \\text{A}"
   ],
   "value2": [
-    "26 \\omega",
+    "26.0 \\text{\\Omega}",
     "91.91 \\text{V}",
     "3.53 \\text{A}"
   ],
@@ -35,7 +35,7 @@
     "3.53 \\text{A}"
   ],
   "equation": [
-    "91.91 \\text{V} / 17 \\omega = 5.41 \\text{A}",
-    "91.91 \\text{V} / 26 \\omega = 3.53 \\text{A}"
+    "91.91 \\text{V} / 17.0 \\text{\\Omega} = 5.41 \\text{A}",
+    "91.91 \\text{V} / 26.0 \\text{\\Omega} = 3.53 \\text{A}"
   ]
 }

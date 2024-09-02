@@ -15,18 +15,18 @@
     "I1"
   ],
   "oldValue": [
-    "2 \\omega",
-    "10 \\text{V}",
-    "5 \\text{A}"
+    "2.0 \\text{\\Omega}",
+    "10.0 \\text{V}",
+    "5.0 \\text{A}"
   ],
   "value1": [
-    "6 \\omega",
-    "10 \\text{V}",
+    "6.0 \\text{\\Omega}",
+    "10.0 \\text{V}",
     "1.67 \\text{A}"
   ],
   "value2": [
-    "3 \\omega",
-    "10 \\text{V}",
+    "3.0 \\text{\\Omega}",
+    "10.0 \\text{V}",
     "3.33 \\text{A}"
   ],
   "relation": "parallel",
@@ -35,7 +35,7 @@
     "3.33 \\text{A}"
   ],
   "equation": [
-    "10 \\text{V} / 6 \\omega = 1.67 \\text{A}",
-    "10 \\text{V} / 3 \\omega = 3.33 \\text{A}"
+    "10.0 \\text{V} / 6.0 \\text{\\Omega} = 1.67 \\text{A}",
+    "10.0 \\text{V} / 3.0 \\text{\\Omega} = 3.33 \\text{A}"
   ]
 }

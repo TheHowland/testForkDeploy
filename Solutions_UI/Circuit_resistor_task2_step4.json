@@ -15,17 +15,17 @@
     "Isim4"
   ],
   "oldValue": [
-    "13.74 \\omega",
+    "13.74 \\text{\\Omega}",
     "220 \\text{V}",
     "16.01 \\text{A}"
   ],
   "value1": [
-    "8 \\omega",
+    "8.0 \\text{\\Omega}",
     "128.09 \\text{V}",
     "16.01 \\text{A}"
   ],
   "value2": [
-    "5.74 \\omega",
+    "5.74 \\text{\\Omega}",
     "91.91 \\text{V}",
     "16.01 \\text{A}"
   ],
@@ -35,7 +35,7 @@
     "91.91 \\text{V}"
   ],
   "equation": [
-    "8 \\omega * 16.01 \\text{A} = 128.09 \\text{V}",
-    "5.74 \\omega * 16.01 \\text{A} = 91.91 \\text{V}"
+    "8.0 \\text{\\Omega} * 16.01 \\text{A} = 128.09 \\text{V}",
+    "5.74 \\text{\\Omega} * 16.01 \\text{A} = 91.91 \\text{V}"
   ]
 }

@@ -15,27 +15,27 @@
     "Isim4"
   ],
   "oldValue": [
-    "20 \\omega",
-    "200 \\text{V}",
-    "10 \\text{A}"
+    "20.0 \\text{\\Omega}",
+    "200.0 \\text{V}",
+    "10.0 \\text{A}"
   ],
   "value1": [
-    "19 \\omega",
-    "190 \\text{V}",
-    "10 \\text{A}"
+    "19.0 \\text{\\Omega}",
+    "190.0 \\text{V}",
+    "10.0 \\text{A}"
   ],
   "value2": [
-    "1 \\omega",
-    "10 \\text{V}",
-    "10 \\text{A}"
+    "1.0 \\text{\\Omega}",
+    "10.0 \\text{V}",
+    "10.0 \\text{A}"
   ],
   "relation": "series",
   "result": [
-    "190 \\text{V}",
-    "10 \\text{V}"
+    "190.0 \\text{V}",
+    "10.0 \\text{V}"
   ],
   "equation": [
-    "19 \\omega * 10 \\text{A} = 190 \\text{V}",
-    "1 \\omega * 10 \\text{A} = 10 \\text{V}"
+    "19.0 \\text{\\Omega} * 10.0 \\text{A} = 190.0 \\text{V}",
+    "1.0 \\text{\\Omega} * 10.0 \\text{A} = 10.0 \\text{V}"
   ]
 }

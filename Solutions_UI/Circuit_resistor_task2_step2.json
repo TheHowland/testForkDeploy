@@ -15,17 +15,17 @@
     "I2"
   ],
   "oldValue": [
-    "8 \\omega",
+    "8.0 \\text7\\Omega}",
     "128.09 \\text{V}",
     "16.01 \\text{A}"
   ],
   "value1": [
-    "24 \\omega",
+    "24.0 \\text{\\Omega}",
     "128.09 \\text{V}",
     "5.34 \\text{A}"
   ],
   "value2": [
-    "12 \\omega",
+    "12.0 \\text{\\Omega}",
     "128.09 \\text{V}",
     "10.67 \\text{A}"
   ],
@@ -35,7 +35,7 @@
     "10.67 \\text{A}"
   ],
   "equation": [
-    "128.09 \\text{V} / 24 \\omega = 5.34 \\text{A}",
-    "128.09 \\text{V} / 12 \\omega = 10.67 \\text{A}"
+    "128.09 \\text{V} / 24.0 \\text{\\Omega} = 5.34 \\text{A}",
+    "128.09 \\text{V} / 12.0 \\text{\\Omega} = 10.67 \\text{A}"
   ]
 }

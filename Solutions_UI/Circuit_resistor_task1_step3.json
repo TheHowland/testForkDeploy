@@ -15,27 +15,27 @@
     "I3"
   ],
   "oldValue": [
-    "1 \\omega",
-    "10 \\text{V}",
-    "10 \\text{A}"
+    "1.0 \\text{Omega}",
+    "10.0 \\text{V}",
+    "10.0 \\text{A}"
   ],
   "value1": [
-    "2 \\omega",
-    "10 \\text{V}",
-    "5 \\text{A}"
+    "2.0 \\text{\\Omega}",
+    "10.0 \\text{V}",
+    "5.0 \\text{A}"
   ],
   "value2": [
-    "2 \\omega",
-    "10 \\text{V}",
-    "5 \\text{A}"
+    "2.0 \\text{\\Omega}",
+    "10.0 \\text{V}",
+    "5.0 \\text{A}"
   ],
   "relation": "parallel",
   "result": [
-    "5 \\text{A}",
-    "5 \\text{A}"
+    "5.0 \\text{A}",
+    "5.0 \\text{A}"
   ],
   "equation": [
-    "10 \\text{V} / 2 \\omega = 5 \\text{A}",
-    "10 \\text{V} / 2 \\omega = 5 \\text{A}"
+    "10.0 \\text{V} / 2.0 \\text{\\Omega} = 5.0 \\text{A}",
+    "10.0 \\text{V} / 2.0 \\text{\\Omega} = 5.0 \\text{A}"
   ]
 }

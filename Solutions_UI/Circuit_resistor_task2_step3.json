@@ -15,17 +15,17 @@
     "Isim2"
   ],
   "oldValue": [
-    "5.74 \\omega",
+    "5.74 \\text{\\Omega}",
     "91.91 \\text{V}",
     "16.01 \\text{A}"
   ],
   "value1": [
-    "13 \\omega",
+    "13.0 \\text{\\Omega}",
     "91.91 \\text{V}",
     "7.07 \\text{A}"
   ],
   "value2": [
-    "10.28 \\omega",
+    "10.28 \\text{\\Omega}",
     "91.91 \\text{V}",
     "8.94 \\text{A}"
   ],
@@ -35,7 +35,7 @@
     "8.94 \\text{A}"
   ],
   "equation": [
-    "91.91 \\text{V} / 13 \\omega = 7.07 \\text{A}",
-    "91.91 \\text{V} / 10.28 \\omega = 8.94 \\text{A}"
+    "91.91 \\text{V} / 13.0 \\text{\\Omega} = 7.07 \\text{A}",
+    "91.91 \\text{V} / 10.28 \\text{\\Omega} = 8.94 \\text{A}"
   ]
 }

@@ -15,27 +15,27 @@
     "I6"
   ],
   "oldValue": [
-    "19 \\omega",
-    "190 \\text{V}",
-    "10 \\text{A}"
+    "19.0 \\text{\\Omega}",
+    "190.0 \\text{V}",
+    "10.0 \\text{A}"
   ],
   "value1": [
-    "12 \\omega",
-    "120 \\text{V}",
-    "10 \\text{A}"
+    "12.0 \\text{\\Omega}",
+    "120.0 \\text{V}",
+    "10.0 \\text{A}"
   ],
   "value2": [
-    "7 \\omega",
-    "70 \\text{V}",
-    "10 \\text{A}"
+    "7.0 \\text{\\Omega}",
+    "70.0 \\text{V}",
+    "10.0 \\text{A}"
   ],
   "relation": "series",
   "result": [
-    "120 \\text{V}",
-    "70 \\text{V}"
+    "120.0 \\text{V}",
+    "70.0 \\text{V}"
   ],
   "equation": [
-    "12 \\omega * 10 \\text{A} = 120 \\text{V}",
-    "7 \\omega * 10 \\text{A} = 70 \\text{V}"
+    "12.0 \\text{\\Omega} * 10.0 \\text{A} = 120.0 \\text{V}",
+    "7.0 \\text{\\Omega} * 10.0 \\text{A} = 70.0 \\text{V}"
   ]
 }
