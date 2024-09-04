@@ -15,27 +15,27 @@
     "I6"
   ],
   "oldValue": [
-    "10.28 \\text{\\Omega}",
-    "91.91 \\text{V}",
-    "8.94 \\text{A}"
+    "10.28 \u03A9",
+    "91.91 V",
+    "8.94 A"
   ],
   "value1": [
-    "17.0 \\text{\\Omega}",
-    "91.91 \\text{V}",
-    "5.41 \\text{A}"
+    "17.0 \u03A9",
+    "91.91 V",
+    "5.41 A"
   ],
   "value2": [
-    "26.0 \\text{\\Omega}",
-    "91.91 \\text{V}",
-    "3.53 \\text{A}"
+    "26.0 \u03A9",
+    "91.91 V",
+    "3.53 A"
   ],
   "relation": "parallel",
   "result": [
-    "5.41 \\text{A}",
-    "3.53 \\text{A}"
+    "5.41 A",
+    "3.53 A"
   ],
   "equation": [
-    "91.91 \\text{V} / 17.0 \\text{\\Omega} = 5.41 \\text{A}",
-    "91.91 \\text{V} / 26.0 \\text{\\Omega} = 3.53 \\text{A}"
+    "91.91 V / 17.0 \u03A9 = 5.41 A",
+    "91.91 V / 26.0 \u03A9 = 3.53 A"
   ]
 }

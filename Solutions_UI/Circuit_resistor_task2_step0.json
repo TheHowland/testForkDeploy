@@ -15,27 +15,27 @@
     "I4"
   ],
   "oldValue": [
-    "13.0 \\text{\\Omega}",
-    "91.91 \\text{V}",
-    "7.07 \\text{A}"
+    "13.0 \u03A9",
+    "91.91 V",
+    "7.07 A"
   ],
   "value1": [
-    "5.0 \\text{\\Omega}",
-    "35.35 \\text{V}",
-    "7.07 \\text{A}"
+    "5.0 \u03A9",
+    "35.35 V",
+    "7.07 A"
   ],
   "value2": [
-    "8.0 \\text{Omega}",
-    "56.56 \\text{V}",
-    "7.07 \\text{A}"
+    "8.0 \u03A9",
+    "56.56 V",
+    "7.07 A"
   ],
   "relation": "series",
   "result": [
-    "35.35 \\text{V}",
-    "56.56 \\text{V}"
+    "35.35 V",
+    "56.56 V"
   ],
   "equation": [
-    "5.0 \\text{\\Omega} * 7.07 \\text{A} = 35.35 \\text{V}",
-    "8.0 \\text{\\Omega} * 7.07 \\text{A} = 56.56 \\text{V}"
+    "5.0 \u03A9 * 7.07 A = 35.35 V",
+    "8.0 \u03A9 * 7.07 A = 56.56 V"
   ]
 }

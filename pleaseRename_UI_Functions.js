@@ -93,9 +93,9 @@ function paragraph_UI(data, jsonFilePath, descriptionContainer) {
     // Handle relationText generation based on relation type
     if (noFormatData.relation === "parallel" && oldValueExists) {
         relationText = `Die Elemente sind parallel zueinander. Die Spannung (${inlineData.oldValue[1]}) bleibt gleich. <br>
-                        Die Stromstärke (${inlineData.oldValue[2]}) teilt sich auf.`;
+                        Die Stromst&auml;rke (${inlineData.oldValue[2]}) teilt sich auf.`;
     } else if (noFormatData.relation === "series" && oldValueExists) {
-        relationText = `Die Elemente sind in Reihe zueinander. Die Stromstärke (${inlineData.oldValue[2]}) bleibt gleich. <br>
+        relationText = `Die Elemente sind in Reihe zueinander. Die Stromst&auml;rke (${inlineData.oldValue[2]}) bleibt gleich. <br>
                         Die Spannung (${inlineData.oldValue[1]}) teilt sich auf.`;
     } else if (noFormatData.relation === null) {
         relationText = "Keine Beziehung zwischen den Elementen";

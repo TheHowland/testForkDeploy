@@ -15,27 +15,27 @@
     "Isim2"
   ],
   "oldValue": [
-    "5.74 \\text{\\Omega}",
-    "91.91 \\text{V}",
-    "16.01 \\text{A}"
+    "5.74 \u03a9",
+    "91.91 V",
+    "16.01 A"
   ],
   "value1": [
-    "13.0 \\text{\\Omega}",
-    "91.91 \\text{V}",
-    "7.07 \\text{A}"
+    "13.0 \u03a9",
+    "91.91 V",
+    "7.07 A"
   ],
   "value2": [
-    "10.28 \\text{\\Omega}",
-    "91.91 \\text{V}",
-    "8.94 \\text{A}"
+    "10.28 \u03a9",
+    "91.91 V",
+    "8.94 A"
   ],
   "relation": "parallel",
   "result": [
-    "7.07 \\text{A}",
-    "8.94 \\text{A}"
+    "7.07 A",
+    "8.94 A"
   ],
   "equation": [
-    "91.91 \\text{V} / 13.0 \\text{\\Omega} = 7.07 \\text{A}",
-    "91.91 \\text{V} / 10.28 \\text{\\Omega} = 8.94 \\text{A}"
+    "91.91 V / 13.0 \u03a9 = 7.07 A",
+    "91.91 V / 10.28 \u03a9 = 8.94 A"
   ]
 }
