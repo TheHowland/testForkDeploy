@@ -15,27 +15,27 @@
     "I5"
   ],
   "oldValue": [
-    "12.0 \\text{\\Omega}",
-    "120.0 \\text{V}",
-    "10.0 \\text{A}"
+    "12.0 \\Omega",
+    "120.0 V",
+    "10.0 A"
   ],
   "value1": [
-    "20.0 \\text{\\Omega}",
-    "120.0 \\text{V}",
-    "6.0 \\text{A}"
+    "20.0 \\Omega",
+    "120.0 V",
+    "6.0 A"
   ],
   "value2": [
-    "30.0 \\text{\\Omega}",
-    "120.0 \\text{V}",
-    "4.0 \\text{A}"
+    "30.0 \\Omega",
+    "120.0 V",
+    "4.0 A"
   ],
   "relation": "parallel",
   "result": [
-    "6.0 \\text{A}",
-    "4.0 \\text{A}"
+    "6.0 A",
+    "4.0 A"
   ],
   "equation": [
-    "120.0 \\text{V} / 20.0 \\text{\\Omega} = 6.0 \\text{A}",
-    "120.0 \\text{V} / 30.0 \\text{\\Omega} = 4.0 \\text{A}"
+    "120.0 V / 20.0 \\Omega = 6.0 A",
+    "120.0 V / 30.0 \\Omega = 4.0 A"
   ]
 }
