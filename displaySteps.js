@@ -84,7 +84,7 @@ function display_step(pyodide, jsonFilePath_Z,jsonFilePath_UI=null, svgFilePath,
                 if (selectedElements.length === 2) {
                     const canSimplify = await stepSolve.simplifyTwoCpts(selectedElements).toJs();
                     if (canSimplify[0]) {
-                        display_step(pyodide, canSimplify[1], canSimplify[2]);
+                        display_step(pyodide, canSimplify[1],jsonFilePath_UI, canSimplify[2]);
                     } else {
                         showMessage("Die ausgew&auml;hlten Elemente k&ouml;nnen nicht vereinfacht werden.");
                     }
