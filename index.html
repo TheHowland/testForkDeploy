@@ -135,7 +135,7 @@
         document.getElementById('prev-button').addEventListener('click', () => {
             if (currentStep > 0) {
                 currentStep--;
-                display_step(pyodide, `Solutions/${jsonFiles_Z[currentStep]}`, `Solutions/${svgFiles[currentStep]}`);
+                display_step(pyodide, `Solutions/${jsonFiles_Z[currentStep]}`,`Solutions_UI/${jsonFiles_UI[currentStep]}`, `Solutions/${svgFiles[currentStep]}`);
             }
         });
 
