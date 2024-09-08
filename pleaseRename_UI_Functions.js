@@ -74,34 +74,15 @@ function paragraph_UI(data, jsonFilePath, descriptionContainer) {
     const inlineData = data.inline();
     const noFormatData = data.noFormat();
 
-    // Log the data to ensure correctness
-    console.log("inlineData:", inlineData);
-    console.log("noFormatData:", noFormatData);
-
-    if (!inlineData || !noFormatData) {
-        console.error("Missing or incorrect data structure.");
-        throw new Error("Data structure does not match expected format.");
-    }
-
-    // Ensure arrays have the correct length
-    const oldValueExists = Array.isArray(inlineData.oldValue) && inlineData.oldValue.length > 2;
-    if (!oldValueExists) {
-        console.error("oldValue is either not an array or does not contain enough values.");
-        throw new Error("oldValue is either not an array or does not contain enough values.");
-    }
-
     // Handle relationText generation based on relation type
-    if (noFormatData.relation === "parallel" && oldValueExists) {
+    if (noFormatData.relation === "parallel") {
         relationText = `Die Elemente sind parallel zueinander. Die Spannung (${inlineData.oldValue[1]}) bleibt gleich. <br>
                         Die Stromst&auml;rke (${inlineData.oldValue[2]}) teilt sich auf.`;
-    } else if (noFormatData.relation === "series" && oldValueExists) {
+    } else if (noFormatData.relation === "series") {
         relationText = `Die Elemente sind in Reihe zueinander. Die Stromst&auml;rke (${inlineData.oldValue[2]}) bleibt gleich. <br>
                         Die Spannung (${inlineData.oldValue[1]}) teilt sich auf.`;
-    } else if (noFormatData.relation === null) {
-        relationText = "Keine Beziehung zwischen den Elementen";
     } else {
-        console.error("Unknown relation type or oldValue data is insufficient.");
-        throw new Error("Unknown relation type or oldValue data is insufficient.");
+        relationText = "Keine Beziehung zwischen den Elementen";
     }
 
     const paragraph_UI = document.createElement('p');
