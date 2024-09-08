@@ -6,11 +6,9 @@ function display_step(pyodide, jsonFilePath_Z,jsonFilePath_UI=null, svgFilePath,
         // Lade die JSON-Datei und logge den Inhalt
         let jsonDataString = pyodide.FS.readFile(jsonFilePath_Z, { encoding: "utf8" });
         const jsonData = JSON.parse(jsonDataString);
-        console.log("Loaded JSON Data:", jsonData);
         //Lade UI-JSON-Datei und logge den Inhalt
         let jsonDataString_UI = pyodide.FS.readFile(jsonFilePath_UI, { encoding: "utf8" });
         const jsonData_UI = JSON.parse(jsonDataString_UI);
-        console.log("Loaded JSON Data UI:", jsonData_UI);
 
         // Instanziiere SolutionObject und SolutionObject_UI
         let data = new SolutionObject(
@@ -18,14 +16,12 @@ function display_step(pyodide, jsonFilePath_Z,jsonFilePath_UI=null, svgFilePath,
             jsonData.value1, jsonData.value2, jsonData.result,
             jsonData.relation, jsonData.latexEquation
         );
-        console.log("Initialized SolutionObject:", data);
 
         let data_ui = new SolutionObject_UI(
             jsonData_UI.oldName, jsonData_UI.name1, jsonData_UI.name2,
             jsonData_UI.oldValue, jsonData_UI.value1, jsonData_UI.value2,
             jsonData_UI.relation, jsonData_UI.result, jsonData_UI.equation
         );
-        console.log("Initialized SolutionObject_UI:", data_ui);
 
         // Lade die SVG-Datei
         const svgData = pyodide.FS.readFile(svgFilePath, { encoding: "utf8" });
