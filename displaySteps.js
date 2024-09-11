@@ -1,5 +1,5 @@
 //Darstellung der Schritte
-function display_step(pyodide, jsonFilePath_Z,jsonFilePath_UI=null, svgFilePath, contentDivName = 'simplification') {
+function display_step(pyodide, jsonFilePath_Z,svgFilePath,jsonFilePath_UI=null, contentDivName = 'simplification') {
     const contentDiv = document.getElementById(contentDivName);
     contentDiv.innerHTML = '';
 
@@ -21,7 +21,7 @@ function display_step(pyodide, jsonFilePath_Z,jsonFilePath_UI=null, svgFilePath,
         let data_ui = new SolutionObject_UI(
             jsonData_UI.oldName, jsonData_UI.name1, jsonData_UI.name2,
             jsonData_UI.oldValue, jsonData_UI.value1, jsonData_UI.value2,
-            jsonData_UI.relation, jsonData_UI.result, jsonData_UI.equation
+            jsonData_UI.relation, jsonData_UI.equation
         );
 
         // Lade die SVG-Datei
@@ -81,7 +81,7 @@ function display_step(pyodide, jsonFilePath_Z,jsonFilePath_UI=null, svgFilePath,
                 if (selectedElements.length === 2) {
                     const canSimplify = await stepSolve.simplifyTwoCpts(selectedElements).toJs();
                     if (canSimplify[0]) {
-                        display_step(pyodide, canSimplify[1],jsonFilePath_UI, canSimplify[2]);
+                        display_step(pyodide, canSimplify[1], canSimplify[2]);
                     } else {
                         showMessage("Die ausgew&auml;hlten Elemente k&ouml;nnen nicht vereinfacht werden.");
                     }
