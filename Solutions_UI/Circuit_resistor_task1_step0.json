@@ -30,10 +30,6 @@
     "4.0 A"
   ],
   "relation": "parallel",
-  "result": [
-    "6.0 A",
-    "4.0 A"
-  ],
   "equation": [
     "120.0 V / 20.0 \u03A9 = 6.0 A",
     "120.0 V / 30.0 \u03A9 = 4.0 A"

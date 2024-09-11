@@ -1,3 +1,4 @@
+//Darstellung der Schritte
 function display_step(pyodide, jsonFilePath_Z,jsonFilePath_UI=null, svgFilePath, contentDivName = 'simplification') {
     const contentDiv = document.getElementById(contentDivName);
     contentDiv.innerHTML = '';

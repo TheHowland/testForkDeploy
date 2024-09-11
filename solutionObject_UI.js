@@ -1,7 +1,7 @@
 class SolutionObject_UI {
     constructor(oldName = ["N/A", "N/A", "N/A"], name1 = ["N/A", "N/A","N/A"], name2 = ["N/A","N/A","N/A"],
                 oldValue = ["N/A", "N/A", "N/A"], value1 = ["N/A","N/A","N/A"], value2 = ["N/A","N/A","N/A"],
-                relation = "none", result = ["N/A","N/A"], equation = ["N/A", "N/A"]) {
+                relation = "none", equation = ["N/A", "N/A"]) {
 
         this._oldName = Array.isArray(oldName) && oldName.length ? oldName : ["N/A", "N/A", "N/A"];
         this._name1 = Array.isArray(name1) && name1.length ? name1 : ["N/A","N/A","N/A"];
@@ -10,7 +10,6 @@ class SolutionObject_UI {
         this._value1 = Array.isArray(value1) && value1.length ? value1 : ["N/A", "N/A", "N/A"];
         this._value2 = Array.isArray(value2) && value2.length ? value2 : ["N/A", "N/A", "N/A"];
         this._relation = relation;
-        this._result = Array.isArray(result) && result.length ? result : ["N/A", "N/A"];
         this._equation = Array.isArray(equation) && equation.length ? equation : ["N/A", "N/A"];
 
         this._inlineReturnFunc = (string) => `\\(${string}\\)`;
@@ -44,8 +43,7 @@ class SolutionObject_UI {
 
     isNull() {
         return (!this._oldName && !this._name1 && !this._name2 && !this._oldValue &&
-            !this._value1 && !this._value2 && !this._result &&
-            !this._relation && !this._equation);
+            !this._value1 && !this._value2 && !this._relation && !this._equation);
     }
 
     get oldName() {
@@ -70,10 +68,6 @@ class SolutionObject_UI {
 
     get value2() {
         return this._format(this._value2[0]);
-    }
-
-    get result() {
-        return this._format(this._result[0]);
     }
 
     get relation() {
