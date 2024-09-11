@@ -87,7 +87,7 @@ class SolutionObject_UI {
 }
 
 // Beispiel JSON-Inhalt (kann durch ein echtes JSON-File ersetzt werden)
-const jsonContent= require('C:\\Users\\Lucky\\HiWi_Kray_Arbeit\\inskale\\Pyodide\\Solutions_UI\\Circuit_resistor_task1_step0.json');
+const jsonContent= require('C:\\Users\\Lucky\\HiWi_Kray_Arbeit\\inskale\\Pyodide\\Solutions_VC\\Circuit_resistor_task1_step0.json');
 
 // Simulation des Einlesens der JSON-Datei
 function testSolutionObjectUI() {

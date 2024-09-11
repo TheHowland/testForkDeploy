@@ -6,7 +6,7 @@
     <script src="http://localhost:8000/pyodide.js"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="solutionObject.js"></script>
-    <script src="solutionObject_UI.js"></script>
+    <script src="solutionObject_VC.js"></script>
     <script src="fetchDirectoryListing.js"></script>
     <script src="progressbar.js"></script>
     <script src="loadPackages.js"></script>
@@ -47,10 +47,10 @@
     //--------------------------------------------------------------
     let currentStep = 0;
     let jsonFiles_Z = [];
-    let jsonFiles_UI = [];
+    let jsonFiles_VC = [];
     let svgFiles = [];
     let circuitFiles = [];
-    let solutionsUIFiles = [];
+    let solutionsVCFiles = [];
     let selectedElements = [];
     let currentCircuit = "";
     let selectedCircuit = "";
@@ -81,7 +81,7 @@
         let cirArrBuff = await (await fetch(serverAddress + "/Circuits.zip")).arrayBuffer();
         await pyodide.unpackArchive(cirArrBuff, ".zip");
 
-        let solArrBuff = await (await fetch(serverAddress + "/Solutions_UI.zip")).arrayBuffer();
+        let solArrBuff = await (await fetch(serverAddress + "/Solutions_VC.zip")).arrayBuffer();
         await pyodide.unpackArchive(solArrBuff, ".zip");
 
         circuitFiles = pyodide.FS.readdir("Circuits");
@@ -89,8 +89,8 @@
         populateCircuitSelector();
         console.timeEnd(loadCircuits);
 
-        solutionsUIFiles = pyodide.FS.readdir("Solutions_UI");
-        solutionsUIFiles = solutionsUIFiles.filter((file) => file !== "." && file !== "..");
+        solutionsVCFiles = pyodide.FS.readdir("Solutions_VC");
+        solutionsVCFiles = solutionsVCFiles.filter((file) => file !== "." && file !== "..");
 
         pyodide.FS.writeFile("/home/pyodide/solve.py", await (await fetch(serverAddress + "/solve.py")).text());
 
@@ -133,21 +133,21 @@
         document.getElementById('prev-button').addEventListener('click', () => {
             if (currentStep > 0) {
                 currentStep--;
-                display_step(pyodide, `Solutions/${jsonFiles_Z[currentStep]}`,`Solutions_UI/${jsonFiles_UI[currentStep]}`, `Solutions/${svgFiles[currentStep]}`);
+                display_step(pyodide, `Solutions/${jsonFiles_Z[currentStep]}`, `Solutions/${svgFiles[currentStep]}`,`Solutions_VC/${jsonFiles_VC[currentStep]}`);
             }
         });
 
         document.getElementById('next-button').addEventListener('click', () => {
             if (currentStep < jsonFiles_Z.length - 1) {
                 currentStep++;
-                display_step(pyodide, `Solutions/${jsonFiles_Z[currentStep]}`,`Solutions_UI/${jsonFiles_UI[currentStep]}`, `Solutions/${svgFiles[currentStep]}`);
+                display_step(pyodide, `Solutions/${jsonFiles_Z[currentStep]}`, `Solutions/${svgFiles[currentStep]}`,`Solutions_VC/${jsonFiles_VC[currentStep]}`);
             }
         });
 
         document.getElementById('continue-button').addEventListener('click',()=>{
             if(currentStep>0){
                 currentStep--;
-                display_step(pyodide,`Solutions/${jsonFiles_Z[currentStep]}`,`Solutions_UI/${jsonFiles_UI[currentStep]}`,`Solutions/${svgFiles[currentStep]}`);
+                display_step(pyodide,`Solutions/${jsonFiles_Z[currentStep]}`,`Solutions/${svgFiles[currentStep]}`,`Solutions_VC/${jsonFiles_VC[currentStep]}`);
             }
         });
 
@@ -208,13 +208,13 @@
         console.timeEnd(timeSolve);
 
         const files_Z = await pyodide.FS.readdir("Solutions");
-        const files_UI= await pyodide.FS.readdir("Solutions_UI");
+        const files_VC= await pyodide.FS.readdir("Solutions_VC");
         jsonFiles_Z = files_Z.filter(file => file.endsWith(".json"))
-        jsonFiles_UI = files_UI.filter(file => file.includes(selectedCircuit));
+        jsonFiles_VC = files_VC.filter(file => file.includes(selectedCircuit));
         svgFiles = files_Z.filter(file => file.endsWith(".svg"));
         document.getElementById('loading-message').style.display='none';
         currentStep = 0;
-        display_step(pyodide, `Solutions/${jsonFiles_Z[currentStep]}`,`Solutions_UI/${jsonFiles_UI[currentStep]}`, `Solutions/${svgFiles[currentStep]}`);
+        display_step(pyodide, `Solutions/${jsonFiles_Z[currentStep]}`, `Solutions/${svgFiles[currentStep]}`,`Solutions_VC/${jsonFiles_VC[currentStep]}`);
 
         if (mode === 'pre_calculated') {
             document.querySelector('.nav-buttons-container').style.display = 'flex';

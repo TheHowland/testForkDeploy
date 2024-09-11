@@ -68,7 +68,7 @@ function paragraph_Z(data, jsonFilePath,descriptionContainer) {
     }
 }
 
-function paragraph_UI(data, jsonFilePath, descriptionContainer) {
+function paragraph_VC(data, jsonFilePath, descriptionContainer) {
     let relationText = "";
 
     const inlineData = data.inline();
@@ -85,8 +85,8 @@ function paragraph_UI(data, jsonFilePath, descriptionContainer) {
         relationText = "Keine Beziehung zwischen den Elementen";
     }
 
-    const paragraph_UI = document.createElement('p');
-    paragraph_UI.innerHTML = `
+    const paragraph_VC = document.createElement('p');
+    paragraph_VC.innerHTML = `
         Das Element ${noFormatData.oldName} setzt sich aus den Elementen ${noFormatData.name1} und ${noFormatData.name2} zusammen.<br>
         ${noFormatData.oldName}&nbsp= (${inlineData.oldValue[0]}, ${inlineData.oldValue[1]}, ${inlineData.oldValue[2]})<br>
         ${noFormatData.name1}&nbsp= ${inlineData.value1}<br>
@@ -95,7 +95,7 @@ function paragraph_UI(data, jsonFilePath, descriptionContainer) {
         Rechnung:<br>
         ${noFormatData.name1}&nbsp: ${inlineData.equation[0]}<br>
         ${noFormatData.name2}&nbsp: ${inlineData.equation[1]}<br>`;
-    descriptionContainer.appendChild(paragraph_UI);
+    descriptionContainer.appendChild(paragraph_VC);
 }
 
 

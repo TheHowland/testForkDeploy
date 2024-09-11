@@ -1,4 +1,4 @@
-class SolutionObject_UI {
+class SolutionObject_VC {
     constructor(oldName = ["N/A", "N/A", "N/A"], name1 = ["N/A", "N/A","N/A"], name2 = ["N/A","N/A","N/A"],
                 oldValue = ["N/A", "N/A", "N/A"], value1 = ["N/A","N/A","N/A"], value2 = ["N/A","N/A","N/A"],
                 relation = "none", equation = ["N/A", "N/A"]) {

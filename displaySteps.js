@@ -1,5 +1,5 @@
 //Darstellung der Schritte
-function display_step(pyodide, jsonFilePath_Z,svgFilePath,jsonFilePath_UI=null, contentDivName = 'simplification') {
+function display_step(pyodide, jsonFilePath_Z,svgFilePath,jsonFilePath_VC=null, contentDivName = 'simplification') {
     const contentDiv = document.getElementById(contentDivName);
     contentDiv.innerHTML = '';
 
@@ -8,8 +8,8 @@ function display_step(pyodide, jsonFilePath_Z,svgFilePath,jsonFilePath_UI=null, 
         let jsonDataString = pyodide.FS.readFile(jsonFilePath_Z, { encoding: "utf8" });
         const jsonData = JSON.parse(jsonDataString);
         //Lade UI-JSON-Datei und logge den Inhalt
-        let jsonDataString_UI = pyodide.FS.readFile(jsonFilePath_UI, { encoding: "utf8" });
-        const jsonData_UI = JSON.parse(jsonDataString_UI);
+        let jsonDataString_VC = pyodide.FS.readFile(jsonFilePath_VC, { encoding: "utf8" });
+        const jsonData_VC = JSON.parse(jsonDataString_VC);
 
         // Instanziiere SolutionObject und SolutionObject_UI
         let data = new SolutionObject(
@@ -18,10 +18,10 @@ function display_step(pyodide, jsonFilePath_Z,svgFilePath,jsonFilePath_UI=null, 
             jsonData.relation, jsonData.latexEquation
         );
 
-        let data_ui = new SolutionObject_UI(
-            jsonData_UI.oldName, jsonData_UI.name1, jsonData_UI.name2,
-            jsonData_UI.oldValue, jsonData_UI.value1, jsonData_UI.value2,
-            jsonData_UI.relation, jsonData_UI.equation
+        let data_vc = new SolutionObject_VC(
+            jsonData_VC.oldName, jsonData_VC.name1, jsonData_VC.name2,
+            jsonData_VC.oldValue, jsonData_VC.value1, jsonData_VC.value2,
+            jsonData_VC.relation, jsonData_VC.equation
         );
 
         // Lade die SVG-Datei
@@ -154,7 +154,7 @@ function display_step(pyodide, jsonFilePath_Z,svgFilePath,jsonFilePath_UI=null, 
             } else if (congratsDisplayed === false) {
                 paragraph_Z(data, jsonFilePath_Z, descriptionContainer);
             } else {
-                paragraph_UI(data_ui, jsonFilePath_UI, descriptionContainer);
+                paragraph_VC(data_vc, jsonFilePath_VC, descriptionContainer);
             }
         }
 
