@@ -1,3 +1,9 @@
+/*
+The SolutionObject class represents a solution object for circuit simplification steps.
+It includes properties for element names, values, results, relations, and LaTeX equations.
+The class provides methods to format these properties for inline, block, or no formatting, and to check if the object is null.
+It also includes getter methods to retrieve the formatted properties.
+ */
 class SolutionObject {
     constructor(name1, name2, newName, value1, value2, result, relation, latexEquation) {
         this._name1 = name1;

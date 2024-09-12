@@ -1,7 +1,13 @@
+/*
+Replaces non-alphanumeric characters in a selector string with underscores to ensure it is a valid CSS selector.
+ */
 function sanitizeSelector(selector) {
     return selector.replace(/[^\w-]/g, '_');
 }
 
+/*
+Populates a dropdown menu with circuit file options, allowing the user to select a circuit.
+ */
 function populateCircuitSelector() {
     const circuitSelector = document.getElementById('circuit-selector');
     circuitSelector.innerHTML = '<option value="" disabled selected>Select Circuit</option>';
@@ -14,6 +20,9 @@ function populateCircuitSelector() {
     });
 }
 
+/*
+ Removes all bounding boxes and clears the list of clicked elements in the SVG and the clicked elements container.
+ */
 function resetClickedElements(svgDiv, clickedElementsContainer) {
     const boundingBoxes = svgDiv.querySelectorAll('.bounding-box');
     if (boundingBoxes.length > 0) {
@@ -28,6 +37,10 @@ function resetClickedElements(svgDiv, clickedElementsContainer) {
     }
     selectedElements = [];
 }
+
+/*
+Displays a temporary message to the user in a message box.
+ */
 function showMessage(message) {
     const messageBox = document.getElementById('message-box');
     messageBox.textContent = message;
@@ -37,6 +50,10 @@ function showMessage(message) {
     }, 3000);
 }
 
+/*
+Generates and appends a paragraph describing the resistance (Z=general term for complex resistance)  simplification step,
+excluding step0.json files.
+ */
 function paragraph_Z(data, jsonFilePath,descriptionContainer) {
 
 
@@ -68,6 +85,10 @@ function paragraph_Z(data, jsonFilePath,descriptionContainer) {
     }
 }
 
+/*
+Generates and appends a paragraph describing the voltage and current (VC= voltage and current) simplification step
+based on the provided data.
+ */
 function paragraph_VC(data, jsonFilePath, descriptionContainer) {
     let relationText = "";
 
@@ -98,7 +119,10 @@ function paragraph_VC(data, jsonFilePath, descriptionContainer) {
     descriptionContainer.appendChild(paragraph_VC);
 }
 
-
+/*
+Sets the global variable congratsDisplayed to false.
+This is used to reset a state indicating whether a congratulatory message has been displayed.
+ */
 function resetCongratsDisplayed() {
     congratsDisplayed = false;
 }

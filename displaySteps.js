@@ -1,4 +1,6 @@
-//Darstellung der Schritte
+/*
+Displays the current step of the circuit simplification process using the provided JSON and SVG files.
+ */
 function display_step(pyodide, jsonFilePath_Z,svgFilePath,jsonFilePath_VC=null, contentDivName = 'simplification') {
     const contentDiv = document.getElementById(contentDivName);
     contentDiv.innerHTML = '';

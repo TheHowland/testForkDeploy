@@ -1,3 +1,10 @@
+/*
+The SolutionObject_VC class represents a solution object for voltage and current (VC) simplification steps in a circuit.
+It includes properties for old and new element names, values, relations, and equations.
+The class provides methods to format these properties for inline,
+block, or no formatting, and to check if the object is null.
+It also includes getter methods to retrieve the formatted properties.
+ */
 class SolutionObject_VC {
     constructor(oldName = ["N/A", "N/A", "N/A"], name1 = ["N/A", "N/A","N/A"], name2 = ["N/A","N/A","N/A"],
                 oldValue = ["N/A", "N/A", "N/A"], value1 = ["N/A","N/A","N/A"], value2 = ["N/A","N/A","N/A"],
