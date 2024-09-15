@@ -9,9 +9,7 @@ function display_step(pyodide, jsonFilePath_Z,svgFilePath,jsonFilePath_VC=null, 
         // Lade die JSON-Datei und logge den Inhalt
         let jsonDataString = pyodide.FS.readFile(jsonFilePath_Z, { encoding: "utf8" });
         const jsonData = JSON.parse(jsonDataString);
-        //Lade UI-JSON-Datei und logge den Inhalt
-        let jsonDataString_VC = pyodide.FS.readFile(jsonFilePath_VC, { encoding: "utf8" });
-        const jsonData_VC = JSON.parse(jsonDataString_VC);
+
 
         // Instanziiere SolutionObject und SolutionObject_UI
         let data = new SolutionObject(
@@ -20,11 +18,29 @@ function display_step(pyodide, jsonFilePath_Z,svgFilePath,jsonFilePath_VC=null, 
             jsonData.relation, jsonData.latexEquation
         );
 
-        let data_vc = new SolutionObject_VC(
-            jsonData_VC.oldName, jsonData_VC.name1, jsonData_VC.name2,
-            jsonData_VC.oldValue, jsonData_VC.value1, jsonData_VC.value2,
-            jsonData_VC.relation, jsonData_VC.equation
-        );
+        let jsonData_VC;
+        let data_vc;
+
+        if(jsonFilePath_VC != null){
+            //Lade UI-JSON-Datei und logge den Inhalt
+            let jsonDataString_VC = pyodide.FS.readFile(jsonFilePath_VC, { encoding: "utf8" });
+            jsonData_VC = JSON.parse(jsonDataString_VC);
+            data_vc = new SolutionObject_VC(
+                jsonData_VC.oldName, jsonData_VC.name1, jsonData_VC.name2,
+                jsonData_VC.oldValue, jsonData_VC.value1, jsonData_VC.value2,
+                jsonData_VC.relation, jsonData_VC.equation
+            );
+        }
+        else{
+            data_vc = new SolutionObject_VC(
+                ["NA","NA","NA"], ["NA","NA","NA"], ["NA","NA","NA"],
+                ["NA","NA","NA"], ["NA","NA","NA"], ["NA","NA","NA"],
+                "NA", ["NA","NA"]
+            );
+        }
+
+
+
 
         // Lade die SVG-Datei
         const svgData = pyodide.FS.readFile(svgFilePath, { encoding: "utf8" });
