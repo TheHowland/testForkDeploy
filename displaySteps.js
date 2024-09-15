@@ -4,7 +4,7 @@ Displays the current step of the circuit simplification process using the provid
 function display_step(pyodide, jsonFilePath_Z,svgFilePath,jsonFilePath_VC=null, contentDivName = 'simplification') {
     const contentDiv = document.getElementById(contentDivName);
     contentDiv.innerHTML = '';
-
+    console.log(jsonFilePath_VC);
     try {
         // Lade die JSON-Datei und logge den Inhalt
         let jsonDataString = pyodide.FS.readFile(jsonFilePath_Z, { encoding: "utf8" });
@@ -38,9 +38,6 @@ function display_step(pyodide, jsonFilePath_Z,svgFilePath,jsonFilePath_VC=null, 
                 "NA", ["NA","NA"]
             );
         }
-
-
-
 
         // Lade die SVG-Datei
         const svgData = pyodide.FS.readFile(svgFilePath, { encoding: "utf8" });
