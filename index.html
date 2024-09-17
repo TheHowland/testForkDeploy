@@ -173,7 +173,13 @@
         document.getElementById('continue-button').addEventListener('click',()=>{
             if(currentStep>0){
                 currentStep--;
-                display_step(pyodide,`Solutions/${jsonFiles_Z[currentStep]}`,`Solutions/${svgFiles[currentStep]}`,`Solutions_VC/${jsonFiles_VC[currentStep]}`);
+                if(jsonFiles_VC===null)
+                {
+                    display_step(pyodide,`Solutions/${jsonFiles_Z[currentStep]}`,`Solutions/${svgFiles[currentStep]}`);
+                }
+                else{
+                    display_step(pyodide,`Solutions/${jsonFiles_Z[currentStep]}`,`Solutions/${svgFiles[currentStep]}`,`Solutions_VC/${jsonFiles_VC[currentStep]}`);
+                }
             }
         });
 
@@ -248,10 +254,20 @@
         const files_VC= await pyodide.FS.readdir("Solutions_VC");
         jsonFiles_Z = files_Z.filter(file => file.endsWith(".json"))
         jsonFiles_VC = files_VC.filter(file => file.includes(selectedCircuit));
+        if(jsonFiles_VC===[]){
+            jsonFiles_VC = null;
+        }
+        console.log(jsonFiles_VC);
         svgFiles = files_Z.filter(file => file.endsWith(".svg"));
         document.getElementById('loading-message').style.display='none';
         currentStep = 0;
-        display_step(pyodide, `Solutions/${jsonFiles_Z[currentStep]}`, `Solutions/${svgFiles[currentStep]}`,`Solutions_VC/${jsonFiles_VC[currentStep]}`);
+        if(jsonFiles_VC===null)
+        {
+            display_step(pyodide, `Solutions/${jsonFiles_Z[currentStep]}`, `Solutions/${svgFiles[currentStep]}`);
+        }
+        else{
+            display_step(pyodide, `Solutions/${jsonFiles_Z[currentStep]}`, `Solutions/${svgFiles[currentStep]}`,`Solutions_VC/${jsonFiles_VC[currentStep]}`);
+        }
 
         if (mode === 'pre_calculated') {
             document.querySelector('.nav-buttons-container').style.display = 'flex';
