@@ -18,13 +18,12 @@ function display_step(pyodide, jsonFilePath_Z,svgFilePath,jsonFilePath_VC=null, 
             jsonData.relation, jsonData.latexEquation
         );
 
-        let jsonData_VC;
-        let data_vc;
+        let data_vc=null;
 
         if(jsonFilePath_VC != null){
             //Lade UI-JSON-Datei und logge den Inhalt
             let jsonDataString_VC = pyodide.FS.readFile(jsonFilePath_VC, { encoding: "utf8" });
-            jsonData_VC = JSON.parse(jsonDataString_VC);
+            let jsonData_VC = JSON.parse(jsonDataString_VC);
             data_vc = new SolutionObject_VC(
                 jsonData_VC.oldName, jsonData_VC.name1, jsonData_VC.name2,
                 jsonData_VC.oldValue, jsonData_VC.value1, jsonData_VC.value2,
@@ -169,7 +168,7 @@ function display_step(pyodide, jsonFilePath_Z,svgFilePath,jsonFilePath_VC=null, 
             } else if (congratsDisplayed === false) {
                 paragraph_Z(data, jsonFilePath_Z, descriptionContainer);
             } else {
-                paragraph_VC(data_vc, jsonFilePath_VC, descriptionContainer);
+                paragraph_VC(data_vc, descriptionContainer);
             }
         }
 

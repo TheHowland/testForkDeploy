@@ -89,7 +89,7 @@ function paragraph_Z(data, jsonFilePath,descriptionContainer) {
 Generates and appends a paragraph describing the voltage and current (VC= voltage and current) simplification step
 based on the provided data.
  */
-function paragraph_VC(data, jsonFilePath, descriptionContainer) {
+function paragraph_VC(data, descriptionContainer) {
     let relationText = "";
 
     const inlineData = data.inline();
