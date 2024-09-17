@@ -55,8 +55,6 @@
     let svgFiles = [];
     //Array to store the names of the circuit files.
     let circuitFiles = [];
-    //Array to store solution file paths for VC simplification.
-    let solutionsVCFiles = [];
     //Array to store selected elements in the circuit.
     let selectedElements = [];
     //Stores the currently selected circuit file name.
@@ -110,9 +108,6 @@
         circuitFiles = circuitFiles.filter((file) => file !== "." && file !== "..");
         populateCircuitSelector();
         console.timeEnd(loadCircuits);
-
-        solutionsVCFiles = pyodide.FS.readdir("Solutions_VC");
-        solutionsVCFiles = solutionsVCFiles.filter((file) => file !== "." && file !== "..");
 
         pyodide.FS.writeFile("/home/pyodide/solve.py", await (await fetch(serverAddress + "/solve.py")).text());
 
