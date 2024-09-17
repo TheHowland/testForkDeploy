@@ -1,4 +1,6 @@
 from lcapy import Circuit, Solution, FileToImpedance, DrawWithSchemdraw
+from typing import Union
+from lcapy.componentRelation import ComponentRelation
 import os
 
 
@@ -32,7 +34,7 @@ class SolveInUserOrder:
 
         return
 
-    def simplifyTwoCpts(self, cpts: list) -> tuple[bool, str, str]:
+    def simplifyTwoCpts(self, cpts: list) -> tuple[bool, tuple[str, str], str]:
         """
         :param cpts: list with two component name strings to simplify ["R1", "R2"]
         :return tuple with bool if simplification is possible, str with json filename, str with svg filename
@@ -44,23 +46,23 @@ class SolveInUserOrder:
 
         if cpts[1] in self.circuit.in_series(cpts[0]):
             newNet, newCptName = self.circuit.simplify_two_cpts(self.circuit, cpts)
-            self.steps.append((newNet, cpts[0], cpts[1], newCptName, "series"))
+            self.steps.append((newNet, cpts[0], cpts[1], newCptName, ComponentRelation.series.value))
         elif cpts[1] in self.circuit.in_parallel(cpts[0]):
             newNet, newCptName = self.circuit.simplify_two_cpts(self.circuit, cpts)
-            self.steps.append((newNet, cpts[0], cpts[1], newCptName, "parallel"))
+            self.steps.append((newNet, cpts[0], cpts[1], newCptName, ComponentRelation.parallel.value))
         else:
-            return False, "", ""
+            return False, ("", ""), ""
 
         sol = Solution(self.steps)
         newestStep = sol.available_steps[-1]
 
-        jsonName = sol.exportStepAsJson(newestStep, path=self.savePath, filename=os.path.splitext(self.filename)[0])
+        jsonNames = sol.exportStepAsJson(newestStep, path=self.savePath, filename=os.path.splitext(self.filename)[0])
         svgName = sol.drawStep(newestStep, path=self.savePath, filename=os.path.splitext(self.filename)[0])
 
         self.circuit = newNet
-        return True, jsonName, svgName
+        return True, jsonNames, svgName
 
-    def createInitialStep(self) -> tuple[bool, str, str]:
+    def createInitialStep(self) -> tuple[bool, tuple[str, str], str]:
         """
         create the initial step or step0 of the circuit
         :return tuple with bool if simplification is possible, str with json filename, str with svg filename
@@ -74,7 +76,7 @@ class SolveInUserOrder:
 
         return True, nameStep0Json, nameStep0Svg
 
-    def createStep0(self) -> tuple[bool, str, str]:
+    def createStep0(self) -> tuple[bool, tuple[str, str], str]:
         return self.createInitialStep()
 
     def getSolution(self):
