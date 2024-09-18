@@ -1,5 +1,5 @@
+# for lcapy version: 1.24+inskale.0.10
 from lcapy import Circuit, Solution, FileToImpedance, DrawWithSchemdraw
-from typing import Union
 from lcapy.componentRelation import ComponentRelation
 import os
 
@@ -9,8 +9,8 @@ def solve_circuit(filename: str, filePath="Circuits/", savePath="Solutions/"):
     cct.namer.reset()
     steps = cct.simplify_stepwise()
     sol = Solution(steps)
-    sol.draw(path=savePath)
-    sol.export(path=savePath)
+    sol.draw(path=savePath, filename=filename)
+    sol.export(path=savePath, filename=filename)
 
 
 class SolveInUserOrder:
@@ -39,7 +39,7 @@ class SolveInUserOrder:
         :param cpts: list with two component name strings to simplify ["R1", "R2"]
         :return tuple with bool if simplification is possible, str with json filename, str with svg filename
         """
-        # ToDo rsiki only works aslong as only simplifieable components are selected wich are represented as a
+        # ToDo this only works as long as only simplifiable components are selected which are represented as a
         # impedance internally in the cirucuit
         cpts[0] = "Z" + cpts[0][1::]
         cpts[1] = "Z" + cpts[1][1::]
@@ -56,23 +56,21 @@ class SolveInUserOrder:
         sol = Solution(self.steps)
         newestStep = sol.available_steps[-1]
 
-        jsonNames = sol.exportStepAsJson(newestStep, path=self.savePath, filename=os.path.splitext(self.filename)[0])
+        jsonName = sol.exportStepAsJson(newestStep, path=self.savePath, filename=os.path.splitext(self.filename)[0])
         svgName = sol.drawStep(newestStep, path=self.savePath, filename=os.path.splitext(self.filename)[0])
 
         self.circuit = newNet
-        return True, jsonNames, svgName
+        return True, jsonName, svgName
 
     def createInitialStep(self) -> tuple[bool, tuple[str, str], str]:
         """
         create the initial step or step0 of the circuit
         :return tuple with bool if simplification is possible, str with json filename, str with svg filename
         """
-        nameStep0Svg = f"{os.path.splitext(self.filename)[0]}_step0.svg"
-        nameStep0Json = self.filename
 
         sol = Solution(self.steps)
-        nameStep0Json = sol.exportStepAsJson("step0", path=self.savePath, filename=nameStep0Json)
-        nameStep0Svg = DrawWithSchemdraw(sol["step0"].circuit, fileName=nameStep0Svg).draw(path=self.savePath)
+        nameStep0Json = sol.exportStepAsJson("step0", path=self.savePath, filename=self.filename)
+        nameStep0Svg = sol.drawStep('step0', filename=self.filename, path=self.savePath)
 
         return True, nameStep0Json, nameStep0Svg
 
