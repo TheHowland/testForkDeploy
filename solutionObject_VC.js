@@ -6,17 +6,17 @@ block, or no formatting, and to check if the object is null.
 It also includes getter methods to retrieve the formatted properties.
  */
 class SolutionObject_VC {
-    constructor(oldName = ["N/A", "N/A", "N/A"], name1 = ["N/A", "N/A","N/A"], name2 = ["N/A","N/A","N/A"],
-                oldValue = ["N/A", "N/A", "N/A"], value1 = ["N/A","N/A","N/A"], value2 = ["N/A","N/A","N/A"],
+    constructor(oldNames = ["N/A", "N/A", "N/A"], names1 = ["N/A", "N/A","N/A"], names2 = ["N/A","N/A","N/A"],
+                oldValues = ["N/A", "N/A", "N/A"], values1 = ["N/A","N/A","N/A"], values2 = ["N/A","N/A","N/A"],
                 convOldValue=["NA"],convValue1=["NA"],convValue2=["NA"],
                 relation = "none", equation = ["N/A", "N/A"]) {
 
-        this._oldName = Array.isArray(oldName) && oldName.length ? oldName : ["N/A", "N/A", "N/A"];
-        this._name1 = Array.isArray(name1) && name1.length ? name1 : ["N/A","N/A","N/A"];
-        this._name2 = Array.isArray(name2) && name2.length ? name2 : ["N/A","N/A","N/A"];
-        this._oldValue = Array.isArray(oldValue) && oldValue.length ? oldValue : ["N/A", "N/A", "N/A"];
-        this._value1 = Array.isArray(value1) && value1.length ? value1 : ["N/A", "N/A", "N/A"];
-        this._value2 = Array.isArray(value2) && value2.length ? value2 : ["N/A", "N/A", "N/A"];
+        this._oldNames = Array.isArray(oldNames) && oldNames.length ? oldNames : ["N/A", "N/A", "N/A"];
+        this._names1 = Array.isArray(names1) && names1.length ? names1 : ["N/A","N/A","N/A"];
+        this._names2 = Array.isArray(names2) && names2.length ? names2 : ["N/A","N/A","N/A"];
+        this._oldValues = Array.isArray(oldValues) && oldValues.length ? oldValues : ["N/A", "N/A", "N/A"];
+        this._values1 = Array.isArray(values1) && values1.length ? values1 : ["N/A", "N/A", "N/A"];
+        this._values2 = Array.isArray(values2) && values2.length ? values2 : ["N/A", "N/A", "N/A"];
         this._convOldValue = Array.isArray(convOldValue) && convOldValue.length ? convOldValue : ["N/A", "N/A", "N/A"];
         this._convValue1 = Array.isArray(convValue1) && convValue1.length ? convValue1 : ["N/A", "N/A", "N/A"];
         this._convValue2 = Array.isArray(convValue2) && convValue2.length ? convValue2 : ["N/A", "N/A", "N/A"];
@@ -53,32 +53,34 @@ class SolutionObject_VC {
     }
 
     isNull() {
-        return (!this._oldName && !this._name1 && !this._name2 && !this._oldValue &&
-            !this._value1 && !this._value2 && !this._relation && !this._equation);
+        return (!this._oldNames && !this._names1 && !this._names2 && !this._oldValues &&
+                !this._values1 && !this._values2 && !this._convOldValue &&
+                !this._convValue1 && !this._convValue2 &&
+                !this._relation && !this._equation);
     }
 
-    get oldName() {
-        return this._format(this._oldName[0]);
+    get oldNames() {
+        return this._format(this._oldNames[0]);
     }
 
-    get name1() {
-        return this._format(this._name1[0]);
+    get names1() {
+        return this._format(this._names1[0]);
     }
 
-    get name2() {
-        return this._format(this._name2[0]);
+    get names2() {
+        return this._format(this._names2[0]);
     }
 
-    get oldValue() {
-        return this._format(this._oldValue);
+    get oldValues() {
+        return this._format(this._oldValues);
     }
 
-    get value1() {
-        return this._format(this._value1[0]);
+    get values1() {
+        return this._format(this._values1[0]);
     }
 
-    get value2() {
-        return this._format(this._value2[0]);
+    get values2() {
+        return this._format(this._values2[0]);
     }
     get convOldValue() {
         return this._format(this._convOldValue);

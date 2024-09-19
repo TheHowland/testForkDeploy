@@ -97,25 +97,25 @@ function paragraph_VC(data, descriptionContainer) {
 
     // Handle relationText generation based on relation type
     if (noFormatData.relation === "parallel") {
-        relationText = `Die Elemente sind parallel zueinander. Die Spannung (${inlineData.oldValue[1]}) bleibt gleich. <br>
-                        Die Stromst&auml;rke (${inlineData.oldValue[2]}) teilt sich auf.`;
+        relationText = `Die Elemente sind parallel zueinander. Die Spannung (${inlineData.oldValues[1]}) bleibt gleich. <br>
+                        Die Stromst&auml;rke (${inlineData.oldValues[2]}) teilt sich auf.`;
     } else if (noFormatData.relation === "series") {
-        relationText = `Die Elemente sind in Reihe zueinander. Die Stromst&auml;rke (${inlineData.oldValue[2]}) bleibt gleich. <br>
-                        Die Spannung (${inlineData.oldValue[1]}) teilt sich auf.`;
+        relationText = `Die Elemente sind in Reihe zueinander. Die Stromst&auml;rke (${inlineData.oldValues[2]}) bleibt gleich. <br>
+                        Die Spannung (${inlineData.oldValues[1]}) teilt sich auf.`;
     } else {
         relationText = "Keine Beziehung zwischen den Elementen";
     }
 
     const paragraph_VC = document.createElement('p');
     paragraph_VC.innerHTML = `
-        Das Element ${noFormatData.oldName} setzt sich aus den Elementen ${noFormatData.name1} und ${noFormatData.name2} zusammen.<br>
-        ${noFormatData.oldName}&nbsp= (${inlineData.oldValue[0]}, ${inlineData.oldValue[1]}, ${inlineData.oldValue[2]})<br>
-        ${noFormatData.name1}&nbsp= ${inlineData.value1}<br>
-        ${noFormatData.name2}&nbsp= ${inlineData.value2}<br>
+        Das Element ${noFormatData.oldNames} setzt sich aus den Elementen ${noFormatData.names1} und ${noFormatData.names2} zusammen.<br>
+        ${noFormatData.oldNames}&nbsp= (${inlineData.oldValues[0]}, ${inlineData.oldValues[1]}, ${inlineData.oldValues[2]})<br>
+        ${noFormatData.names1}&nbsp= ${inlineData.values1}<br>
+        ${noFormatData.names2}&nbsp= ${inlineData.values2}<br>
         ${relationText}<br>
         Rechnung:<br>
-        ${noFormatData.name1}&nbsp: ${inlineData.equation[0]}<br>
-        ${noFormatData.name2}&nbsp: ${inlineData.equation[1]}<br>`;
+        ${noFormatData.names1}&nbsp: ${inlineData.equation[0]}<br>
+        ${noFormatData.names2}&nbsp: ${inlineData.equation[1]}<br>`;
     descriptionContainer.appendChild(paragraph_VC);
 }
 

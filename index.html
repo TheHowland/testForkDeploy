@@ -100,10 +100,6 @@
         let cirArrBuff = await (await fetch(serverAddress + "/Circuits.zip")).arrayBuffer();
         await pyodide.unpackArchive(cirArrBuff, ".zip");
 
-        //An array buffer containing the zipped solution files for VC simplification fetched from the server.
-        let solArrBuff = await (await fetch(serverAddress + "/Solutions_VC.zip")).arrayBuffer();
-        await pyodide.unpackArchive(solArrBuff, ".zip");
-
         circuitFiles = pyodide.FS.readdir("Circuits");
         circuitFiles = circuitFiles.filter((file) => file !== "." && file !== "..");
         populateCircuitSelector();
@@ -173,7 +169,7 @@
                     display_step(pyodide,`Solutions/${jsonFiles_Z[currentStep]}`,`Solutions/${svgFiles[currentStep]}`);
                 }
                 else{
-                    display_step(pyodide,`Solutions/${jsonFiles_Z[currentStep]}`,`Solutions/${svgFiles[currentStep]}`,`Solutions_VC/${jsonFiles_VC[currentStep]}`);
+                    display_step(pyodide,`Solutions/${jsonFiles_Z[currentStep]}`,`Solutions/${svgFiles[currentStep]}`,`Solutions/${jsonFiles_VC[currentStep]}`);
                 }
             }
         });
@@ -245,9 +241,10 @@
         console.timeEnd(timeSolve);
         //An array of file names representing the JSON and SVG files in the Solutions directory.
         const files_Z = await pyodide.FS.readdir("Solutions");
-        //An array of file names representing the JSON files in the Solutions_VC directory.
+        //An array of file names representing the JSON files in the Solutions directory.
         const files_VC= await pyodide.FS.readdir("Solutions");
-        jsonFiles_Z = files_Z.filter(file => file.endsWith(".json"))
+        jsonFiles_Z = files_Z.filter(file => !file.endsWith("VC.json")&& file.endsWith(".json"));
+        console.log(jsonFiles_Z);
         jsonFiles_VC = files_VC.filter(file => file.endsWith("VC.json"));
         if(jsonFiles_VC===[]){
             jsonFiles_VC = null;

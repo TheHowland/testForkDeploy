@@ -171,6 +171,7 @@ function display_step(pyodide, jsonFilePath_Z,svgFilePath,jsonFilePath_VC=null, 
             } else {
                 paragraph_VC(data_vc, descriptionContainer);
             }
+            MathJax.typeset();
         }
 
         MathJax.typeset();
