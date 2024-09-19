@@ -27,6 +27,7 @@ function display_step(pyodide, jsonFilePath_Z,svgFilePath,jsonFilePath_VC=null, 
             data_vc = new SolutionObject_VC(
                 jsonData_VC.oldName, jsonData_VC.name1, jsonData_VC.name2,
                 jsonData_VC.oldValue, jsonData_VC.value1, jsonData_VC.value2,
+                jsonData_VC.convOldValue, jsonData_VC.convValue1, jsonData_VC.convValue2,
                 jsonData_VC.relation, jsonData_VC.equation
             );
         }
@@ -34,7 +35,7 @@ function display_step(pyodide, jsonFilePath_Z,svgFilePath,jsonFilePath_VC=null, 
             data_vc = new SolutionObject_VC(
                 ["NA","NA","NA"], ["NA","NA","NA"], ["NA","NA","NA"],
                 ["NA","NA","NA"], ["NA","NA","NA"], ["NA","NA","NA"],
-                "NA", ["NA","NA"]
+                ["NA"], ["NA"], ["NA"],"none", ["NA","NA"]
             );
         }
 

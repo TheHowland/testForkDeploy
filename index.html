@@ -246,9 +246,9 @@
         //An array of file names representing the JSON and SVG files in the Solutions directory.
         const files_Z = await pyodide.FS.readdir("Solutions");
         //An array of file names representing the JSON files in the Solutions_VC directory.
-        const files_VC= await pyodide.FS.readdir("Solutions_VC");
+        const files_VC= await pyodide.FS.readdir("Solutions");
         jsonFiles_Z = files_Z.filter(file => file.endsWith(".json"))
-        jsonFiles_VC = files_VC.filter(file => file.includes(selectedCircuit));
+        jsonFiles_VC = files_VC.filter(file => file.endsWith("VC.json"));
         if(jsonFiles_VC===[]){
             jsonFiles_VC = null;
         }
@@ -261,7 +261,7 @@
             display_step(pyodide, `Solutions/${jsonFiles_Z[currentStep]}`, `Solutions/${svgFiles[currentStep]}`);
         }
         else{
-            display_step(pyodide, `Solutions/${jsonFiles_Z[currentStep]}`, `Solutions/${svgFiles[currentStep]}`,`Solutions_VC/${jsonFiles_VC[currentStep]}`);
+            display_step(pyodide, `Solutions/${jsonFiles_Z[currentStep]}`, `Solutions/${svgFiles[currentStep]}`,`Solutions/${jsonFiles_VC[currentStep]}`);
         }
 
         if (mode === 'pre_calculated') {
