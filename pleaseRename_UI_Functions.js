@@ -108,14 +108,14 @@ function paragraph_VC(data, descriptionContainer) {
 
     const paragraph_VC = document.createElement('p');
     paragraph_VC.innerHTML = `
-        Das Element ${noFormatData.oldNames} setzt sich aus den Elementen ${noFormatData.names1} und ${noFormatData.names2} zusammen.<br>
-        ${noFormatData.oldNames}&nbsp= (${inlineData.oldValues[0]}, ${inlineData.oldValues[1]}, ${inlineData.oldValues[2]})<br>
-        ${noFormatData.names1}&nbsp= ${inlineData.values1}<br>
-        ${noFormatData.names2}&nbsp= ${inlineData.values2}<br>
+        Das Element ${inlineData.oldNames} setzt sich aus den Elementen ${inlineData.names1} und ${inlineData.names2} zusammen.<br>
+        ${inlineData.oldNames}&nbsp= (${inlineData.oldValues[0]}, ${inlineData.oldValues[1]}, ${inlineData.oldValues[2]})<br>
+        ${inlineData.names1}&nbsp= ${inlineData.values1}<br>
+        ${inlineData.names2}&nbsp= ${inlineData.values2}<br>
         ${relationText}<br>
         Rechnung:<br>
-        ${noFormatData.names1}&nbsp: ${inlineData.equation[0]}<br>
-        ${noFormatData.names2}&nbsp: ${inlineData.equation[1]}<br>`;
+        ${inlineData.names1}&nbsp: ${inlineData.equation[0]}<br>
+        ${inlineData.names2}&nbsp: ${inlineData.equation[1]}<br>`;
     descriptionContainer.appendChild(paragraph_VC);
 }
 

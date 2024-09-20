@@ -25,18 +25,14 @@ function display_step(pyodide, jsonFilePath_Z,svgFilePath,jsonFilePath_VC=null, 
             let jsonDataString_VC = pyodide.FS.readFile(jsonFilePath_VC, { encoding: "utf8" });
             let jsonData_VC = JSON.parse(jsonDataString_VC);
             data_vc = new SolutionObject_VC(
-                jsonData_VC.oldName, jsonData_VC.name1, jsonData_VC.name2,
-                jsonData_VC.oldValue, jsonData_VC.value1, jsonData_VC.value2,
+                jsonData_VC.oldNames, jsonData_VC.names1, jsonData_VC.names2,
+                jsonData_VC.oldValues, jsonData_VC.values1, jsonData_VC.values2,
                 jsonData_VC.convOldValue, jsonData_VC.convValue1, jsonData_VC.convValue2,
                 jsonData_VC.relation, jsonData_VC.equation
             );
         }
         else{
-            data_vc = new SolutionObject_VC(
-                ["NA","NA","NA"], ["NA","NA","NA"], ["NA","NA","NA"],
-                ["NA","NA","NA"], ["NA","NA","NA"], ["NA","NA","NA"],
-                ["NA"], ["NA"], ["NA"],"none", ["NA","NA"]
-            );
+            data_vc = new SolutionObject_VC();
         }
 
         // Lade die SVG-Datei

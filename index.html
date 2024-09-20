@@ -163,13 +163,14 @@
 
         document.getElementById('continue-button').addEventListener('click',()=>{
             if(currentStep>0){
-                currentStep--;
                 if(jsonFiles_VC===null)
                 {
+                    currentStep--;
                     display_step(pyodide,`Solutions/${jsonFiles_Z[currentStep]}`,`Solutions/${svgFiles[currentStep]}`);
                 }
                 else{
-                    display_step(pyodide,`Solutions/${jsonFiles_Z[currentStep]}`,`Solutions/${svgFiles[currentStep]}`,`Solutions/${jsonFiles_VC[currentStep]}`);
+                    currentStep--;
+                    display_step(pyodide,`Solutions/${jsonFiles_Z[currentStep]}`,`Solutions/${svgFiles[currentStep]}`,`Solutions/${jsonFiles_VC[currentStep+1]}`);
                 }
             }
         });
@@ -240,17 +241,16 @@
 
         console.timeEnd(timeSolve);
         //An array of file names representing the JSON and SVG files in the Solutions directory.
-        const files_Z = await pyodide.FS.readdir("Solutions");
-        //An array of file names representing the JSON files in the Solutions directory.
-        const files_VC= await pyodide.FS.readdir("Solutions");
-        jsonFiles_Z = files_Z.filter(file => !file.endsWith("VC.json")&& file.endsWith(".json"));
+        const files = await pyodide.FS.readdir("Solutions");
+        jsonFiles_Z = files.filter(file => !file.endsWith("VC.json")&& file.endsWith(".json"));
         console.log(jsonFiles_Z);
-        jsonFiles_VC = files_VC.filter(file => file.endsWith("VC.json"));
+        jsonFiles_VC = files.filter(file => file.endsWith("VC.json"));
         if(jsonFiles_VC===[]){
             jsonFiles_VC = null;
         }
         console.log(jsonFiles_VC);
-        svgFiles = files_Z.filter(file => file.endsWith(".svg"));
+        svgFiles = files.filter(file => file.endsWith(".svg"));
+        console.log(svgFiles);
         document.getElementById('loading-message').style.display='none';
         currentStep = 0;
         if(jsonFiles_VC===null)

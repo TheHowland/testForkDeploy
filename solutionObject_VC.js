@@ -6,22 +6,22 @@ block, or no formatting, and to check if the object is null.
 It also includes getter methods to retrieve the formatted properties.
  */
 class SolutionObject_VC {
-    constructor(oldNames = ["N/A", "N/A", "N/A"], names1 = ["N/A", "N/A","N/A"], names2 = ["N/A","N/A","N/A"],
-                oldValues = ["N/A", "N/A", "N/A"], values1 = ["N/A","N/A","N/A"], values2 = ["N/A","N/A","N/A"],
-                convOldValue=["NA"],convValue1=["NA"],convValue2=["NA"],
-                relation = "none", equation = ["N/A", "N/A"]) {
+    constructor(oldNames = [null, null, null], names1 = [null, null, null], names2 = [null, null, null],
+                oldValues = [null, null, null], values1 = [null, null, null], values2 = [null, null, null],
+                convOldValue=[null],convValue1=[null],convValue2=[null],
+                relation = "none", equation = [null, null]) {
 
-        this._oldNames = Array.isArray(oldNames) && oldNames.length ? oldNames : ["N/A", "N/A", "N/A"];
-        this._names1 = Array.isArray(names1) && names1.length ? names1 : ["N/A","N/A","N/A"];
-        this._names2 = Array.isArray(names2) && names2.length ? names2 : ["N/A","N/A","N/A"];
-        this._oldValues = Array.isArray(oldValues) && oldValues.length ? oldValues : ["N/A", "N/A", "N/A"];
-        this._values1 = Array.isArray(values1) && values1.length ? values1 : ["N/A", "N/A", "N/A"];
-        this._values2 = Array.isArray(values2) && values2.length ? values2 : ["N/A", "N/A", "N/A"];
-        this._convOldValue = Array.isArray(convOldValue) && convOldValue.length ? convOldValue : ["N/A", "N/A", "N/A"];
-        this._convValue1 = Array.isArray(convValue1) && convValue1.length ? convValue1 : ["N/A", "N/A", "N/A"];
-        this._convValue2 = Array.isArray(convValue2) && convValue2.length ? convValue2 : ["N/A", "N/A", "N/A"];
+        this._oldNames = oldNames;
+        this._names1 = names1;
+        this._names2 = names2;
+        this._oldValues = oldValues;
+        this._values1 = values1;
+        this._values2 = values2;
+        this._convOldValue = convOldValue;
+        this._convValue1 = convValue1;
+        this._convValue2 = convValue2;
         this._relation = relation;
-        this._equation = Array.isArray(equation) && equation.length ? equation : ["N/A", "N/A"];
+        this._equation = equation;
 
         this._inlineReturnFunc = (string) => `\\(${string}\\)`;
         this._blockReturnFunc = (string) => `$$${string}$$`;
