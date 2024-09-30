@@ -23,15 +23,27 @@ class SolutionObject_VC {
         this._relation = relation;
         this._equation = equation;
 
-        this._inlineReturnFunc = (string) => `\\(${string}\\)`;
-        this._blockReturnFunc = (string) => `$$${string}$$`;
+        this._inlineReturnFunc = (string) => {
+            if (Array.isArray(string)){
+                return string.map(string => `\\(${string}\\)`);
+            }
+            return `\\(${string}\\)`;
+        };
 
+        this._blockReturnFunc = (string) => {
+            if (Array.isArray(string)){
+                return string.map(string => `$$${string}$$`);
+            }
+            return `$$${string}$$`;
+        };
         this._returnFunction = this._inlineReturnFunc;
     }
 
     set returnFunction(func) {
         this._returnFunction = func;
     }
+
+
 
     inline() {
         this._returnFunction = this._inlineReturnFunc;
@@ -60,15 +72,15 @@ class SolutionObject_VC {
     }
 
     get oldNames() {
-        return this._format(this._oldNames[0]);
+        return this._format(this._oldNames);
     }
 
     get names1() {
-        return this._format(this._names1[0]);
+        return this._format(this._names1);
     }
 
     get names2() {
-        return this._format(this._names2[0]);
+        return this._format(this._names2);
     }
 
     get oldValues() {
@@ -76,22 +88,22 @@ class SolutionObject_VC {
     }
 
     get values1() {
-        return this._format(this._values1[0]);
+        return this._format(this._values1);
     }
 
     get values2() {
-        return this._format(this._values2[0]);
+        return this._format(this._values2);
     }
     get convOldValue() {
         return this._format(this._convOldValue);
     }
 
     get convValue1() {
-        return this._format(this._convValue1[0]);
+        return this._format(this._convValue1);
     }
 
     get convValue2() {
-        return this._format(this._convValue2[0]);
+        return this._format(this._convValue2);
     }
 
     get relation() {

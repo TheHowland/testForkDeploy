@@ -91,31 +91,37 @@ based on the provided data.
  */
 function paragraph_VC(data, descriptionContainer) {
     let relationText = "";
-
-    const inlineData = data.inline();
-    const noFormatData = data.noFormat();
+    let relation = data.noFormat().relation[0]
+    console.log("Relation: " + data.noFormat().relation[0])
 
     // Handle relationText generation based on relation type
-    if (noFormatData.relation === "parallel") {
-        relationText = `Die Elemente sind parallel zueinander. Die Spannung (${inlineData.oldValues[1]}) bleibt gleich. <br>
-                        Die Stromst&auml;rke (${inlineData.oldValues[2]}) teilt sich auf.`;
-    } else if (noFormatData.relation === "series") {
-        relationText = `Die Elemente sind in Reihe zueinander. Die Stromst&auml;rke (${inlineData.oldValues[2]}) bleibt gleich. <br>
-                        Die Spannung (${inlineData.oldValues[1]}) teilt sich auf.`;
+    if (relation === "parallel") {
+        relationText = `Die Elemente sind parallel zueinander. Die Spannung ${data.inline().oldValues[1]} bleibt gleich. <br>
+                        Die Stromst&aumlrke ${data.inline().oldValues[2]} teilt sich auf.`;
+    } else if (relation === "series") {
+        relationText = `Die Elemente sind in Reihe zueinander. Die Stromst&aumlrke ${data.inline().oldValues[2]} bleibt gleich. <br>
+                        Die Spannung ${data.inline().oldValues[1]} teilt sich auf.`;
     } else {
         relationText = "Keine Beziehung zwischen den Elementen";
     }
 
     const paragraph_VC = document.createElement('p');
+
     paragraph_VC.innerHTML = `
-        Das Element ${inlineData.oldNames} setzt sich aus den Elementen ${inlineData.names1} und ${inlineData.names2} zusammen.<br>
-        ${inlineData.oldNames}&nbsp= (${inlineData.oldValues[0]}, ${inlineData.oldValues[1]}, ${inlineData.oldValues[2]})<br>
-        ${inlineData.names1}&nbsp= ${inlineData.values1}<br>
-        ${inlineData.names2}&nbsp= ${inlineData.values2}<br>
+        Das Element ${data.inline().oldNames[0]} setzt sich aus den Elementen ${data.inline().names1[0]} und ${data.inline().names2[0]} zusammen.<br>
+        ${data.inline().oldNames[0]}&nbsp= ${data.inline().oldValues[0]}<br>
+        ${data.inline().oldNames[1]}&nbsp= ${data.inline().oldValues[1]}<br>
+        ${data.inline().oldNames[2]}&nbsp= ${data.inline().oldValues[2]}<br>   
+        ${data.inline().names1[0]}&nbsp= ${data.inline().values1[0]}<br>
+        ${data.inline().names1[1]}&nbsp= ${data.inline().values1[1]}<br>
+        ${data.inline().names1[2]}&nbsp= ${data.inline().values1[2]}<br>
+        ${data.inline().names2[0]}&nbsp= ${data.inline().values2[0]}<br>
+        ${data.inline().names2[1]}&nbsp= ${data.inline().values2[1]}<br>
+        ${data.inline().names2[2]}&nbsp= ${data.inline().values2[2]}<br>
         ${relationText}<br>
         Rechnung:<br>
-        ${inlineData.names1}&nbsp: ${inlineData.equation[0]}<br>
-        ${inlineData.names2}&nbsp: ${inlineData.equation[1]}<br>`;
+        ${data.inline().equation[0]}<br>
+        ${data.inline().equation[1]}<br>`;
     descriptionContainer.appendChild(paragraph_VC);
 }
 

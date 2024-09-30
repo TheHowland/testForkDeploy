@@ -70,7 +70,7 @@ function display_step(pyodide, jsonFilePath_Z,svgFilePath,jsonFilePath_VC=null, 
 
             if (filteredPaths.length === 1) {
                 const congratsMessage = document.createElement('p');
-                congratsMessage.innerHTML = 'Herzlichen Glückwunsch! Sie haben den Schaltkreis vollständig vereinfacht.';
+                congratsMessage.innerHTML = 'Herzlichen Glueckwunsch! Sie haben den Schaltkreis vollsaendig vereinfacht.';
                 clickedElementsContainer.appendChild(congratsMessage);
             }
 
@@ -93,10 +93,10 @@ function display_step(pyodide, jsonFilePath_Z,svgFilePath,jsonFilePath_VC=null, 
                     if (canSimplify[0]) {
                         display_step(pyodide, canSimplify[1][0], canSimplify[2],canSimplify[1][1]);
                     } else {
-                        showMessage("Die ausgewählten Elemente konnten nicht vereinfacht werden.");
+                        showMessage("Die ausgewaehlten Elemente konnten nicht vereinfacht werden.");
                     }
                 } else {
-                    showMessage('Bitte wählen Sie genau zwei Elemente aus!');
+                    showMessage('Bitte waehlen Sie genau zwei Elemente aus!');
                 }
                 MathJax.typeset();
             });
