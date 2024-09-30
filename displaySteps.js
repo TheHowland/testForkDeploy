@@ -70,7 +70,7 @@ function display_step(pyodide, jsonFilePath_Z,svgFilePath,jsonFilePath_VC=null, 
 
             if (filteredPaths.length === 1) {
                 const congratsMessage = document.createElement('p');
-                congratsMessage.innerHTML = 'Herzlichen Gl&uuml;ckwunsch! Sie haben den Schaltkreis vollst&auml;ndig vereinfacht.';
+                congratsMessage.innerHTML = 'Herzlichen Glückwunsch! Sie haben den Schaltkreis vollständig vereinfacht.';
                 clickedElementsContainer.appendChild(congratsMessage);
             }
 
@@ -93,10 +93,10 @@ function display_step(pyodide, jsonFilePath_Z,svgFilePath,jsonFilePath_VC=null, 
                     if (canSimplify[0]) {
                         display_step(pyodide, canSimplify[1][0], canSimplify[2],canSimplify[1][1]);
                     } else {
-                        showMessage("Die ausgew&auml;hlten Elemente k&ouml;nnen nicht vereinfacht werden.");
+                        showMessage("Die ausgewählten Elemente konnten nicht vereinfacht werden.");
                     }
                 } else {
-                    showMessage('Bitte w&auml;hlen Sie genau zwei Elemente aus!');
+                    showMessage('Bitte wählen Sie genau zwei Elemente aus!');
                 }
                 MathJax.typeset();
             });
@@ -155,7 +155,7 @@ function display_step(pyodide, jsonFilePath_Z,svgFilePath,jsonFilePath_VC=null, 
             const congratsMessage = document.createElement('p');
 
             if (filteredPaths.length === 1) {
-                congratsMessage.innerHTML = 'Die Komponenten sind nun vollst&auml;ndig vereinfacht. Es folgt nun die Berechnung der Spannungen und Str&ouml;me.';
+                congratsMessage.innerHTML = 'Die Komponenten sind nun vollstaendig vereinfacht. Es folgt nun die Berechnung der Spannungen und Stroeme.';
                 descriptionContainer.appendChild(congratsMessage);
                 congratsDisplayed = true;
                 paragraph_Z(data, jsonFilePath_Z, descriptionContainer);
