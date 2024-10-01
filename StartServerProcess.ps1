@@ -1,10 +1,13 @@
 $curDir = Get-Location
 Set-Location $PSScriptRoot
-if (Test-Path "server.pid"){
-    try {
-        Start-Process ./StopServerProcess.ps1
+if (Test-Path "server.pid")
+{
+    try
+    {
+        Start-Process -FilePath "powershell.exe" -ArgumentList "./StopServerProcess.ps1" -Wait
     }
-    catch {
+    catch
+    {
         Write-Output "Process does not exist anymore, delting file"
         Remove-Item "server.pid"
     }
