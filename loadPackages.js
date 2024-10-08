@@ -26,6 +26,4 @@ async function load_packages(pyodide, optAddNames) {
     await Promise.all(packagePromises);
     console.log("Installed:" + packages);
     removeProgressBar();
-    pyodideReady = true;
-    document.getElementById('start-button').disabled = false;
 }
