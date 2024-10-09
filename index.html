@@ -1,10 +1,25 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/html">
 <head>
-    <title>Circuit Simplification</title>
 
-    <script src="http://localhost:8000/pyodide.js"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+
+    <!-- Bootstrap Import -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+</head>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>simpliPFy</title>
+
+    <!-- JS Scripts Import -->
+    <script src="src/scripts/main.js"></script>
     <script src="src/scripts/utils/solutionObject.js"></script>
     <script src="src/scripts/utils/solutionObject_VC.js"></script>
     <script src="src/scripts/utils/fetchDirectoryListing.js"></script>
@@ -14,265 +29,96 @@
     <script src="src/scripts/utils/UI_Functions.js"></script>
     <script src="src/scripts/utils/displaySteps.js"></script>
 
+    <!-- Pyodide and MathJax Import -->
+    <script src="http://localhost:8000/pyodide.js"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="src/styles/allStyles.css">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@100..900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 </head>
 
-<body>
-<div id="simplification"></div>
-<div id="menu-bar">
-    <select id="mode">
-        <option value="" disabled selected>Select Mode</option>
-        <option value="user">User Based Mode</option>
-        <option value="pre_calculated">Pre Calculated Mode</option>
-    </select>
-    <label for="circuit-selector"></label>
-    <select id="circuit-selector">
-        <option value="" disabled selected></option>
-    </select>
-    <button id="start-button" disabled>Start</button>
-</div>
-<button id="menu-toggle"></button>
-<button id="continue-button" style="display: none;">Weiter</button>
-<div id="message-box"></div>
-<div class="nav-buttons-container" style="display: none;">
-    <button id="prev-button" class="nav-button">Zur&uuml;ck</button>
-    <button id="next-button" class="nav-button">Vor</button>
-</div>
-<div id="initial-message" style="display: none;">Bitte w&auml;hlen Sie einen Modus und Schaltkreis aus</div>
-<div id="loading-message" style="display:none;">Vielen Dank! Ihre Auswahl wird geladen</div>
-<script>
-    //ToDo this could be an Object better than global variables
-    //--------------------------------------------------------------
-    //Tracks the current step in the circuit simplification process.
-    let currentStep = 0;
-    //Array to store JSON file paths for Z simplification steps.
-    let jsonFiles_Z = [];
-    // Array to store JSON file paths for VC simplification steps.
-    let jsonFiles_VC = [];
-    //Array to store SVG file paths for circuit diagrams.
-    let svgFiles = [];
-    //Array to store the names of the circuit files.
-    let circuitFiles = [];
-    //Array to store selected elements in the circuit.
-    let selectedElements = [];
-    //Stores the currently selected circuit file name.
-    let currentCircuit = "";
-    //Stores the name of the selected circuit without the file extension.
-    let selectedCircuit = "";
-    //Variable to store the step solving object.
-    let stepSolve;
-    // Stores the current mode (user or pre-calculated).
-    let mode = '';
-    // Boolean to track if the congratulatory message has been displayed.
-    let congratsDisplayed = false;
-    //--------------------------------------------------------------
-    //Boolean to track if the Pyodide environment is ready.
-    let pyodideReady = false;
-    //Stores the server address for fetching resources.
-    let serverAddress = "http://localhost:8000"
+<!-- add arbitrary id to add weight to manually fine tune css styles. See more under "weight of selectors" in css -->
+<body id="bootstrap-overrides">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark p-2">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <!--<a class="navbar-brand" id="logo" href="#">simpliPFy</a>-->
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link mt-4 p-0" href="#">HOME <span class="sr-only"></span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link m-0 p-0" id="nav-link-circuit" href="#">CIRCUIT SIMPLIFIER</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link m-0 p-0" href="#">CHEAT SHEET</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link m-0 p-0" href="#">ABOUT</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
 
-    /*
-    Initializes the Pyodide environment, loads circuit and solution files,
-    and sets up event listeners for UI elements.
-     */
-    async function main() {
-        //A div element used to display loading messages to the user.
-        const infoText = document.createElement('div');
-        infoText.id = "infoText";
-        infoText.textContent = "";
+    <div class="container-fluid m-0 p-0 text-center justify-content-center" id="landingpage-container">
 
-        document.body.appendChild(infoText);
-        infoText.setAttribute('style', 'white-space: pre;');
+        <div class="container-fluid bg-warning" id="yellow-image-container">
+            <img src="src/resources/landingpage/tablet_smartphone.png" class="img-fluid pt-3" alt="smartphone-and-tablet-example">
+            <p class="pt-2" id="heading-logo">simpliPFy</p>
+            <p class="pb-3">a free browser tool for learning<br>how to simplify electrical circuits</p>
+        </div>
 
-        infoText.textContent = "Lade Pyodide Umgebung... ";
-        //The Pyodide instance used to run Python code in the browser.
-        let pyodide = await loadPyodide();
-        infoText.textContent += "fertig\r\n";
+        <div class="container-fluid" id="start-container">
+            <button class="btn mt-4 px-5 shadow" id="start-button">START</button>
+        </div>
 
-        //A string used as a label for timing the loading of circuit files.
-        let loadCircuits = "Lade Schaltkreise";
-        infoText.textContent += "Lade Schaltkreise vom Server... ";
-        console.time(loadCircuits);
+        <div class="container-fluid mt-5" id="feature-container">
+            <img src="src/resources/landingpage/tablet_smartphone_darkmode.png" class="img-fluid pt-3" alt="smartphone-and-tablet-example">
+            <ul class="py-5 px-0 mb-0 text-center" id="features">
+                <li>
+                    <p>Key feature 1</p>
+                </li>
+                <li>
+                    <p>•</p>
+                </li>
+                <li>
+                    <p>Key feature 2</p>
+                </li>
+                <li>
+                    <p>•</p>
+                </li>
+                <li>
+                    <p>Key feature 3</p>
+                </li>
+            </ul>
+        </div>
 
-        //An array buffer containing the zipped circuit files fetched from the server.
-        let cirArrBuff = await (await fetch(serverAddress + "/Circuits.zip")).arrayBuffer();
-        await pyodide.unpackArchive(cirArrBuff, ".zip");
+        <div class="container-fluid pt-5" id="circuit-selector-explanation-container">
+            <p class="my-0">
+                There are circuits that you can use. You can try different electrical
+                components (resistors, capacitors and coils). More advanced circuits combine
+                these elements and can also provide you with voltages and currents, even
+                for alternating currents!
+            </p>
+            <img src="src/resources/landingpage/circuit_selector.png" class="img-fluid pt-3" alt="circuits">
+            <p class="my-0 pb-4">
+                You can also choose between a light and dark mode in further version.
+                Just use the button in the navigation.
+            </p>
+        </div>
 
-        circuitFiles = pyodide.FS.readdir("Circuits");
-        circuitFiles = circuitFiles.filter((file) => file !== "." && file !== "..");
-        populateCircuitSelector();
-        console.timeEnd(loadCircuits);
+    </div>
 
-        pyodide.FS.writeFile("/home/pyodide/solve.py", await (await fetch(serverAddress + "/solve.py")).text());
+    <script>
+        //main();
+    </script>
 
-        document.body.removeChild(infoText);
-
-        document.getElementById('menu-toggle').style.display = 'block';
-        document.getElementById('initial-message').style.display = 'block';
-        //The div element representing the menu bar in the UI.
-        const menuBar = document.getElementById('menu-bar');
-        //The div element where the circuit simplification content is displayed.
-        const simplificationDiv = document.getElementById('simplification');
-        if (menuBar.style.left === '0px') {
-            menuBar.style.left = '-250px';
-            simplificationDiv.style.width = '90vw';
-        } else {
-            menuBar.style.left = '0px';
-            simplificationDiv.style.width = 'calc(90vw - 250px)';
-        }
-
-        document.getElementById('menu-toggle').addEventListener('click', () => {
-            // The div element representing the menu bar in the UI.
-            const menuBar = document.getElementById('menu-bar');
-            //The div element where the circuit simplification content is displayed.
-            const simplificationDiv = document.getElementById('simplification');
-            if (menuBar.style.left === '0px') {
-                menuBar.style.left = '-250px';
-                simplificationDiv.style.width = '90vw';
-            } else {
-                menuBar.style.left = '0px';
-                simplificationDiv.style.width = 'calc(90vw - 250px)';
-            }
-        });
-
-        document.getElementById('mode').addEventListener('change', (event) => {
-            mode = event.target.value;
-        });
-
-        document.getElementById('circuit-selector').addEventListener('change', (event) => {
-            currentCircuit = event.target.value;
-            selectedCircuit= currentCircuit.replace(".txt", "");
-            console.log(selectedCircuit)
-        });
-
-        document.getElementById('prev-button').addEventListener('click', () => {
-            if (currentStep > 0) {
-                currentStep--;
-                display_step(pyodide, `Solutions/${jsonFiles_Z[currentStep]}`, `Solutions/${svgFiles[currentStep]}`);
-            }
-        });
-
-        document.getElementById('next-button').addEventListener('click', () => {
-            if (currentStep < jsonFiles_Z.length - 1) {
-                currentStep++;
-                display_step(pyodide, `Solutions/${jsonFiles_Z[currentStep]}`, `Solutions/${svgFiles[currentStep]}`);
-            }
-        });
-
-        document.getElementById('continue-button').addEventListener('click',()=>{
-            if(currentStep>0){
-                if(jsonFiles_VC===null)
-                {
-                    currentStep--;
-                    display_step(pyodide,`Solutions/${jsonFiles_Z[currentStep]}`,`Solutions/${svgFiles[currentStep]}`);
-                }
-                else{
-                    currentStep--;
-                    display_step(pyodide,`Solutions/${jsonFiles_Z[currentStep]}`,`Solutions/${svgFiles[currentStep]}`,`Solutions/${jsonFiles_VC[currentStep+1]}`);
-                }
-            }
-        });
-
-        document.getElementById('start-button').addEventListener('click', () => {
-            if (mode && currentCircuit && pyodideReady) {
-                document.getElementById('menu-toggle').click();
-                document.getElementById('initial-message').style.display = 'none';
-                document.getElementById('loading-message').style.display='block';
-                document.getElementById('continue-button').style.display='none';
-                resetCongratsDisplayed();
-                setTimeout(()=>{
-                    solveCircuit(currentCircuit, pyodide);
-                },300);
-                //The div element that contains the SVG representation of the circuit diagram.
-                const svgDiv = document.querySelector('.svg-container');
-                //The div element that contains the list of elements that have been clicked or selected in the circuit diagram.
-                const clickedElementsContainer = document.querySelector('.clicked-elements-container');
-                if (svgDiv && clickedElementsContainer) {
-                    resetClickedElements(svgDiv, clickedElementsContainer);
-                }
-            }
-        });
-
-
-
-        await load_packages(pyodide, ["sqlite3-1.0.0.zip"]);
-        await import_packages(pyodide).then(() => {
-            document.getElementById('menu-toggle').style.display = 'block';
-            document.getElementById('initial-message').style.display = 'block';
-        });
-    }
-
-    /*
-     Imports the Python script for solving circuits,
-     clears old solution files, solves the circuit based on the selected mode,
-     and displays the initial step.
-     */
-    async function solveCircuit(circuit, pyodide) {
-        //A string used as a label for timing the import of the Python script.
-        let timeImporting = "Importiere Python Skript";
-        console.time(timeImporting);
-        //The Python module imported from the Pyodide environment for solving circuits.
-        let solve = await pyodide.pyimport("solve");
-        console.timeEnd(timeImporting);
-        //A string used as a label for timing the circuit solving process.
-        let timeSolve = "Solve circuit";
-        console.time(timeSolve);
-
-        // Clear old solution files
-        try {
-            //An array of file names representing the solution files in the Solutions directory.
-            let solutionFiles = await pyodide.FS.readdir("Solutions");
-            solutionFiles.forEach(file => {
-                if (file !== "." && file !== "..") {
-                    pyodide.FS.unlink(`Solutions/${file}`);
-                }
-            });
-        } catch (error) {
-            console.warn("Solutions directory not found or already cleared.");
-        }
-
-        if (mode === 'user') {
-            stepSolve = solve.SolveInUserOrder(circuit, "Circuits/", "Solutions/");
-            //The initial step object created when solving the circuit in user mode.
-            let initialStep = await stepSolve.createStep0().toJs();
-            console.log("Initial Step:", initialStep);
-        } else {
-            await solve.solve_circuit(circuit);
-        }
-
-        console.timeEnd(timeSolve);
-        //An array of file names representing the JSON and SVG files in the Solutions directory.
-        const files = await pyodide.FS.readdir("Solutions");
-        jsonFiles_Z = files.filter(file => !file.endsWith("VC.json")&& file.endsWith(".json"));
-        console.log(jsonFiles_Z);
-        jsonFiles_VC = files.filter(file => file.endsWith("VC.json"));
-        if(jsonFiles_VC===[]){
-            jsonFiles_VC = null;
-        }
-        console.log(jsonFiles_VC);
-        svgFiles = files.filter(file => file.endsWith(".svg"));
-        console.log(svgFiles);
-        document.getElementById('loading-message').style.display='none';
-        currentStep = 0;
-        if(jsonFiles_VC===null)
-        {
-            display_step(pyodide, `Solutions/${jsonFiles_Z[currentStep]}`, `Solutions/${svgFiles[currentStep]}`);
-        }
-        else{
-            display_step(pyodide, `Solutions/${jsonFiles_Z[currentStep]}`, `Solutions/${svgFiles[currentStep]}`,`Solutions/${jsonFiles_VC[currentStep]}`);
-        }
-
-        if (mode === 'pre_calculated') {
-            document.querySelector('.nav-buttons-container').style.display = 'flex';
-        } else {
-            document.querySelector('.nav-buttons-container').style.display = 'none';
-        }
-    }
-
-    main();
-</script>
+    <!-- Bootstrap Import -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>
