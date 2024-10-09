@@ -33,6 +33,65 @@ Initializes the Pyodide environment, loads circuit and solution files,
 and sets up event listeners for UI elements.
  */
 async function main() {
+
+
+    // ############################# Navigation functions ############################################
+
+    const landingPage = document.getElementById("landingpage-container");
+    const selectPage = document.getElementById("select-page-container");
+    landingPage.style.display = "none";
+
+    const homeButton = document.getElementById("nav-home");
+    const simplifierButton = document.getElementById("nav-select");
+    const landingStartButton = document.getElementById("start-button");
+    const navLogo = document.getElementById("nav-logo");
+
+    homeButton.addEventListener('click', () => {
+        landingPage.style.display = "block";
+        selectPage.style.display = "none";
+    })
+    simplifierButton.addEventListener("click", () => {
+        landingPage.style.display = "none";
+        selectPage.style.display = "block";
+    })
+    landingStartButton.addEventListener("click", () => {
+        landingPage.style.display = "none";
+        selectPage.style.display = "block";
+    })
+    navLogo.addEventListener("click", () => {
+        landingPage.style.display = "block";
+        selectPage.style.display = "none";
+    })
+
+    // ############################# Select functions ############################################
+    const res1 = document.getElementById("res_1");
+    const res2 = document.getElementById("res_2");
+    const res3 = document.getElementById("res_3");
+    const next = document.getElementById("res-next-btn");
+    const prev = document.getElementById("res-prev-btn");
+
+    res1.addEventListener("click", () => {
+        res1.style.borderColor = "#FFC107";
+        res1.style.opacity = "0.5";
+    })
+
+    next.addEventListener("click", () => {
+        res1.style.borderColor = "white";
+        res1.style.opacity = "1";
+        res2.style.borderColor = "white";
+        res3.style.borderColor = "white";
+    })
+    prev.addEventListener("click", () => {
+        res1.style.borderColor = "white";
+        res1.style.opacity = "1";
+        res2.style.borderColor = "white";
+        res3.style.borderColor = "white";
+    })
+
+
+
+
+/*
     //A div element used to display loading messages to the user.
     const infoText = document.createElement('div');
     infoText.id = "infoText";
@@ -42,8 +101,10 @@ async function main() {
     infoText.setAttribute('style', 'white-space: pre;');
 
     infoText.textContent = "Lade Pyodide Umgebung... ";
+*/
     //The Pyodide instance used to run Python code in the browser.
     let pyodide = await loadPyodide();
+    /*
     infoText.textContent += "fertig\r\n";
 
     //A string used as a label for timing the loading of circuit files.
@@ -112,7 +173,7 @@ async function main() {
     document.getElementById('next-button').addEventListener('click', () => {
         if (currentStep < jsonFiles_Z.length - 1) {
             currentStep++;
-            display_step(pyodide, `Solutions/${jsonFiles_Z[currentStep]}`, `Solutions/${svgFiles[currentStep]}`);
+                  display_step(pyodide, `Solutions/${jsonFiles_Z[currentStep]}`, `Solutions/${svgFiles[currentStep]}`);
         }
     });
 
@@ -123,13 +184,15 @@ async function main() {
                 currentStep--;
                 display_step(pyodide,`Solutions/${jsonFiles_Z[currentStep]}`,`Solutions/${svgFiles[currentStep]}`);
             }
-            else{
+                    else{
                 currentStep--;
                 display_step(pyodide,`Solutions/${jsonFiles_Z[currentStep]}`,`Solutions/${svgFiles[currentStep]}`,`Solutions/${jsonFiles_VC[currentStep+1]}`);
             }
         }
     });
+    */
 
+/*
     document.getElementById('start-button').addEventListener('click', () => {
         if (mode && currentCircuit && pyodideReady) {
             document.getElementById('menu-toggle').click();
@@ -149,14 +212,10 @@ async function main() {
             }
         }
     });
-
-
+    */
 
     await load_packages(pyodide, ["sqlite3-1.0.0.zip"]);
-    await import_packages(pyodide).then(() => {
-        document.getElementById('menu-toggle').style.display = 'block';
-        document.getElementById('initial-message').style.display = 'block';
-    });
+    await import_packages(pyodide);
 }
 
 /*

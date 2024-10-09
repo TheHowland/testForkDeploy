@@ -1,18 +1,21 @@
 async function import_packages(pyodide) {
     let packages = ["matplotlib", "numpy", "sympy", "networkx", "IPython", "schemdraw", "ordered_set", "lcapy"];
-    createProgressBar("Importing packages into python Interpreter...");
-    updateProgressBar(0);
+    progressBar = document.getElementById("pgr-bar");
+    progressBarContainer = document.getElementById("pgr-bar-container");
+    progressBar.style.width = "40%";
 
     let progress = 0;
     for(const packageName of packages){
         await pyodide.runPythonAsync("import " + packageName)
         progress += 1;
         console.log("finished:" + packageName)
-        updateProgressBar(Math.floor((progress / packages.length) * 100))
+        let percent = 40 + Math.floor((progress / packages.length) * (100 - 40));
+        progressBar.style.width = String(percent)+"%";
     }
 
     console.log("Imported: " + packages);
-    await removeProgressBar();
+
+    progressBarContainer.style.display = "none";
     pyodideReady = true;
     document.getElementById('start-button').disabled = false;
 }

@@ -5,16 +5,18 @@ body, html {
 /* Landing page shadows*/
 #bootstrap-overrides #yellow-image-container {
     box-shadow: 0 6px 6px 0px lightgray;
+    z-index: 2;
+    position: relative;
 }
 
 #bootstrap-overrides #feature-container {
-    box-shadow: 0 4px 4px 0px lightgray;
+    box-shadow: 0 6px 6px 0px gray;
     z-index: 1;
     position: relative;
 }
 
 /* navbar */
-#bootstrap-overrides #logo {
+#bootstrap-overrides #nav-logo {
     font-family: 'Roboto Condensed', sans-serif;
     font-size: large;
     font-weight: bold;
@@ -51,8 +53,28 @@ body, html {
     font-weight: bold;
 }
 
+#bootstrap-overrides #start-container {
+    background-color: white;
+}
+
+#bootstrap-overrides #feature-container {
+    background-color: white;
+}
+
 #bootstrap-overrides #circuit-selector-explanation-container {
     background-color: #FFE7AD;
     z-index: 0;
     position: relative;
+}
+
+/* Selection page */
+#bootstrap-overrides .element-heading {
+    color: #FFC107;
+    font-family: 'Roboto Condensed', sans-serif;
+    font-size: 24px;
+}
+
+#bootstrap-overrides .select-img {
+    border: 1px solid white;
+    border-radius: 10px;
 }
