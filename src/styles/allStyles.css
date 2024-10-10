@@ -74,7 +74,30 @@ body, html {
     font-size: 24px;
 }
 
-#bootstrap-overrides .select-img {
+
+#bootstrap-overrides .circuit-imgs {
     border: 1px solid white;
     border-radius: 10px;
+}
+
+
+#bootstrap-overrides .img-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+#bootstrap-overrides .img-overlay {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    display: none;  /* don't show button overlay at start */
+}
+
+#bootstrap-overrides .img-overlay:before {
+    content: ' ';
+    display: block;
+    height: 45%; /* height position of the start button in container */
 }

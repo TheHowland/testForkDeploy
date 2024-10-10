@@ -5,8 +5,6 @@ async function load_packages(pyodide, optAddNames) {
     let packageAddress = serverAddress + "/Packages/";
     let packages = await fetchDirectoryListing(packageAddress, ".whl");
 
-
-
     if(Array.isArray(optAddNames)){
         for(let i = 0; i < optAddNames.length; i++){
             packages.push(optAddNames[i]);

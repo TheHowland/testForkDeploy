@@ -32,6 +32,24 @@ let serverAddress = "http://localhost:8000"
 Initializes the Pyodide environment, loads circuit and solution files,
 and sets up event listeners for UI elements.
  */
+
+function showCircuitAsSelected(circuit, btnOverlay) {
+    circuit.style.borderColor = "#FFC107";
+    circuit.style.opacity = "0.5";
+    btnOverlay.style.display = "block"
+}
+function showCircuitAsUnselected(circuit, btnOverlay) {
+    circuit.style.borderColor = "white";
+    circuit.style.opacity = "1";
+    btnOverlay.style.display = "none"
+}
+
+function setupSelectionCircuit(circuit, startBtn, startBtnOverlay) {
+    circuit.addEventListener("click", () => {showCircuitAsSelected(circuit, startBtnOverlay)})
+    startBtnOverlay.addEventListener("click", () => {showCircuitAsUnselected(circuit, startBtnOverlay)})
+    // todo startbtn
+}
+
 async function main() {
 
 
@@ -39,7 +57,10 @@ async function main() {
 
     const landingPage = document.getElementById("landingpage-container");
     const selectPage = document.getElementById("select-page-container");
+
+    // ############################# Set start page ############################################
     landingPage.style.display = "none";
+    selectPage.style.display = "block";
 
     const homeButton = document.getElementById("nav-home");
     const simplifierButton = document.getElementById("nav-select");
@@ -64,30 +85,61 @@ async function main() {
     })
 
     // ############################# Select functions ############################################
-    const res1 = document.getElementById("res_1");
-    const res2 = document.getElementById("res_2");
-    const res3 = document.getElementById("res_3");
+    const res1 = document.getElementById("res1");
+    const res1Btn = document.getElementById("res1-btn");
+    const res1BtnOverlay = document.getElementById("res1-overlay");
+
+    const res2 = document.getElementById("res2");
+    const res2Btn = document.getElementById("res2-btn");
+    const res2BtnOverlay = document.getElementById("res2-overlay");
+
+    const res3 = document.getElementById("res3");
+    const res3Btn = document.getElementById("res3-btn");
+    const res3BtnOverlay = document.getElementById("res3-overlay");
+
     const next = document.getElementById("res-next-btn");
     const prev = document.getElementById("res-prev-btn");
 
-    res1.addEventListener("click", () => {
-        res1.style.borderColor = "#FFC107";
-        res1.style.opacity = "0.5";
+    setupSelectionCircuit(res1, res1Btn, res1BtnOverlay);
+    setupSelectionCircuit(res2, res2Btn, res2BtnOverlay);
+    setupSelectionCircuit(res3, res3Btn, res3BtnOverlay);
+
+
+    res1Btn.addEventListener("click", () => {
+        console.log("start clicked");
     })
+
+    res2Btn.addEventListener("click", () => {
+        console.log("start 2 clicked");
+    })
+
+    res3Btn.addEventListener("click", () => {
+        console.log("start 3 clicked");
+    })
+
 
     next.addEventListener("click", () => {
         res1.style.borderColor = "white";
-        res1.style.opacity = "1";
         res2.style.borderColor = "white";
         res3.style.borderColor = "white";
+        res1.style.opacity = "1";
+        res2.style.opacity = "1";
+        res3.style.opacity = "1";
+        res1BtnOverlay.style.display = "none";
+        res3BtnOverlay.style.display = "none";
+        res2BtnOverlay.style.display = "none";
     })
     prev.addEventListener("click", () => {
         res1.style.borderColor = "white";
-        res1.style.opacity = "1";
         res2.style.borderColor = "white";
         res3.style.borderColor = "white";
+        res1.style.opacity = "1";
+        res2.style.opacity = "1";
+        res3.style.opacity = "1";
+        res1BtnOverlay.style.display = "none";
+        res3BtnOverlay.style.display = "none";
+        res2BtnOverlay.style.display = "none";
     })
-
 
 
 
@@ -214,8 +266,8 @@ async function main() {
     });
     */
 
-    await load_packages(pyodide, ["sqlite3-1.0.0.zip"]);
-    await import_packages(pyodide);
+    //await load_packages(pyodide, ["sqlite3-1.0.0.zip"]);
+    //await import_packages(pyodide);
 }
 
 /*
