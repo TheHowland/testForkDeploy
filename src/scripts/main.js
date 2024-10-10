@@ -18,8 +18,6 @@ let currentCircuit = "";
 let selectedCircuit = "";
 //Variable to store the step solving object.
 let stepSolve;
-// Stores the current mode (user or pre-calculated).
-let mode = '';
 // Boolean to track if the congratulatory message has been displayed.
 let congratsDisplayed = false;
 //--------------------------------------------------------------
@@ -50,118 +48,131 @@ function setupSelectionCircuit(circuit, startBtn, startBtnOverlay) {
     // todo startbtn
 }
 
+function resetSelection(circuit, overlay) {
+    circuit.style.borderColor = "white";
+    circuit.style.opacity = "1";
+    overlay.style.display = "none";
+}
+
+function startSolving(pyodide) {
+    if (currentCircuit && pyodideReady) {
+        //resetCongratsDisplayed();
+        setTimeout(()=>{
+            solveCircuit(currentCircuit, pyodide);
+        },300);
+        //The div element that contains the SVG representation of the circuit diagram.
+        const svgDiv = document.querySelector('.svg-container');
+        //The div element that contains the list of elements that have been clicked or selected in the circuit diagram.
+        const clickedElementsContainer = document.querySelector('.clicked-elements-container');
+        if (svgDiv && clickedElementsContainer) {
+            resetClickedElements(svgDiv, clickedElementsContainer);
+        }
+    }
+}
+
 async function main() {
 
 
-    // ############################# Navigation functions ############################################
-
+    // ############################# Pages (Containers) ############################################
+    // The navigation for this website is not via different html files, but by showing and not
+    // showing different containers that act as pages
     const landingPage = document.getElementById("landingpage-container");
     const selectPage = document.getElementById("select-page-container");
+    const simplifierPage = document.getElementById("simplifier-page-container");
 
     // ############################# Set start page ############################################
     landingPage.style.display = "none";
     selectPage.style.display = "block";
+    simplifierPage.style.display = "none";
 
-    const homeButton = document.getElementById("nav-home");
-    const simplifierButton = document.getElementById("nav-select");
-    const landingStartButton = document.getElementById("start-button");
+    const navHomeLink = document.getElementById("nav-home");
+    const navSimplifierLink = document.getElementById("nav-select");
     const navLogo = document.getElementById("nav-logo");
 
-    homeButton.addEventListener('click', () => {
+    const landingStartButton = document.getElementById("start-button");
+
+    navHomeLink.addEventListener('click', () => {
         landingPage.style.display = "block";
         selectPage.style.display = "none";
+        simplifierPage.style.display = "none";
     })
-    simplifierButton.addEventListener("click", () => {
+    navSimplifierLink.addEventListener("click", () => {
         landingPage.style.display = "none";
         selectPage.style.display = "block";
+        simplifierPage.style.display = "none";
     })
     landingStartButton.addEventListener("click", () => {
         landingPage.style.display = "none";
         selectPage.style.display = "block";
+        simplifierPage.style.display = "none";
     })
     navLogo.addEventListener("click", () => {
         landingPage.style.display = "block";
         selectPage.style.display = "none";
+        simplifierPage.style.display = "none";
     })
 
     // ############################# Select functions ############################################
     const res1 = document.getElementById("res1");
-    const res1Btn = document.getElementById("res1-btn");
+    const res1StartBtn = document.getElementById("res1-btn");
     const res1BtnOverlay = document.getElementById("res1-overlay");
 
+    res1StartBtn.disabled = true;
+
     const res2 = document.getElementById("res2");
-    const res2Btn = document.getElementById("res2-btn");
+    const res2StartBtn = document.getElementById("res2-btn");
     const res2BtnOverlay = document.getElementById("res2-overlay");
 
     const res3 = document.getElementById("res3");
-    const res3Btn = document.getElementById("res3-btn");
+    const res3StartBtn = document.getElementById("res3-btn");
     const res3BtnOverlay = document.getElementById("res3-overlay");
 
-    const next = document.getElementById("res-next-btn");
-    const prev = document.getElementById("res-prev-btn");
+    const resNext = document.getElementById("res-next-btn");
+    const resPrev = document.getElementById("res-prev-btn");
 
-    setupSelectionCircuit(res1, res1Btn, res1BtnOverlay);
-    setupSelectionCircuit(res2, res2Btn, res2BtnOverlay);
-    setupSelectionCircuit(res3, res3Btn, res3BtnOverlay);
+    setupSelectionCircuit(res1, res1StartBtn, res1BtnOverlay);
+    setupSelectionCircuit(res2, res2StartBtn, res2BtnOverlay);
+    setupSelectionCircuit(res3, res3StartBtn, res3BtnOverlay);
 
-
-    res1Btn.addEventListener("click", () => {
+    res1StartBtn.addEventListener("click", () => {
         console.log("start clicked");
+        // show simplifier page
+        landingPage.style.display = "none";
+        selectPage.style.display = "none";
+        simplifierPage.style.display = "block";
+        currentCircuit = "Circuit_resistors.txt";
+        selectedCircuit= currentCircuit.replace(".txt", "");
+        console.log(selectedCircuit);
+        startSolving(pyodide);
     })
 
-    res2Btn.addEventListener("click", () => {
+    res2StartBtn.addEventListener("click", () => {
         console.log("start 2 clicked");
     })
 
-    res3Btn.addEventListener("click", () => {
+    res3StartBtn.addEventListener("click", () => {
         console.log("start 3 clicked");
     })
 
 
-    next.addEventListener("click", () => {
-        res1.style.borderColor = "white";
-        res2.style.borderColor = "white";
-        res3.style.borderColor = "white";
-        res1.style.opacity = "1";
-        res2.style.opacity = "1";
-        res3.style.opacity = "1";
-        res1BtnOverlay.style.display = "none";
-        res3BtnOverlay.style.display = "none";
-        res2BtnOverlay.style.display = "none";
+    resNext.addEventListener("click", () => {
+        resetSelection(res1, res1BtnOverlay);
+        resetSelection(res2, res2BtnOverlay);
+        resetSelection(res3, res3BtnOverlay);
     })
-    prev.addEventListener("click", () => {
-        res1.style.borderColor = "white";
-        res2.style.borderColor = "white";
-        res3.style.borderColor = "white";
-        res1.style.opacity = "1";
-        res2.style.opacity = "1";
-        res3.style.opacity = "1";
-        res1BtnOverlay.style.display = "none";
-        res3BtnOverlay.style.display = "none";
-        res2BtnOverlay.style.display = "none";
+    resPrev.addEventListener("click", () => {
+        resetSelection(res1, res1BtnOverlay);
+        resetSelection(res2, res2BtnOverlay);
+        resetSelection(res3, res3BtnOverlay);
     })
 
 
-
-/*
-    //A div element used to display loading messages to the user.
-    const infoText = document.createElement('div');
-    infoText.id = "infoText";
-    infoText.textContent = "";
-
-    document.body.appendChild(infoText);
-    infoText.setAttribute('style', 'white-space: pre;');
-
-    infoText.textContent = "Lade Pyodide Umgebung... ";
-*/
     //The Pyodide instance used to run Python code in the browser.
     let pyodide = await loadPyodide();
-    /*
-    infoText.textContent += "fertig\r\n";
+
 
     //A string used as a label for timing the loading of circuit files.
-    let loadCircuits = "Lade Schaltkreise";
-    infoText.textContent += "Lade Schaltkreise vom Server... ";
+    let loadCircuits = "loading circuits";
     console.time(loadCircuits);
 
     //An array buffer containing the zipped circuit files fetched from the server.
@@ -170,64 +181,13 @@ async function main() {
 
     circuitFiles = pyodide.FS.readdir("Circuits");
     circuitFiles = circuitFiles.filter((file) => file !== "." && file !== "..");
-    populateCircuitSelector();
     console.timeEnd(loadCircuits);
 
     pyodide.FS.writeFile("/home/pyodide/solve.py", await (await fetch(serverAddress + "/solve.py")).text());
 
-    document.body.removeChild(infoText);
 
-    document.getElementById('menu-toggle').style.display = 'block';
-    document.getElementById('initial-message').style.display = 'block';
-    //The div element representing the menu bar in the UI.
-    const menuBar = document.getElementById('menu-bar');
-    //The div element where the circuit simplification content is displayed.
-    const simplificationDiv = document.getElementById('simplification');
-    if (menuBar.style.left === '0px') {
-        menuBar.style.left = '-250px';
-        simplificationDiv.style.width = '90vw';
-    } else {
-        menuBar.style.left = '0px';
-        simplificationDiv.style.width = 'calc(90vw - 250px)';
-    }
+/*
 
-    document.getElementById('menu-toggle').addEventListener('click', () => {
-        // The div element representing the menu bar in the UI.
-        const menuBar = document.getElementById('menu-bar');
-        //The div element where the circuit simplification content is displayed.
-        const simplificationDiv = document.getElementById('simplification');
-        if (menuBar.style.left === '0px') {
-            menuBar.style.left = '-250px';
-            simplificationDiv.style.width = '90vw';
-        } else {
-            menuBar.style.left = '0px';
-            simplificationDiv.style.width = 'calc(90vw - 250px)';
-        }
-    });
-
-    document.getElementById('mode').addEventListener('change', (event) => {
-        mode = event.target.value;
-    });
-
-    document.getElementById('circuit-selector').addEventListener('change', (event) => {
-        currentCircuit = event.target.value;
-        selectedCircuit= currentCircuit.replace(".txt", "");
-        console.log(selectedCircuit)
-    });
-
-    document.getElementById('prev-button').addEventListener('click', () => {
-        if (currentStep > 0) {
-            currentStep--;
-            display_step(pyodide, `Solutions/${jsonFiles_Z[currentStep]}`, `Solutions/${svgFiles[currentStep]}`);
-        }
-    });
-
-    document.getElementById('next-button').addEventListener('click', () => {
-        if (currentStep < jsonFiles_Z.length - 1) {
-            currentStep++;
-                  display_step(pyodide, `Solutions/${jsonFiles_Z[currentStep]}`, `Solutions/${svgFiles[currentStep]}`);
-        }
-    });
 
     document.getElementById('continue-button').addEventListener('click',()=>{
         if(currentStep>0){
@@ -242,7 +202,7 @@ async function main() {
             }
         }
     });
-    */
+*/
 
 /*
     document.getElementById('start-button').addEventListener('click', () => {
@@ -266,8 +226,10 @@ async function main() {
     });
     */
 
-    //await load_packages(pyodide, ["sqlite3-1.0.0.zip"]);
-    //await import_packages(pyodide);
+    await load_packages(pyodide, ["sqlite3-1.0.0.zip"]);
+    await import_packages(pyodide);
+
+    console.log("we did this");
 }
 
 /*
@@ -299,14 +261,10 @@ async function solveCircuit(circuit, pyodide) {
         console.warn("Solutions directory not found or already cleared.");
     }
 
-    if (mode === 'user') {
-        stepSolve = solve.SolveInUserOrder(circuit, "Circuits/", "Solutions/");
-        //The initial step object created when solving the circuit in user mode.
-        let initialStep = await stepSolve.createStep0().toJs();
-        console.log("Initial Step:", initialStep);
-    } else {
-        await solve.solve_circuit(circuit);
-    }
+    stepSolve = solve.SolveInUserOrder(circuit, "Circuits/", "Solutions/");
+    //The initial step object created when solving the circuit in user mode.
+    let initialStep = await stepSolve.createStep0().toJs();
+    console.log("Initial Step:", initialStep);
 
     console.timeEnd(timeSolve);
     //An array of file names representing the JSON and SVG files in the Solutions directory.
@@ -320,7 +278,6 @@ async function solveCircuit(circuit, pyodide) {
     console.log(jsonFiles_VC);
     svgFiles = files.filter(file => file.endsWith(".svg"));
     console.log(svgFiles);
-    document.getElementById('loading-message').style.display='none';
     currentStep = 0;
     if(jsonFiles_VC===null)
     {
@@ -328,11 +285,5 @@ async function solveCircuit(circuit, pyodide) {
     }
     else{
         display_step(pyodide, `Solutions/${jsonFiles_Z[currentStep]}`, `Solutions/${svgFiles[currentStep]}`,`Solutions/${jsonFiles_VC[currentStep]}`);
-    }
-
-    if (mode === 'pre_calculated') {
-        document.querySelector('.nav-buttons-container').style.display = 'flex';
-    } else {
-        document.querySelector('.nav-buttons-container').style.display = 'none';
     }
 }

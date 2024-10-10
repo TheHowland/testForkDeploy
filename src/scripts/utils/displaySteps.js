@@ -1,10 +1,13 @@
 /*
 Displays the current step of the circuit simplification process using the provided JSON and SVG files.
  */
-function display_step(pyodide, jsonFilePath_Z,svgFilePath,jsonFilePath_VC=null, contentDivName = 'simplification') {
-    const contentDiv = document.getElementById(contentDivName);
-    contentDiv.innerHTML = '';
+function display_step(pyodide, jsonFilePath_Z,svgFilePath,jsonFilePath_VC=null) {
+    const contentCol = document.getElementById("content-col");
+    const resetBtn = document.getElementById("reset-btn");
+    const checkBtn = document.getElementById("check-btn");
+
     console.log(jsonFilePath_VC);
+
     try {
         // Lade die JSON-Datei und logge den Inhalt
         let jsonDataString = pyodide.FS.readFile(jsonFilePath_Z, { encoding: "utf8" });
@@ -40,140 +43,115 @@ function display_step(pyodide, jsonFilePath_Z,svgFilePath,jsonFilePath_VC=null, 
 
         // Baue das UI auf
         const circuitContainer = document.createElement('div');
-        circuitContainer.className = 'circuit-container';
+        circuitContainer.classList.add('circuit-container');
+        circuitContainer.classList.add("row"); // use flexbox property for scaling display sizes
+        circuitContainer.classList.add("w-75"); // set width
+        circuitContainer.classList.add("mx-auto"); // centers the content
+        circuitContainer.classList.add("my-1"); // centers the content
+
 
         const svgDiv = document.createElement('div');
-        svgDiv.className = 'svg-container';
+        svgDiv.classList.add("svg-container");
+        svgDiv.classList.add("p-1");
+        svgDiv.style.border = "1px solid white";
+        svgDiv.style.borderRadius = "10px";
         svgDiv.innerHTML = svgData;
+
 
         const sanitizedSvgFilePath = sanitizeSelector(svgFilePath);
         circuitContainer.appendChild(svgDiv);
+        contentCol.append(circuitContainer)
 
-        const descriptionContainer = document.createElement('div');
-        descriptionContainer.className = 'description-container';
+        const clickedElementsContainer = document.createElement('div');
+        clickedElementsContainer.className = 'clicked-elements-container';
+        clickedElementsContainer.classList.add("text-light");
+        clickedElementsContainer.classList.add("text-center");
+        clickedElementsContainer.classList.add("py-1");
+        clickedElementsContainer.classList.add("mb-5");
+        clickedElementsContainer.innerHTML = `<h3>Next elements</h3><ul id="clicked-elements-list-${sanitizedSvgFilePath}"></ul>`;
 
-        const contentContainer = document.createElement('div');
-        contentContainer.className = 'content-container';
-        contentContainer.appendChild(circuitContainer);
-        contentContainer.appendChild(descriptionContainer);
-        contentDiv.appendChild(contentContainer);
+        //paragraph_Z(data, jsonFilePath_Z, contentCol);
 
-        if (mode === 'user') {
-            const clickedElementsContainer = document.createElement('div');
-            clickedElementsContainer.className = 'clicked-elements-container';
-            clickedElementsContainer.innerHTML = `<h3>Ausgew&auml;hlte Elemente</h3><ul id="clicked-elements-list-${sanitizedSvgFilePath}"></ul>`;
+        const pathElements = svgDiv.querySelectorAll('path');
+        const filteredPaths = Array.from(pathElements).filter(path => path.getAttribute('class') !== 'na');
 
-            paragraph_Z(data, jsonFilePath_Z, descriptionContainer);
-
-            const pathElements = svgDiv.querySelectorAll('path');
-            const filteredPaths = Array.from(pathElements).filter(path => path.getAttribute('class') !== 'na');
-
-            if (filteredPaths.length === 1) {
-                const congratsMessage = document.createElement('p');
-                congratsMessage.innerHTML = 'Herzlichen Glueckwunsch! Sie haben den Schaltkreis vollsaendig vereinfacht.';
-                clickedElementsContainer.appendChild(congratsMessage);
-            }
-
-            const resetButton = document.createElement('button');
-            resetButton.className = 'reset-button';
-            resetButton.textContent = 'Reset';
-            resetButton.addEventListener('click', () => {
-                resetClickedElements(svgDiv, clickedElementsContainer);
-            });
-
-            const checkButton = document.createElement('button');
-            checkButton.className = 'check-button';
-            checkButton.textContent = 'Check';
-            checkButton.addEventListener('click', async () => {
-                setTimeout(() => {
-                    resetClickedElements(svgDiv, clickedElementsContainer);
-                }, 100);
-                if (selectedElements.length === 2) {
-                    const canSimplify = await stepSolve.simplifyTwoCpts(selectedElements).toJs();
-                    if (canSimplify[0]) {
-                        display_step(pyodide, canSimplify[1][0], canSimplify[2],canSimplify[1][1]);
-                    } else {
-                        showMessage("Die ausgewaehlten Elemente konnten nicht vereinfacht werden.");
-                    }
-                } else {
-                    showMessage('Bitte waehlen Sie genau zwei Elemente aus!');
-                }
-                MathJax.typeset();
-            });
-
-            clickedElementsContainer.appendChild(resetButton);
-            clickedElementsContainer.appendChild(checkButton);
-
-            descriptionContainer.appendChild(clickedElementsContainer);
-
-            if (filteredPaths.length > 1) {
-                const clickedElementsList = clickedElementsContainer.querySelector(`#clicked-elements-list-${sanitizedSvgFilePath}`);
-
-                pathElements.forEach(pathElement => {
-                    pathElement.style.pointerEvents = 'bounding-box';
-                    pathElement.style.cursor = 'pointer';
-
-                    pathElement.addEventListener('click', () => {
-                        const bboxId = `bbox-${pathElement.getAttribute('id') || Math.random().toString(36).substr(2, 9)}`;
-                        const existingBox = document.getElementById(bboxId);
-                        if (existingBox) {
-                            existingBox.remove();
-                            const listItem = document.querySelector(`li[data-bbox-id="${bboxId}"]`);
-                            if (listItem) {
-                                listItem.remove();
-                                selectedElements = selectedElements.filter(e => e !== pathElement.getAttribute('id'));
-                            }
-                        } else {
-                            const bbox = pathElement.getBBox();
-                            const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-                            rect.setAttribute('x', bbox.x);
-                            rect.setAttribute('y', bbox.y);
-                            rect.setAttribute('width', bbox.width);
-                            rect.setAttribute('height', bbox.height);
-                            rect.setAttribute('id', bboxId);
-                            rect.classList.add('bounding-box');
-                            pathElement.parentNode.insertBefore(rect, pathElement.nextSibling);
-
-                            const value = pathElement.getAttribute('class') || 'na';
-                            const listItem = document.createElement('li');
-                            listItem.innerHTML = `${pathElement.getAttribute('id') || 'no id'} = \\(${value}\\)`;
-                            listItem.setAttribute('data-bbox-id', bboxId);
-                            clickedElementsList.appendChild(listItem);
-                            selectedElements.push(pathElement.getAttribute('id') || 'no id');
-                        }
-                        MathJax.typeset();
-                    });
-                });
-            }
+        if (filteredPaths.length === 1) {
+            const congratsMessage = document.createElement('p');
+            congratsMessage.innerHTML = 'Well done, you finished the circuit!';
+            clickedElementsContainer.appendChild(congratsMessage);
         }
 
-        MathJax.typeset();
+        resetBtn.addEventListener('click', () => {
+            resetClickedElements(svgDiv, clickedElementsContainer);
+        });
 
-        if (mode === 'pre_calculated') {
-            const pathElements = svgDiv.querySelectorAll('path');
-            const filteredPaths = Array.from(pathElements).filter(path => path.getAttribute('class') !== 'na');
-            const congratsMessage = document.createElement('p');
-
-            if (filteredPaths.length === 1) {
-                congratsMessage.innerHTML = 'Die Komponenten sind nun vollstaendig vereinfacht. Es folgt nun die Berechnung der Spannungen und Stroeme.';
-                descriptionContainer.appendChild(congratsMessage);
-                congratsDisplayed = true;
-                paragraph_Z(data, jsonFilePath_Z, descriptionContainer);
-                document.querySelector('.nav-buttons-container').style.display = 'none';
-                document.getElementById('continue-button').style.display = 'flex';
-            } else if (congratsDisplayed === false) {
-                paragraph_Z(data, jsonFilePath_Z, descriptionContainer);
+        checkBtn.addEventListener('click', async () => {
+            setTimeout(() => {
+                resetClickedElements(svgDiv, clickedElementsContainer);
+            }, 100);
+            if (selectedElements.length === 2) {
+                const canSimplify = await stepSolve.simplifyTwoCpts(selectedElements).toJs();
+                if (canSimplify[0]) {
+                    display_step(pyodide, canSimplify[1][0], canSimplify[2],canSimplify[1][1]);
+                } else {
+                    showMessage(contentCol, "Can not simplify those elements");
+                }
             } else {
-                paragraph_VC(data_vc, descriptionContainer);
+                showMessage(contentCol, 'Please choose exactly 2 elements');
             }
             MathJax.typeset();
+            contentCol.removeChild(clickedElementsContainer)
+
+        });
+
+        contentCol.appendChild(clickedElementsContainer);
+
+        if (filteredPaths.length > 1) {
+            const clickedElementsList = clickedElementsContainer.querySelector(`#clicked-elements-list-${sanitizedSvgFilePath}`);
+
+            pathElements.forEach(pathElement => {
+                pathElement.style.pointerEvents = 'bounding-box';
+                pathElement.style.cursor = 'pointer';
+
+                pathElement.addEventListener('click', () => {
+                    const bboxId = `bbox-${pathElement.getAttribute('id') || Math.random().toString(36).substr(2, 9)}`;
+                    const existingBox = document.getElementById(bboxId);
+                    if (existingBox) {
+                        existingBox.remove();
+                        const listItem = document.querySelector(`li[data-bbox-id="${bboxId}"]`);
+                        if (listItem) {
+                            listItem.remove();
+                            selectedElements = selectedElements.filter(e => e !== pathElement.getAttribute('id'));
+                        }
+                    } else {
+                        const bbox = pathElement.getBBox();
+                        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                        rect.setAttribute('x', bbox.x);
+                        rect.setAttribute('y', bbox.y);
+                        rect.setAttribute('width', bbox.width);
+                        rect.setAttribute('height', bbox.height);
+                        rect.setAttribute('id', bboxId);
+                        rect.classList.add('bounding-box');
+                        pathElement.parentNode.insertBefore(rect, pathElement.nextSibling);
+
+                        const value = pathElement.getAttribute('class') || 'na';
+                        const listItem = document.createElement('li');
+                        listItem.innerHTML = `${pathElement.getAttribute('id') || 'no id'} = \\(${value}\\)`;
+                        listItem.setAttribute('data-bbox-id', bboxId);
+                        clickedElementsList.appendChild(listItem);
+                        selectedElements.push(pathElement.getAttribute('id') || 'no id');
+                    }
+                    MathJax.typeset();
+                });
+            });
         }
 
         MathJax.typeset();
+
 
     } catch (error) {
         console.error('Error fetching data:', error);
-        contentDiv.textContent = 'Error loading content';
+        contentCol.textContent = 'Error loading content';
     }
 }
 

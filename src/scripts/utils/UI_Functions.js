@@ -6,21 +6,6 @@ function sanitizeSelector(selector) {
 }
 
 /*
-Populates a dropdown menu with circuit file options, allowing the user to select a circuit.
- */
-function populateCircuitSelector() {
-    const circuitSelector = document.getElementById('circuit-selector');
-    circuitSelector.innerHTML = '<option value="" disabled selected>Select Circuit</option>';
-
-    circuitFiles.forEach(file => {
-        const option = document.createElement('option');
-        option.value = file;
-        option.text = file.replace('.txt', '');
-        circuitSelector.appendChild(option);
-    });
-}
-
-/*
  Removes all bounding boxes and clears the list of clicked elements in the SVG and the clicked elements container.
  */
 function resetClickedElements(svgDiv, clickedElementsContainer) {
@@ -41,12 +26,16 @@ function resetClickedElements(svgDiv, clickedElementsContainer) {
 /*
 Displays a temporary message to the user in a message box.
  */
-function showMessage(message) {
-    const messageBox = document.getElementById('message-box');
-    messageBox.textContent = message;
-    messageBox.style.display = 'block';
+function showMessage(container, message) {
+    const msg = document.createElement('div');
+    msg.classList.add("alert");
+    msg.classList.add("alert-warning");
+    msg.classList.add("fixed-bottom");
+    msg.classList.add("m-5");
+    msg.innerHTML = message;
+    container.appendChild(svgDiv);
     setTimeout(() => {
-        messageBox.style.display = 'none';
+        msg.style.display = 'none';
     }, 3000);
 }
 

@@ -1,5 +1,6 @@
 body, html {
     font-family: 'Roboto', sans-serif;
+    overflow-x: hidden;
 }
 
 /* Landing page shadows*/
@@ -74,12 +75,10 @@ body, html {
     font-size: 24px;
 }
 
-
 #bootstrap-overrides .circuit-imgs {
     border: 1px solid white;
     border-radius: 10px;
 }
-
 
 #bootstrap-overrides .img-wrapper {
     position: relative;
@@ -100,4 +99,20 @@ body, html {
     content: ' ';
     display: block;
     height: 45%; /* height position of the start button in container */
+}
+
+/* applies to every start button overlay on the circuits */
+#bootstrap-overrides .circuitStartBtn {
+    font-weight: bold;
+    border-radius: 40px;
+}
+
+/* Simplifier page */
+#bootstrap-overrides svg{
+    width: 100%;
+    height: 400px; /* set an absolute height, so changing images always have the same size */
+}
+
+#bootstrap-overrides ul {
+    list-style-type: none;
 }

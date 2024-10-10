@@ -17,5 +17,6 @@ async function import_packages(pyodide) {
 
     progressBarContainer.style.display = "none";
     pyodideReady = true;
+    document.getElementById("res1-btn").disabled = false;
     document.getElementById('start-button').disabled = false;
 }
