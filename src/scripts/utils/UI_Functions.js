@@ -5,23 +5,7 @@ function sanitizeSelector(selector) {
     return selector.replace(/[^\w-]/g, '_');
 }
 
-/*
- Removes all bounding boxes and clears the list of clicked elements in the SVG and the clicked elements container.
- */
-function resetClickedElements(svgDiv, clickedElementsContainer) {
-    const boundingBoxes = svgDiv.querySelectorAll('.bounding-box');
-    if (boundingBoxes.length > 0) {
-        boundingBoxes.forEach(box => box.remove());
-    }
 
-    const clickedElementsList = clickedElementsContainer.querySelector('ul');
-    if (clickedElementsList) {
-        clickedElementsList.innerHTML = '';
-    } else {
-        console.warn('clickedElementsContainer ul-Liste nicht gefunden');
-    }
-    selectedElements = [];
-}
 
 /*
 Displays a temporary message to the user in a message box.

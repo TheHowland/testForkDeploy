@@ -25,11 +25,36 @@ let congratsDisplayed = false;
 let pyodideReady = false;
 //Stores the server address for fetching resources.
 let serverAddress = "http://localhost:8000"
+let pictureCounter = 0;
 
 /*
 Initializes the Pyodide environment, loads circuit and solution files,
 and sets up event listeners for UI elements.
  */
+function resetHighlightedBoundingBoxes(svgDiv) {
+    const boundingBoxes = svgDiv.querySelectorAll('.bounding-box');
+    if (boundingBoxes.length > 0) {
+        boundingBoxes.forEach(box => box.remove());
+    }
+}
+
+function resetNextElementsTextAndList(nextElementsContainer) {
+    const nextElementList = nextElementsContainer.querySelector('ul');
+    if (nextElementList) {
+        nextElementList.innerHTML = '';
+    } else {
+        console.warn('nextElementsContainer ul-list not found');
+    }
+    selectedElements = [];
+}
+
+/*
+ Removes all bounding boxes and clears the list of clicked elements in the SVG and the clicked elements container.
+ */
+function resetNextElements(svgDiv, nextElementsContainer) {
+    resetHighlightedBoundingBoxes(svgDiv);
+    resetNextElementsTextAndList(nextElementsContainer);
+}
 
 function showCircuitAsSelected(circuit, btnOverlay) {
     circuit.style.borderColor = "#FFC107";
@@ -63,11 +88,24 @@ function startSolving(pyodide) {
         //The div element that contains the SVG representation of the circuit diagram.
         const svgDiv = document.querySelector('.svg-container');
         //The div element that contains the list of elements that have been clicked or selected in the circuit diagram.
-        const clickedElementsContainer = document.querySelector('.clicked-elements-container');
-        if (svgDiv && clickedElementsContainer) {
-            resetClickedElements(svgDiv, clickedElementsContainer);
+        const nextElementsContainer = document.querySelector('.next-elements-container');
+        if (svgDiv && nextElementsContainer) {
+            resetNextElements(svgDiv, nextElementsContainer);
         }
     }
+}
+
+
+function showLandingPage(landingPage, selectPage, simplifierPage) {
+    landingPage.style.display = "block";
+    selectPage.style.display = "none";
+    simplifierPage.style.display = "none";
+}
+
+function showSelectPage(landingPage, selectPage, simplifierPage) {
+    landingPage.style.display = "none";
+    selectPage.style.display = "block";
+    simplifierPage.style.display = "none";
 }
 
 async function main() {
@@ -79,37 +117,28 @@ async function main() {
     const selectPage = document.getElementById("select-page-container");
     const simplifierPage = document.getElementById("simplifier-page-container");
 
-    // ############################# Set start page ############################################
-    landingPage.style.display = "block";
-    selectPage.style.display = "none";
-    simplifierPage.style.display = "none";
+    // ############################# Setup start page ############################################
+    showLandingPage(landingPage, selectPage, simplifierPage);
 
     const navHomeLink = document.getElementById("nav-home");
     const navSimplifierLink = document.getElementById("nav-select");
     const navLogo = document.getElementById("nav-logo");
-
     const landingStartButton = document.getElementById("start-button");
 
     navHomeLink.addEventListener('click', () => {
-        landingPage.style.display = "block";
-        selectPage.style.display = "none";
-        simplifierPage.style.display = "none";
+        showLandingPage(landingPage, selectPage, simplifierPage);
     })
     navSimplifierLink.addEventListener("click", () => {
-        landingPage.style.display = "none";
-        selectPage.style.display = "block";
-        simplifierPage.style.display = "none";
+        showSelectPage(landingPage, selectPage, simplifierPage);
     })
     landingStartButton.addEventListener("click", () => {
-        landingPage.style.display = "none";
-        selectPage.style.display = "block";
-        simplifierPage.style.display = "none";
+        showSelectPage(landingPage, selectPage, simplifierPage);
     })
     navLogo.addEventListener("click", () => {
-        landingPage.style.display = "block";
-        selectPage.style.display = "none";
-        simplifierPage.style.display = "none";
+        showLandingPage(landingPage, selectPage, simplifierPage);
     })
+
+    // ############################# Setup simplifier page ############################################
 
     const resetBtn = document.getElementById("reset-btn");
     const checkBtn = document.getElementById("check-btn");
@@ -120,18 +149,19 @@ async function main() {
     });
 
     checkBtn.addEventListener('click', async () => {
-        const clickedElementsContainer = document.getElementById("clickedElementsContainer");
-        const svgDiv = document.getElementById("svgDiv");
+        const nextElementsContainer = document.getElementById("nextElementsContainer");
+        const svgDiv = document.getElementById(`svgDiv${pictureCounter}`);
+
 
         setTimeout(() => {
-            resetClickedElements(svgDiv, clickedElementsContainer);
+            resetNextElements(svgDiv, nextElementsContainer);
         }, 100);
         console.log(selectedElements)
         if (selectedElements.length === 2) {
             const canSimplify = await stepSolve.simplifyTwoCpts(selectedElements).toJs();
             if (canSimplify[0]) {
                 display_step(pyodide, canSimplify[1][0], canSimplify[2],canSimplify[1][1]);
-                contentCol.removeChild(clickedElementsContainer);
+                contentCol.removeChild(nextElementsContainer);
             } else {
                 showMessage(contentCol, "Can not simplify those elements");
             }
@@ -200,7 +230,6 @@ async function main() {
     //The Pyodide instance used to run Python code in the browser.
     let pyodide = await loadPyodide();
 
-
     //A string used as a label for timing the loading of circuit files.
     let loadCircuits = "loading circuits";
     console.time(loadCircuits);
@@ -234,32 +263,8 @@ async function main() {
     });
 */
 
-/*
-    document.getElementById('start-button').addEventListener('click', () => {
-        if (mode && currentCircuit && pyodideReady) {
-            document.getElementById('menu-toggle').click();
-            document.getElementById('initial-message').style.display = 'none';
-            document.getElementById('loading-message').style.display='block';
-            document.getElementById('continue-button').style.display='none';
-            resetCongratsDisplayed();
-            setTimeout(()=>{
-                solveCircuit(currentCircuit, pyodide);
-            },300);
-            //The div element that contains the SVG representation of the circuit diagram.
-            const svgDiv = document.querySelector('.svg-container');
-            //The div element that contains the list of elements that have been clicked or selected in the circuit diagram.
-            const clickedElementsContainer = document.querySelector('.clicked-elements-container');
-            if (svgDiv && clickedElementsContainer) {
-                resetClickedElements(svgDiv, clickedElementsContainer);
-            }
-        }
-    });
-    */
-
     await load_packages(pyodide, ["sqlite3-1.0.0.zip"]);
     await import_packages(pyodide);
-
-    console.log("we did this");
 }
 
 /*
