@@ -1,6 +1,14 @@
+/* COLORS
+key-yellow: #FFC107
+*/
+
 body, html {
     font-family: 'Roboto', sans-serif;
     overflow-x: hidden;
+}
+
+#bootstrap-overrides #nav-select{
+    color: #FFC107;
 }
 
 /* Landing page shadows*/
@@ -63,7 +71,7 @@ body, html {
 }
 
 #bootstrap-overrides #circuit-selector-explanation-container {
-    background-color: #FFE7AD;
+    background-color: white;
     z-index: 0;
     position: relative;
 }
@@ -117,3 +125,4 @@ body, html {
 #bootstrap-overrides ul {
     list-style-type: none;
 }
+

@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/html" lang="de">
+<html xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>simpliPFy</title>
 
     <!-- JS Scripts Import -->
-    <script src="src/scripts/main.js"></script>
+    <script src="main.js"></script>
     <script src="src/scripts/utils/solutionObject.js"></script>
     <script src="src/scripts/utils/solutionObject_VC.js"></script>
     <script src="src/scripts/utils/fetchDirectoryListing.js"></script>
@@ -14,7 +14,7 @@
     <script src="src/scripts/utils/loadPackages.js"></script>
     <script src="src/scripts/utils/importPackages.js"></script>
     <script src="src/scripts/utils/UI_Functions.js"></script>
-    <script src="src/scripts/utils/displaySteps.js"></script>
+    <script src="displaySteps.js"></script>
 
     <!-- Pyodide and MathJax Import -->
     <script src="http://localhost:8000/pyodide.js"></script>
@@ -29,7 +29,7 @@
 
 <!-- add arbitrary id to add weight to manually fine tune css styles. See more under "weight of selectors" in css -->
 <body id="bootstrap-overrides" class="bg-dark">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark p-2">
+    <nav class="navbar navbar-dark bg-dark p-2">
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -61,12 +61,11 @@
         <div class="container-fluid bg-warning pb-2 mb-0" id="yellow-image-container">
             <img src="src/resources/landingpage/tablet_smartphone.png" class="img-fluid pt-3" alt="smartphone-and-tablet-example">
             <p class="pt-2" id="heading-logo">simpliPFy</p>
-            <p lang="de" class="pb-2">a free german browser tool for learning<br>how to simplify electrical circuits</p>
-            <p lang="en" class="pb-2">a free browser tool for learning<br>how to simplify electrical circuits</p>
+            <p class="pb-2">a free browser tool for learning<br>how to simplify electrical circuits</p>
         </div>
 
         <div class="container-fluid" id="start-container">
-            <button class="btn mt-4 px-5 shadow" id="start-button">START</button>
+            <button class="btn my-4 px-5 shadow" id="start-button">START</button>
         </div>
 
         <div class="container-fluid pt-5" id="feature-container">
@@ -112,7 +111,7 @@
 
         <div id="pgr-bar-container" class="container-fluid">
             <div class="progress my-4">
-                <div id="pgr-bar" class="progress-bar progress-bar-striped bg-warning" role="progressbar"
+                <div id="pgr-bar" class="progress-bar progress-bar-striped progress-bar-animated bg-warning" role="progressbar"
                      style="width: 0" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
             </div>
         </div>

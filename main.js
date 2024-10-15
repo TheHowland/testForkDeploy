@@ -72,13 +72,6 @@ function startSolving(pyodide) {
 
 async function main() {
 
-    let englishElements = document.querySelectorAll("[lang=en]");
-    console.log(englishElements);
-    let germanElements = document.querySelectorAll("[lang=de]");
-    englishElements.forEach(function() {
-        this.style.visibility="hidden";
-    });
-
     // ############################# Pages (Containers) ############################################
     // The navigation for this website is not via different html files, but by showing and not
     // showing different containers that act as pages
@@ -117,6 +110,37 @@ async function main() {
         selectPage.style.display = "none";
         simplifierPage.style.display = "none";
     })
+
+    const resetBtn = document.getElementById("reset-btn");
+    const checkBtn = document.getElementById("check-btn");
+    const contentCol = document.getElementById("content-col");
+
+    resetBtn.addEventListener('click', () => {
+        // resetClickedElements(svgDiv, clickedElementsContainer);
+    });
+
+    checkBtn.addEventListener('click', async () => {
+        const clickedElementsContainer = document.getElementById("clickedElementsContainer");
+        const svgDiv = document.getElementById("svgDiv");
+
+        setTimeout(() => {
+            resetClickedElements(svgDiv, clickedElementsContainer);
+        }, 100);
+        console.log(selectedElements)
+        if (selectedElements.length === 2) {
+            const canSimplify = await stepSolve.simplifyTwoCpts(selectedElements).toJs();
+            if (canSimplify[0]) {
+                display_step(pyodide, canSimplify[1][0], canSimplify[2],canSimplify[1][1]);
+                contentCol.removeChild(clickedElementsContainer);
+            } else {
+                showMessage(contentCol, "Can not simplify those elements");
+            }
+        } else {
+            showMessage(contentCol, 'Please choose exactly 2 elements');
+        }
+        MathJax.typeset();
+
+    });
 
     // ############################# Select functions ############################################
     const res1 = document.getElementById("res1");

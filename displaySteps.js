@@ -3,8 +3,7 @@ Displays the current step of the circuit simplification process using the provid
  */
 function display_step(pyodide, jsonFilePath_Z,svgFilePath,jsonFilePath_VC=null) {
     const contentCol = document.getElementById("content-col");
-    const resetBtn = document.getElementById("reset-btn");
-    const checkBtn = document.getElementById("check-btn");
+
 
     console.log(jsonFilePath_VC);
 
@@ -45,16 +44,18 @@ function display_step(pyodide, jsonFilePath_Z,svgFilePath,jsonFilePath_VC=null) 
         const circuitContainer = document.createElement('div');
         circuitContainer.classList.add('circuit-container');
         circuitContainer.classList.add("row"); // use flexbox property for scaling display sizes
-        circuitContainer.classList.add("mx-auto"); // centers the content
+        circuitContainer.classList.add("justify-content-center"); // centers the content
         circuitContainer.classList.add("my-1"); // centers the content
 
 
         const svgDiv = document.createElement('div');
+        svgDiv.id = "svgDiv";
         svgDiv.classList.add("svg-container");
         svgDiv.classList.add("p-2");
-        //svgDiv.style.border = "1px solid white";
-        svgDiv.style.borderRadius = "10px";
-        svgDiv.innerHTML = svgData;
+        svgDiv.style.width = "350px";
+        svgDiv.style.maxWidth = "350px";  // To make the border limit on tablets and bigger screens
+        let whiteSvgData = svgData.replaceAll("black", "white");
+        svgDiv.innerHTML = whiteSvgData;
 
 
         const sanitizedSvgFilePath = sanitizeSelector(svgFilePath);
@@ -63,6 +64,7 @@ function display_step(pyodide, jsonFilePath_Z,svgFilePath,jsonFilePath_VC=null) 
 
         const clickedElementsContainer = document.createElement('div');
         clickedElementsContainer.className = 'clicked-elements-container';
+        clickedElementsContainer.id = "clickedElementsContainer";
         clickedElementsContainer.classList.add("text-light");
         clickedElementsContainer.classList.add("text-center");
         clickedElementsContainer.classList.add("py-1");
@@ -80,29 +82,6 @@ function display_step(pyodide, jsonFilePath_Z,svgFilePath,jsonFilePath_VC=null) 
             clickedElementsContainer.appendChild(congratsMessage);
         }
 
-        resetBtn.addEventListener('click', () => {
-            resetClickedElements(svgDiv, clickedElementsContainer);
-        });
-
-        checkBtn.addEventListener('click', async () => {
-            setTimeout(() => {
-                resetClickedElements(svgDiv, clickedElementsContainer);
-            }, 100);
-            console.log(selectedElements)
-            if (selectedElements.length === 2) {
-                const canSimplify = await stepSolve.simplifyTwoCpts(selectedElements).toJs();
-                if (canSimplify[0]) {
-                    display_step(pyodide, canSimplify[1][0], canSimplify[2],canSimplify[1][1]);
-                    contentCol.removeChild(clickedElementsContainer);
-                } else {
-                    showMessage(contentCol, "Can not simplify those elements");
-                }
-            } else {
-                showMessage(contentCol, 'Please choose exactly 2 elements');
-            }
-            MathJax.typeset();
-
-        });
 
         contentCol.appendChild(clickedElementsContainer);
 
@@ -116,6 +95,7 @@ function display_step(pyodide, jsonFilePath_Z,svgFilePath,jsonFilePath_VC=null) 
                 pathElement.addEventListener('click', () => {
                     const bboxId = `bbox-${pathElement.getAttribute('id') || Math.random().toString(36).substr(2, 9)}`;
                     const existingBox = document.getElementById(bboxId);
+
                     if (existingBox) {
                         existingBox.remove();
                         const listItem = document.querySelector(`li[data-bbox-id="${bboxId}"]`);
@@ -132,6 +112,10 @@ function display_step(pyodide, jsonFilePath_Z,svgFilePath,jsonFilePath_VC=null) 
                         rect.setAttribute('height', bbox.height);
                         rect.setAttribute('id', bboxId);
                         rect.classList.add('bounding-box');
+                        rect.style.pointerEvents = "none";  // to make selecting the element behind it possible
+                        rect.style.fill = "#FFC107";
+                        rect.style.fillOpacity = "0.3";
+
                         pathElement.parentNode.insertBefore(rect, pathElement.nextSibling);
 
                         const value = pathElement.getAttribute('class') || 'na';
@@ -145,7 +129,6 @@ function display_step(pyodide, jsonFilePath_Z,svgFilePath,jsonFilePath_VC=null) 
                 });
             });
         }
-
         MathJax.typeset();
 
 
