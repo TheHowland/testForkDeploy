@@ -45,15 +45,14 @@ function display_step(pyodide, jsonFilePath_Z,svgFilePath,jsonFilePath_VC=null) 
         const circuitContainer = document.createElement('div');
         circuitContainer.classList.add('circuit-container');
         circuitContainer.classList.add("row"); // use flexbox property for scaling display sizes
-        circuitContainer.classList.add("w-75"); // set width
         circuitContainer.classList.add("mx-auto"); // centers the content
         circuitContainer.classList.add("my-1"); // centers the content
 
 
         const svgDiv = document.createElement('div');
         svgDiv.classList.add("svg-container");
-        svgDiv.classList.add("p-1");
-        svgDiv.style.border = "1px solid white";
+        svgDiv.classList.add("p-2");
+        //svgDiv.style.border = "1px solid white";
         svgDiv.style.borderRadius = "10px";
         svgDiv.innerHTML = svgData;
 
@@ -89,10 +88,12 @@ function display_step(pyodide, jsonFilePath_Z,svgFilePath,jsonFilePath_VC=null) 
             setTimeout(() => {
                 resetClickedElements(svgDiv, clickedElementsContainer);
             }, 100);
+            console.log(selectedElements)
             if (selectedElements.length === 2) {
                 const canSimplify = await stepSolve.simplifyTwoCpts(selectedElements).toJs();
                 if (canSimplify[0]) {
                     display_step(pyodide, canSimplify[1][0], canSimplify[2],canSimplify[1][1]);
+                    contentCol.removeChild(clickedElementsContainer);
                 } else {
                     showMessage(contentCol, "Can not simplify those elements");
                 }
@@ -100,7 +101,6 @@ function display_step(pyodide, jsonFilePath_Z,svgFilePath,jsonFilePath_VC=null) 
                 showMessage(contentCol, 'Please choose exactly 2 elements');
             }
             MathJax.typeset();
-            contentCol.removeChild(clickedElementsContainer)
 
         });
 

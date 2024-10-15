@@ -33,7 +33,7 @@ function showMessage(container, message) {
     msg.classList.add("fixed-bottom");
     msg.classList.add("m-5");
     msg.innerHTML = message;
-    container.appendChild(svgDiv);
+    container.appendChild(msg);
     setTimeout(() => {
         msg.style.display = 'none';
     }, 3000);

@@ -72,6 +72,12 @@ function startSolving(pyodide) {
 
 async function main() {
 
+    let englishElements = document.querySelectorAll("[lang=en]");
+    console.log(englishElements);
+    let germanElements = document.querySelectorAll("[lang=de]");
+    englishElements.forEach(function() {
+        this.style.visibility="hidden";
+    });
 
     // ############################# Pages (Containers) ############################################
     // The navigation for this website is not via different html files, but by showing and not
@@ -81,8 +87,8 @@ async function main() {
     const simplifierPage = document.getElementById("simplifier-page-container");
 
     // ############################# Set start page ############################################
-    landingPage.style.display = "none";
-    selectPage.style.display = "block";
+    landingPage.style.display = "block";
+    selectPage.style.display = "none";
     simplifierPage.style.display = "none";
 
     const navHomeLink = document.getElementById("nav-home");
