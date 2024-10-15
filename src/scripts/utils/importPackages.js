@@ -1,3 +1,9 @@
+function enableStartButtonsOnCircuitSelectors() {
+    document.getElementById(Resistor1.btn).disabled = false;
+    document.getElementById(Resistor2.btn).disabled = false;
+    document.getElementById(Resistor3.btn).disabled = false;
+}
+
 async function import_packages(pyodide) {
     let packages = ["matplotlib", "numpy", "sympy", "networkx", "IPython", "schemdraw", "ordered_set", "lcapy"];
     progressBar = document.getElementById("pgr-bar");
@@ -17,6 +23,5 @@ async function import_packages(pyodide) {
 
     progressBarContainer.style.display = "none";
     pyodideReady = true;
-    document.getElementById("res1-btn").disabled = false;
-    document.getElementById('start-button').disabled = false;
+    enableStartButtonsOnCircuitSelectors();
 }
