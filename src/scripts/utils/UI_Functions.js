@@ -10,10 +10,10 @@ function sanitizeSelector(selector) {
 /*
 Displays a temporary message to the user in a message box.
  */
-function showMessage(container, message) {
+function showMessage(container, message, prio = "warning") {
     const msg = document.createElement('div');
     msg.classList.add("alert");
-    msg.classList.add("alert-warning");
+    msg.classList.add(`alert-${prio}`);
     msg.classList.add("fixed-bottom");
     msg.classList.add("m-5");
     msg.innerHTML = message;
@@ -23,13 +23,8 @@ function showMessage(container, message) {
     }, 3000);
 }
 
-/*
-Generates and appends a paragraph describing the resistance (Z=general term for complex resistance)  simplification step,
-excluding step0.json files.
- */
-function paragraph_Z(data, jsonFilePath,descriptionContainer) {
 
-
+function getRelationText(data) {
     let relationText = "";
     if (!data.isNull()) {
         if (data.noFormat().relation === "parallel") {
@@ -42,20 +37,24 @@ function paragraph_Z(data, jsonFilePath,descriptionContainer) {
             throw Error("Unknown relation type");
         }
     }
+    return relationText;
+}
 
-    // Only append the paragraph if it's not a step0.json file
-    if (!jsonFilePath.toLowerCase().includes('step0.json')) {
-        const paragraph_Z = document.createElement('p');
-        paragraph_Z.innerHTML = `Die Elemente ${data.inline().name1} und ${data.inline().name2}<br>
-              wurden zu ${data.inline().newName} zusammengefasst<br>
-              ${data.inline().name1}&nbsp= ${data.inline().value1}<br>
-              ${data.inline().name2}&nbsp= ${data.inline().value2}<br>
-              ${data.inline().newName}&nbsp= ${data.inline().result}<br>
-              ${relationText}<br>
-              Rechnung:<br>
-              ${data.inline().latexEquation}`;
-        descriptionContainer.appendChild(paragraph_Z);
-    }
+// Generates and appends a paragraph describing the resistance simplification step
+function generateTextForZ(data) {
+    let relationText = getRelationText(data);
+    const text = document.createElement('p');
+    text.innerHTML = `
+        Die Elemente ${data.inline().name1} und ${data.inline().name2}<br>
+        wurden zu ${data.inline().newName} zusammengefasst<br>
+        ${data.inline().name1}&nbsp= ${data.inline().value1}<br>
+        ${data.inline().name2}&nbsp= ${data.inline().value2}<br>
+        ${data.inline().newName}&nbsp= ${data.inline().result}<br>
+        ${relationText}<br>
+        Rechnung:<br>
+        ${data.inline().latexEquation}
+    `;
+    return text;
 }
 
 /*

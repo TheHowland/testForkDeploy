@@ -14,6 +14,8 @@ let circuitFiles = [];
 let selectedElements = [];
 //Stores the currently selected circuit file name.
 let currentCircuit = "";
+//The Python module imported from the Pyodide environment for solving circuits.
+let solve;
 //Variable to store the step solving object.
 let stepSolve;
 // Boolean to track if the congratulatory message has been displayed.
@@ -29,6 +31,11 @@ let serverAddress = "http://localhost:8000"
 let circuitPath = serverAddress + "/Circuits.zip";
 let solveFilePath = serverAddress + "/solve.py";
 
+async function importSolverModule(pyodide) {
+    pyodide.FS.writeFile("/home/pyodide/solve.py", await (await fetch(solveFilePath)).text());
+    solve = await pyodide.pyimport("solve");
+}
+
 async function main() {
 
     // ############################################################################################
@@ -39,11 +46,17 @@ async function main() {
     // via these functions
     // ############################################################################################
 
+    // First statement to make sure nothing else is shown at start
     let pageManager = new PageManager(document);
-    pageManager.showLandingPage(); // Start with landing page
+    pageManager.showLandingPage();
+
+    // Get the pyodide instance and setup all pages with functionality
     let pyodide = await loadPyodide();
     setupPages(pageManager, pyodide);
+
+    // Import needed modules and solver
     await doLoadsAndImports(pyodide);
+    await importSolverModule(pyodide);
 
     /*
 
@@ -66,6 +79,7 @@ async function main() {
 
 
 function setupPages(pageManager, pyodide) {
+    setupNavigation(pageManager, pyodide);
     setupLandingPage(pageManager);
     setupSelectPage(pageManager, pyodide);
     setupSimplifierPage(pyodide);
@@ -73,7 +87,6 @@ function setupPages(pageManager, pyodide) {
 
 async function doLoadsAndImports(pyodide) {
     await loadCircuits(pyodide);
-    pyodide.FS.writeFile("/home/pyodide/solve.py", await (await fetch(solveFilePath)).text());
     await importPyodidePackages(pyodide);
 }
 
@@ -173,31 +186,50 @@ function setupResistorSelector(pageManager, pyodide) {
     setupResNextAndPrevButtons();
 }
 
+
 function circuitSelectorStartButtonPressed(circuitName, pageManager, pyodide){
+    clearSimplifierPageContent();
     pageManager.showSimplifierPage();
     currentCircuit = circuitName;
+    pictureCounter = 0;
     if (pyodideReady) {
         startSolving(pyodide);
     }
 }
 
-function setupLandingPage(pageManager) {
+function simplifierPageCurrentlyVisible() {
+    return document.getElementById("simplifier-page-container").style.display === "block";
+}
+
+function checkIfSimplifierPageNeedsReset(pyodide) {
+    if (simplifierPageCurrentlyVisible()) {
+        resetSimplifierPage(pyodide);
+    }
+}
+
+function setupNavigation(pageManager, pyodide) {
     const navHomeLink = document.getElementById("nav-home");
     const navSimplifierLink = document.getElementById("nav-select");
     const navLogo = document.getElementById("nav-logo");
-    const landingStartButton = document.getElementById("start-button");
 
     navHomeLink.addEventListener('click', () => {
+        checkIfSimplifierPageNeedsReset(pyodide);  // must be in front of page change
         pageManager.showLandingPage();
     })
     navSimplifierLink.addEventListener("click", () => {
-        pageManager.showSelectPage();
-    })
-    landingStartButton.addEventListener("click", () => {
+        checkIfSimplifierPageNeedsReset(pyodide);  // must be in front of page change
         pageManager.showSelectPage();
     })
     navLogo.addEventListener("click", () => {
+        checkIfSimplifierPageNeedsReset(pyodide);  // must be in front of page change
         pageManager.showLandingPage();
+    })
+}
+
+function setupLandingPage(pageManager) {
+    const landingStartButton = document.getElementById("start-button");
+    landingStartButton.addEventListener("click", () => {
+        pageManager.showSelectPage();
     })
 }
 
@@ -219,18 +251,68 @@ function checkAndSimplify(simplifyObject, pyodide, contentCol, nextElementsConta
     }
 }
 
+function resetSolverObject() {
+    stepSolve = solve.SolveInUserOrder(currentCircuit, "Circuits/", "Solutions/");
+}
+
+function enableCheckBtn() {
+    document.getElementById("check-btn").disabled = false;
+}
+
+function clearSimplifierPageContent() {
+    const contentCol = document.getElementById("content-col");
+    contentCol.innerHTML = '';
+}
+
+function resetSimplifierPage(pyodide) {
+    clearSimplifierPageContent();
+    resetSolverObject();
+    enableCheckBtn();
+    selectedElements = [];
+    pictureCounter = 0;
+    if (pyodideReady) {
+        startSolving(pyodide);  // Draw the first picture again
+    }
+}
+
+function scrollToBottom() {
+    // Set timeout to make sure the old nextElementsContainer is gone,
+    // and we scroll to the new one on the bottom
+    const nextElementsText = document.getElementById("nextElementsContainer");
+    setTimeout(() => {
+        nextElementsText.scrollIntoView()
+    }, 100);
+}
+
+function enableLastCalcButton() {
+    setTimeout(() => {
+        let lastPicture = pictureCounter - 1;
+        console.log(lastPicture);
+        const lastCalcBtn = document.getElementById(`calcBtn${lastPicture}`);
+        lastCalcBtn.disabled = false;
+    }, 100);
+}
+
+function notLastPicture() {
+    // Because on the last picture, this element won't exist
+    return document.getElementById("nextElementsContainer") != null;
+}
+
 function setupSimplifierPage(pyodide) {
     const resetBtn = document.getElementById("reset-btn");
     const checkBtn = document.getElementById("check-btn");
     const contentCol = document.getElementById("content-col");
 
-    resetBtn.addEventListener('click', () => {
-        // resetClickedElements(svgDiv, clickedElementsContainer);
-    });
-
-    checkBtn.addEventListener('click', async () =>
-        checkAndSimplifyNext(contentCol, pyodide)
+    resetBtn.addEventListener('click', () =>
+        resetSimplifierPage(pyodide)
     );
+    checkBtn.addEventListener('click', async () => {
+        checkAndSimplifyNext(contentCol, pyodide);
+        if (notLastPicture()) {
+            enableLastCalcButton();
+            scrollToBottom();
+        }
+    });
 }
 
 async function checkAndSimplifyNext(contentCol, pyodide){
@@ -278,12 +360,6 @@ async function importPyodidePackages(pyodide) {
  and displays the initial step.
  */
 async function solveCircuit(circuit, pyodide) {
-    //A string used as a label for timing the import of the Python script.
-    let timeImporting = "Importiere Python Skript";
-    console.time(timeImporting);
-    //The Python module imported from the Pyodide environment for solving circuits.
-    let solve = await pyodide.pyimport("solve");
-    console.timeEnd(timeImporting);
     //A string used as a label for timing the circuit solving process.
     let timeSolve = "Solve circuit";
     console.time(timeSolve);

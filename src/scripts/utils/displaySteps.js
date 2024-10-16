@@ -6,7 +6,10 @@ function setupNextElementsContainer(sanitizedSvgFilePath) {
     nextElementsContainer.classList.add("text-center");
     nextElementsContainer.classList.add("py-1");
     nextElementsContainer.classList.add("mb-5");
-    nextElementsContainer.innerHTML = `<h3>Next elements</h3><ul id="next-elements-list-${sanitizedSvgFilePath}"></ul>`;
+    nextElementsContainer.innerHTML = `
+        <h3>Next elements</h3>
+        <ul class="px-0" id="next-elements-list-${sanitizedSvgFilePath}"></ul>
+    `;
     return nextElementsContainer;
 }
 
@@ -15,20 +18,21 @@ function setupCircuitContainer() {
     circuitContainer.classList.add('circuit-container');
     circuitContainer.classList.add("row"); // use flexbox property for scaling display sizes
     circuitContainer.classList.add("justify-content-center"); // centers the content
-    circuitContainer.classList.add("my-1"); // centers the content
+    circuitContainer.classList.add("my-2"); // centers the content
     return circuitContainer;
 }
 
 function setupSvgDivContainer(svgData) {
     const svgDiv = document.createElement('div');
-    pictureCounter = pictureCounter + 1;
     svgDiv.id = `svgDiv${pictureCounter}`;
     svgDiv.classList.add("svg-container");
     svgDiv.classList.add("p-2");
     svgDiv.style.width = "350px";
-    svgDiv.style.maxWidth = "350px";  // To make the border limit on tablets and bigger screens
+    svgDiv.style.maxWidth = "350px";  // To make the border limit for tablets and bigger screens
+
     let whiteSvgData = svgData.replaceAll("black", "white");
     svgDiv.innerHTML = whiteSvgData;
+
     return svgDiv;
 }
 
@@ -40,6 +44,7 @@ function getElementsFromSvgContainer(svgContainer) {
 
 function showCongratsMessage(nextElementsContainer) {
     const congratsMessage = document.createElement('p');
+    congratsMessage.id = "congrats-msg";
     congratsMessage.innerHTML = 'Well done, you finished the circuit!';
     nextElementsContainer.appendChild(congratsMessage);
 }
@@ -86,6 +91,33 @@ function addElementValueToTextBox(pathElement, bboxId, nextElementsList) {
     selectedElements.push(pathElement.getAttribute('id') || 'no id');
 }
 
+function setupCalculationBtn() {
+    const calcBtn = document.createElement("button");
+    calcBtn.id = `calcBtn${pictureCounter}`
+    calcBtn.classList.add("btn");
+    calcBtn.classList.add("my-3");
+    calcBtn.style.color = "white";
+    calcBtn.style.borderColor = "#eeeeee";
+    calcBtn.textContent = "show calculation";
+    calcBtn.disabled = true;
+    return calcBtn;
+}
+
+function chooseElement(pathElement, nextElementsList) {
+
+    const bboxId = `bbox-${pathElement.getAttribute('id') || Math.random().toString(36).substr(2, 9)}`;
+    const existingBox = document.getElementById(bboxId);
+
+    if (existingBox) {
+        removeExistingBoxAndText(existingBox, bboxId, pathElement);
+    }
+    else {
+        createNewHighlightedBoundingBox(pathElement, bboxId);
+        addElementValueToTextBox(pathElement, bboxId, nextElementsList);
+    }
+    MathJax.typeset();
+}
+
 /*
 Displays the current step of the circuit simplification process using the provided JSON and SVG files.
  */
@@ -98,6 +130,7 @@ function display_step(pyodide, jsonFilePath_Z,svgFilePath,jsonFilePath_VC=null) 
         let jsonDataString = pyodide.FS.readFile(jsonFilePath_Z, { encoding: "utf8" });
         const jsonData = JSON.parse(jsonDataString);
 
+        console.log(jsonData);
 
         // Instanziiere SolutionObject und SolutionObject_UI
         let data = new SolutionObject(
@@ -107,7 +140,6 @@ function display_step(pyodide, jsonFilePath_Z,svgFilePath,jsonFilePath_VC=null) 
         );
 
         let data_vc=null;
-
         if(jsonFilePath_VC != null){
             //Lade UI-JSON-Datei und logge den Inhalt
             let jsonDataString_VC = pyodide.FS.readFile(jsonFilePath_VC, { encoding: "utf8" });
@@ -127,47 +159,60 @@ function display_step(pyodide, jsonFilePath_Z,svgFilePath,jsonFilePath_VC=null) 
         const svgData = pyodide.FS.readFile(svgFilePath, { encoding: "utf8" });
         const sanitizedSvgFilePath = sanitizeSelector(svgFilePath);
 
+        pictureCounter++;
+
+
         // Building container for the next step
         // Wrapper around svg div
         const circuitContainer = setupCircuitContainer();
         // Wrapper around svg data
         const svgContainer = setupSvgDivContainer(svgData);
+        // Show disabled calculation button
+        const newCalcBtn = setupCalculationBtn();
         // Box to show text for which elements are chosen
         const nextElementsContainer = setupNextElementsContainer(sanitizedSvgFilePath);
 
-        circuitContainer.appendChild(svgContainer);
-        contentCol.append(circuitContainer)
 
-        //paragraph_Z(data, jsonFilePath_Z, contentCol);
+        // Add the svg graphic to the main container
+        circuitContainer.appendChild(svgContainer);
+        contentCol.append(circuitContainer);
+
+        let stepCalculationText = generateTextForZ(data);
+        stepCalculationText.style.color = "white";
+
+        if (pictureCounter > 1) {
+            const lastStepCalcBtn = document.getElementById(`calcBtn${pictureCounter - 1}`);
+
+            lastStepCalcBtn.addEventListener("click", () => {
+                if (lastStepCalcBtn.textContent === "show calculation") {
+                    lastStepCalcBtn.textContent = "hide calculation";
+                    lastStepCalcBtn.insertAdjacentElement("afterend", stepCalculationText);
+                    MathJax.typeset();
+                } else {
+                    lastStepCalcBtn.textContent = "show calculation";
+                    contentCol.removeChild(stepCalculationText);
+                }
+            })
+        }
+
+
+
+
+
         const {pathElements, filteredPaths} = getElementsFromSvgContainer(svgContainer);
 
         if (filteredPaths.length === 1) {
-            showCongratsMessage(nextElementsContainer);
+            document.getElementById("check-btn").disabled = true;
+            showMessage(contentCol, "Well done, you finished the circuit!", "success");
+        } else {
+            // if it's not the last step, add the calcBtn and text field
+            contentCol.append(newCalcBtn);
+            contentCol.appendChild(nextElementsContainer);
         }
-
-        contentCol.appendChild(nextElementsContainer);
 
         if (filteredPaths.length > 1) {
             const nextElementsList = nextElementsContainer.querySelector(`#next-elements-list-${sanitizedSvgFilePath}`);
-
-            pathElements.forEach(pathElement => {
-                pathElement.style.pointerEvents = 'bounding-box';
-                pathElement.style.cursor = 'pointer';
-
-                pathElement.addEventListener('click', () => {
-                    const bboxId = `bbox-${pathElement.getAttribute('id') || Math.random().toString(36).substr(2, 9)}`;
-                    const existingBox = document.getElementById(bboxId);
-
-                    if (existingBox) {
-                        removeExistingBoxAndText(existingBox, bboxId, pathElement);
-                    }
-                    else {
-                        createNewHighlightedBoundingBox(pathElement, bboxId);
-                        addElementValueToTextBox(pathElement, bboxId, nextElementsList);
-                    }
-                    MathJax.typeset();
-                });
-            });
+            pathElements.forEach(pathElement => setStyleAndEvent(pathElement, nextElementsList));
         }
         MathJax.typeset();
 
@@ -175,5 +220,15 @@ function display_step(pyodide, jsonFilePath_Z,svgFilePath,jsonFilePath_VC=null) 
     } catch (error) {
         console.error('Error fetching data:', error);
         contentCol.textContent = 'Error loading content';
+    }
+}
+
+function setStyleAndEvent(pathElement, nextElementsList) {
+    {
+        pathElement.style.pointerEvents = 'bounding-box';
+        pathElement.style.cursor = 'pointer';
+        pathElement.addEventListener('click', () =>
+            chooseElement(pathElement, nextElementsList)
+        );
     }
 }

@@ -118,8 +118,8 @@ body, html {
 /* Simplifier page */
 #bootstrap-overrides svg{
     height: 400px; /* set an absolute height, so changing images always have the same size */
-    border: 1px solid white;
-    border-radius: 10px;
+    border: 1px solid #eeeeee;
+    border-radius: 6px;
 }
 
 #bootstrap-overrides ul {
