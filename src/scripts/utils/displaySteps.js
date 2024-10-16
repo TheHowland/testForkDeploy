@@ -5,7 +5,7 @@ const showVCBtnText = "voltage/current";
 const hideVCBtnText = "hide"
 
 
-function setupNextElementsContainer(sanitizedSvgFilePath) {
+function setupNextElementsContainer(sanitizedSvgFilePath, filteredPaths) {
     const nextElementsContainer = document.createElement('div');
     nextElementsContainer.className = 'next-elements-container';
     nextElementsContainer.id = "nextElementsContainer";
@@ -13,10 +13,20 @@ function setupNextElementsContainer(sanitizedSvgFilePath) {
     nextElementsContainer.classList.add("text-center");
     nextElementsContainer.classList.add("py-1");
     nextElementsContainer.classList.add("mb-3");
-    nextElementsContainer.innerHTML = `
+    if (onlyOneElementLeft(filteredPaths)) {
+        nextElementsContainer.innerHTML = `
+        <p>You can now check how to calculate the voltages and currents</p>
+        <button class="btn btn-primary mx-1" id="reset-btn">reset</button>
+        <button class="btn btn-primary mx-1" id="check-btn">check</button>
+    `;
+    } else {
+        nextElementsContainer.innerHTML = `
         <h3>Next elements</h3>
         <ul class="px-0" id="next-elements-list-${sanitizedSvgFilePath}"></ul>
+        <button class="btn btn-primary mx-1" id="reset-btn">reset</button>
+        <button class="btn btn-primary mx-1" id="check-btn">check</button>
     `;
+    }
     return nextElementsContainer;
 }
 
@@ -218,6 +228,10 @@ function enableVoltageCurrentBtns() {
     }
 }
 
+function elementsLeftToBeSimplified(filteredPaths) {
+    return !onlyOneElementLeft(filteredPaths);
+}
+
 /*
 Displays the current step of the circuit simplification process using the provided JSON and SVG files.
  */
@@ -239,8 +253,10 @@ function display_step(pyodide, jsonFilePath_Z,svgFilePath,jsonFilePath_VC=null) 
         const {circuitContainer, svgContainer} = setupCircuitContainer(svgData);
         const newCalcBtn = setupCalculationBtn();
         const newVCBtn = setupVoltageCurrentBtn();
+        const {pathElements, filteredPaths} = getElementsFromSvgContainer(svgContainer);
         // Box to show text for which elements are chosen
-        const nextElementsContainer = setupNextElementsContainer(sanitizedSvgFilePath);
+        const nextElementsContainer = setupNextElementsContainer(sanitizedSvgFilePath, filteredPaths);
+
 
         // Add the circuit graphic to the main container
         contentCol.append(circuitContainer);
@@ -256,19 +272,30 @@ function display_step(pyodide, jsonFilePath_Z,svgFilePath,jsonFilePath_VC=null) 
             addVoltageCurrentButtonBetweenPictures(stepVoltageCurrentText, contentCol, stepCalculationText);
         }
 
-        const {pathElements, filteredPaths} = getElementsFromSvgContainer(svgContainer);
+
+
+        if (elementsLeftToBeSimplified(filteredPaths)) {
+            const nextElementsList = nextElementsContainer.querySelector(`#next-elements-list-${sanitizedSvgFilePath}`);
+            pathElements.forEach(pathElement => setStyleAndEvent(pathElement, nextElementsList));
+        }
+
+        if (document.getElementById("nextElementsContainer") != null) {
+            contentCol.removeChild(document.getElementById("nextElementsContainer"));
+        }
+        contentCol.appendChild(nextElementsContainer);
+        enableCheckBtn();
+
+        document.getElementById("reset-btn").addEventListener('click', () =>
+            resetSimplifierPage(pyodide)
+        );
+        document.getElementById("check-btn").addEventListener('click', async () => {
+            checkAndSimplifyNext(pyodide, newCalcBtn, newVCBtn);
+        });
 
         if (onlyOneElementLeft(filteredPaths)) {
             document.getElementById("check-btn").disabled = true;
             showMessage(contentCol, "Well done, you finished the circuit!", "success");
             enableVoltageCurrentBtns();
-        } else {
-            // If it's not the last step, add the calcBtn and text field
-            contentCol.append(newCalcBtn);
-            contentCol.append(newVCBtn);
-            contentCol.appendChild(nextElementsContainer);
-            const nextElementsList = nextElementsContainer.querySelector(`#next-elements-list-${sanitizedSvgFilePath}`);
-            pathElements.forEach(pathElement => setStyleAndEvent(pathElement, nextElementsList));
         }
 
         MathJax.typeset();

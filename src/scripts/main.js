@@ -237,15 +237,20 @@ function twoElementsChosen() {
     return selectedElements.length === 2;
 }
 
-function checkAndSimplify(simplifyObject, pyodide, contentCol, nextElementsContainer) {
+function checkAndSimplify(simplifyObject, pyodide, contentCol, newCalcBtn, newVCBtn) {
     let elementsCanBeSimplified = simplifyObject[0];
     let jsonFilePathZ = simplifyObject[1][0];
     let jsonFilePathVC = simplifyObject[1][1];
     let svgFilePath = simplifyObject[2];
 
     if (elementsCanBeSimplified) {
+        if (notLastPicture()) {
+            contentCol.append(newCalcBtn);
+            contentCol.append(newVCBtn);
+            enableLastCalcButton();
+            scrollToBottom();
+        }
         display_step(pyodide, jsonFilePathZ, svgFilePath, jsonFilePathVC);
-        contentCol.removeChild(nextElementsContainer);
     } else {
         showMessage(contentCol, "Can not simplify those elements");
     }
@@ -267,7 +272,6 @@ function clearSimplifierPageContent() {
 function resetSimplifierPage(pyodide) {
     clearSimplifierPageContent();
     resetSolverObject();
-    enableCheckBtn();
     selectedElements = [];
     pictureCounter = 0;
     if (pyodideReady) {
@@ -301,19 +305,11 @@ function setupSimplifierPage(pyodide) {
     const checkBtn = document.getElementById("check-btn");
     const contentCol = document.getElementById("content-col");
 
-    resetBtn.addEventListener('click', () =>
-        resetSimplifierPage(pyodide)
-    );
-    checkBtn.addEventListener('click', async () => {
-        checkAndSimplifyNext(contentCol, pyodide);
-        if (notLastPicture()) {
-            enableLastCalcButton();
-            scrollToBottom();
-        }
-    });
+
 }
 
-async function checkAndSimplifyNext(contentCol, pyodide){
+async function checkAndSimplifyNext(pyodide, newCalcBtn, newVCBtn){
+    const contentCol = document.getElementById("content-col");
     const nextElementsContainer = document.getElementById("nextElementsContainer");
     const svgDiv = document.getElementById(`svgDiv${pictureCounter}`);
 
@@ -321,7 +317,7 @@ async function checkAndSimplifyNext(contentCol, pyodide){
 
     if (twoElementsChosen()) {
         const simplifyObject = await stepSolve.simplifyTwoCpts(selectedElements).toJs();
-        checkAndSimplify(simplifyObject, pyodide, contentCol, nextElementsContainer);
+        checkAndSimplify(simplifyObject, pyodide, contentCol, newCalcBtn, newVCBtn);
     } else {
         showMessage(contentCol, 'Please choose exactly 2 elements');
     }
