@@ -31,65 +31,50 @@ let serverAddress = "http://localhost:8000"
 let circuitPath = serverAddress + "/Circuits.zip";
 let solveFilePath = serverAddress + "/solve.py";
 
-async function importSolverModule(pyodide) {
-    pyodide.FS.writeFile("/home/pyodide/solve.py", await (await fetch(solveFilePath)).text());
-    solve = await pyodide.pyimport("solve");
-}
-
+// ####################################################################################################################
+// ########################################################## MAIN ####################################################
+// ####################################################################################################################
 async function main() {
 
     // ############################################################################################
     // The navigation for this website is not via different html files, but by showing and not
     // showing different containers that act as pages
-    // In the functions below all callbacks to buttons and links
-    // are set. The functionality of the simplifier is then called
-    // via these functions
+    // In the functions below all callbacks to buttons and links are set.
+    // The functionality of the simplifier is then called via these functions
     // ############################################################################################
 
     // First statement to make sure nothing else is shown at start
     let pageManager = new PageManager(document);
     pageManager.showLandingPage();
 
-    // Get the pyodide instance and setup all pages with functionality
+    // Get the pyodide instance and setup pages with functionality
     let pyodide = await loadPyodide();
     setupPages(pageManager, pyodide);
 
     // Import needed modules and solver
     await doLoadsAndImports(pyodide);
     await importSolverModule(pyodide);
-
-    /*
-
-
-        document.getElementById('continue-button').addEventListener('click',()=>{
-            if(currentStep>0){
-                if(jsonFiles_VC===null)
-                {
-                    currentStep--;
-                    display_step(pyodide,`Solutions/${jsonFiles_Z[currentStep]}`,`Solutions/${svgFiles[currentStep]}`);
-                }
-                        else{
-                    currentStep--;
-                    display_step(pyodide,`Solutions/${jsonFiles_Z[currentStep]}`,`Solutions/${svgFiles[currentStep]}`,`Solutions/${jsonFiles_VC[currentStep+1]}`);
-                }
-            }
-        });
-    */
 }
 
+// ####################################################################################################################
+// ############################################# Helper functions #####################################################
+// ####################################################################################################################
 
 function setupPages(pageManager, pyodide) {
     setupNavigation(pageManager, pyodide);
     setupLandingPage(pageManager);
     setupSelectPage(pageManager, pyodide);
-    setupSimplifierPage(pyodide);
+}
+
+async function importSolverModule(pyodide) {
+    pyodide.FS.writeFile("/home/pyodide/solve.py", await (await fetch(solveFilePath)).text());
+    solve = await pyodide.pyimport("solve");
 }
 
 async function doLoadsAndImports(pyodide) {
     await loadCircuits(pyodide);
     await importPyodidePackages(pyodide);
 }
-
 
 function resetHighlightedBoundingBoxes(svgDiv) {
     const boundingBoxes = svgDiv.querySelectorAll('.bounding-box');
@@ -237,25 +222,6 @@ function twoElementsChosen() {
     return selectedElements.length === 2;
 }
 
-function checkAndSimplify(simplifyObject, pyodide, contentCol, newCalcBtn, newVCBtn) {
-    let elementsCanBeSimplified = simplifyObject[0];
-    let jsonFilePathZ = simplifyObject[1][0];
-    let jsonFilePathVC = simplifyObject[1][1];
-    let svgFilePath = simplifyObject[2];
-
-    if (elementsCanBeSimplified) {
-        if (notLastPicture()) {
-            contentCol.append(newCalcBtn);
-            contentCol.append(newVCBtn);
-            enableLastCalcButton();
-            scrollToBottom();
-        }
-        display_step(pyodide, jsonFilePathZ, svgFilePath, jsonFilePathVC);
-    } else {
-        showMessage(contentCol, "Can not simplify those elements");
-    }
-}
-
 function resetSolverObject() {
     stepSolve = solve.SolveInUserOrder(currentCircuit, "Circuits/", "Solutions/");
 }
@@ -298,30 +264,6 @@ function enableLastCalcButton() {
 function notLastPicture() {
     // Because on the last picture, this element won't exist
     return document.getElementById("nextElementsContainer") != null;
-}
-
-function setupSimplifierPage(pyodide) {
-    const resetBtn = document.getElementById("reset-btn");
-    const checkBtn = document.getElementById("check-btn");
-    const contentCol = document.getElementById("content-col");
-
-
-}
-
-async function checkAndSimplifyNext(pyodide, newCalcBtn, newVCBtn){
-    const contentCol = document.getElementById("content-col");
-    const nextElementsContainer = document.getElementById("nextElementsContainer");
-    const svgDiv = document.getElementById(`svgDiv${pictureCounter}`);
-
-    setTimeout(() => {resetNextElements(svgDiv, nextElementsContainer)},100);
-
-    if (twoElementsChosen()) {
-        const simplifyObject = await stepSolve.simplifyTwoCpts(selectedElements).toJs();
-        checkAndSimplify(simplifyObject, pyodide, contentCol, newCalcBtn, newVCBtn);
-    } else {
-        showMessage(contentCol, 'Please choose exactly 2 elements');
-    }
-    MathJax.typeset();
 }
 
 async function loadCircuits(pyodide) {
