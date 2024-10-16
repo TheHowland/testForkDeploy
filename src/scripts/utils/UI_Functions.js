@@ -57,11 +57,7 @@ function generateTextForZ(data) {
     return text;
 }
 
-/*
-Generates and appends a paragraph describing the voltage and current (VC= voltage and current) simplification step
-based on the provided data.
- */
-function paragraph_VC(data, descriptionContainer) {
+function generateTextForVoltageCurrent(data) {
     let relationText = "";
     let relation = data.noFormat().relation[0]
     console.log("Relation: " + data.noFormat().relation[0])
@@ -77,9 +73,9 @@ function paragraph_VC(data, descriptionContainer) {
         relationText = "Keine Beziehung zwischen den Elementen";
     }
 
-    const paragraph_VC = document.createElement('p');
+    const text = document.createElement('p');
 
-    paragraph_VC.innerHTML = `
+    text.innerHTML = `
         Das Element ${data.inline().oldNames[0]} setzt sich aus den Elementen ${data.inline().names1[0]} und ${data.inline().names2[0]} zusammen.<br>
         ${data.inline().oldNames[0]}&nbsp= ${data.inline().oldValues[0]}<br>
         ${data.inline().oldNames[1]}&nbsp= ${data.inline().oldValues[1]}<br>
@@ -94,13 +90,6 @@ function paragraph_VC(data, descriptionContainer) {
         Rechnung:<br>
         ${data.inline().equation[0]}<br>
         ${data.inline().equation[1]}<br>`;
-    descriptionContainer.appendChild(paragraph_VC);
-}
 
-/*
-Sets the global variable congratsDisplayed to false.
-This is used to reset a state indicating whether a congratulatory message has been displayed.
- */
-function resetCongratsDisplayed() {
-    congratsDisplayed = false;
+    return text;
 }

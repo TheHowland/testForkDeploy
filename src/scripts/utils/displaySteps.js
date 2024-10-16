@@ -1,3 +1,10 @@
+const showCalcBtnText = "impedance";
+const hideCalcBtnText = "hide"
+
+const showVCBtnText = "voltage/current";
+const hideVCBtnText = "hide"
+
+
 function setupNextElementsContainer(sanitizedSvgFilePath) {
     const nextElementsContainer = document.createElement('div');
     nextElementsContainer.className = 'next-elements-container';
@@ -91,14 +98,28 @@ function addElementValueToTextBox(pathElement, bboxId, nextElementsList) {
     selectedElements.push(pathElement.getAttribute('id') || 'no id');
 }
 
+function setupVoltageCurrentBtn() {
+    const vcBtn = document.createElement("button");
+    vcBtn.id = `vcBtn${pictureCounter}`
+    vcBtn.classList.add("btn");
+    vcBtn.classList.add("my-3");
+    vcBtn.classList.add("mx-2");
+    vcBtn.style.color = "white";
+    vcBtn.style.borderColor = "#eeeeee";
+    vcBtn.textContent = "voltage/current";
+    vcBtn.disabled = true;
+    return vcBtn;
+}
+
 function setupCalculationBtn() {
     const calcBtn = document.createElement("button");
     calcBtn.id = `calcBtn${pictureCounter}`
     calcBtn.classList.add("btn");
     calcBtn.classList.add("my-3");
+    calcBtn.classList.add("mx-2");
     calcBtn.style.color = "white";
     calcBtn.style.borderColor = "#eeeeee";
-    calcBtn.textContent = "show calculation";
+    calcBtn.textContent = "impedance";
     calcBtn.disabled = true;
     return calcBtn;
 }
@@ -146,16 +167,41 @@ function getVoltageCurrentData(pyodide, jsonFilePath_VC) {
     return vcData;
 }
 
-function addCalculationButtonBetweenPictures(stepCalculationText, contentCol) {
+function addVoltageCurrentButtonBetweenPictures(vcText, contentCol, stepCalculationText) {
     const lastStepCalcBtn = document.getElementById(`calcBtn${pictureCounter - 1}`);
+    const lastVCBtn = document.getElementById(`vcBtn${pictureCounter - 1}`);
 
-    lastStepCalcBtn.addEventListener("click", () => {
-        if (lastStepCalcBtn.textContent === "show calculation") {
-            lastStepCalcBtn.textContent = "hide calculation";
-            lastStepCalcBtn.insertAdjacentElement("afterend", stepCalculationText);
+    lastVCBtn.addEventListener("click", () => {
+        if (lastVCBtn.textContent === showVCBtnText) {
+            lastVCBtn.textContent = hideVCBtnText;
+            lastVCBtn.insertAdjacentElement("afterend", vcText);
+            if (lastStepCalcBtn.textContent === hideCalcBtnText) {
+                lastStepCalcBtn.textContent = showCalcBtnText;
+                contentCol.removeChild(stepCalculationText);
+            }
             MathJax.typeset();
         } else {
-            lastStepCalcBtn.textContent = "show calculation";
+            lastVCBtn.textContent = showVCBtnText;
+            contentCol.removeChild(vcText);
+        }
+    })
+}
+
+function addCalculationButtonBetweenPictures(stepCalculationText, contentCol, vcText) {
+    const lastStepCalcBtn = document.getElementById(`calcBtn${pictureCounter - 1}`);
+    const lastVCBtn = document.getElementById(`vcBtn${pictureCounter - 1}`);
+
+    lastStepCalcBtn.addEventListener("click", () => {
+        if (lastStepCalcBtn.textContent === showCalcBtnText) {
+            lastStepCalcBtn.textContent = hideCalcBtnText;
+            lastVCBtn.insertAdjacentElement("afterend", stepCalculationText);
+            if (lastVCBtn.textContent === hideVCBtnText) {
+                lastVCBtn.textContent = showVCBtnText;
+                contentCol.removeChild(vcText);
+            }
+            MathJax.typeset();
+        } else {
+            lastStepCalcBtn.textContent = showCalcBtnText;
             contentCol.removeChild(stepCalculationText);
         }
     })
@@ -163,6 +209,13 @@ function addCalculationButtonBetweenPictures(stepCalculationText, contentCol) {
 
 function onlyOneElementLeft(filteredPaths) {
     return filteredPaths.length === 1;
+}
+
+function enableVoltageCurrentBtns() {
+    for (let i = 1; i < pictureCounter; i++) {
+        const vcBtn = document.getElementById(`vcBtn${i}`);
+        vcBtn.disabled = false;
+    }
 }
 
 /*
@@ -183,10 +236,9 @@ function display_step(pyodide, jsonFilePath_Z,svgFilePath,jsonFilePath_VC=null) 
 
         pictureCounter++;
 
-        // Wrapper around svg div
         const {circuitContainer, svgContainer} = setupCircuitContainer(svgData);
-        // Show disabled calculation button
         const newCalcBtn = setupCalculationBtn();
+        const newVCBtn = setupVoltageCurrentBtn();
         // Box to show text for which elements are chosen
         const nextElementsContainer = setupNextElementsContainer(sanitizedSvgFilePath);
 
@@ -196,8 +248,12 @@ function display_step(pyodide, jsonFilePath_Z,svgFilePath,jsonFilePath_VC=null) 
         let stepCalculationText = generateTextForZ(data);
         stepCalculationText.style.color = "white";
 
+        let stepVoltageCurrentText = generateTextForVoltageCurrent(vcData);
+        stepVoltageCurrentText.style.color = "white";
+
         if (pictureCounter > 1) {
-            addCalculationButtonBetweenPictures(stepCalculationText, contentCol);
+            addCalculationButtonBetweenPictures(stepCalculationText, contentCol, stepVoltageCurrentText);
+            addVoltageCurrentButtonBetweenPictures(stepVoltageCurrentText, contentCol, stepCalculationText);
         }
 
         const {pathElements, filteredPaths} = getElementsFromSvgContainer(svgContainer);
@@ -205,9 +261,11 @@ function display_step(pyodide, jsonFilePath_Z,svgFilePath,jsonFilePath_VC=null) 
         if (onlyOneElementLeft(filteredPaths)) {
             document.getElementById("check-btn").disabled = true;
             showMessage(contentCol, "Well done, you finished the circuit!", "success");
+            enableVoltageCurrentBtns();
         } else {
             // If it's not the last step, add the calcBtn and text field
             contentCol.append(newCalcBtn);
+            contentCol.append(newVCBtn);
             contentCol.appendChild(nextElementsContainer);
             const nextElementsList = nextElementsContainer.querySelector(`#next-elements-list-${sanitizedSvgFilePath}`);
             pathElements.forEach(pathElement => setStyleAndEvent(pathElement, nextElementsList));
