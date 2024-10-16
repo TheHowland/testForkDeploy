@@ -33,6 +33,27 @@ let solveFilePath = serverAddress + "/solve.py";
 
 // ####################################################################################################################
 // ########################################################## MAIN ####################################################
+async function createSvgsForSelectors(pyodide) {
+    try {
+        //An array of file names representing the solution files in the Solutions directory.
+        let solutionFiles = await pyodide.FS.readdir("Solutions");
+        solutionFiles.forEach(file => {
+            if (file !== "." && file !== "..") {
+                pyodide.FS.unlink(`Solutions/${file}`);
+            }
+        });
+    } catch (error) {
+        console.warn("Solutions directory not found or already cleared.");
+    }
+
+    stepSolve = solve.SolveInUserOrder(Resistor1.circuitFile, "Circuits/", "Solutions/");
+    await stepSolve.createStep0().toJs();
+    stepSolve = solve.SolveInUserOrder(Resistor2.circuitFile, "Circuits/", "Solutions/");
+    await stepSolve.createStep0().toJs();
+    stepSolve = solve.SolveInUserOrder(Resistor3.circuitFile, "Circuits/", "Solutions/");
+    await stepSolve.createStep0().toJs();
+}
+
 // ####################################################################################################################
 async function main() {
 
@@ -49,22 +70,20 @@ async function main() {
 
     // Get the pyodide instance and setup pages with functionality
     let pyodide = await loadPyodide();
-    setupPages(pageManager, pyodide);
+    // Setup up first page
+    setupNavigation(pageManager, pyodide);
+    setupLandingPage(pageManager);
 
-    // Import needed modules and solver
     await doLoadsAndImports(pyodide);
     await importSolverModule(pyodide);
+
+    await createSvgsForSelectors(pyodide);
+    setupSelectPage(pageManager, pyodide);
 }
 
 // ####################################################################################################################
 // ############################################# Helper functions #####################################################
 // ####################################################################################################################
-
-function setupPages(pageManager, pyodide) {
-    setupNavigation(pageManager, pyodide);
-    setupLandingPage(pageManager);
-    setupSelectPage(pageManager, pyodide);
-}
 
 async function importSolverModule(pyodide) {
     pyodide.FS.writeFile("/home/pyodide/solve.py", await (await fetch(solveFilePath)).text());
@@ -115,7 +134,7 @@ function setupSelectionCircuit(circuit, startBtn, startBtnOverlay) {
 }
 
 function resetSelection(circuitMap) {
-    const circuit = document.getElementById(circuitMap.id);
+    const circuit = document.getElementById(circuitMap.circuitDivID);
     const overlay = document.getElementById(circuitMap.btnOverlay);
     circuit.style.borderColor = "white";
     circuit.style.opacity = "1";
@@ -135,11 +154,19 @@ function startSolving(pyodide) {
 }
 
 function setupSpecificCircuitSelector(circuitMap, pageManager, pyodide) {
-    const circuit = document.getElementById(circuitMap.id);
+    const circuitDiv = document.getElementById(circuitMap.circuitDivID);
     const startBtn = document.getElementById(circuitMap.btn);
     const btnOverlay = document.getElementById(circuitMap.btnOverlay);
-    startBtn.disabled = true;
-    setupSelectionCircuit(circuit, startBtn, btnOverlay);
+    //startBtn.disabled = true;
+
+
+    // Fill div with svg
+    let svgData = pyodide.FS.readFile(circuitMap.svgFile, {encoding: "utf8"});
+    svgData = svgData.replaceAll("black", "white");
+    circuitDiv.innerHTML = svgData;
+
+
+    setupSelectionCircuit(circuitDiv, startBtn, btnOverlay);
     startBtn.addEventListener("click", () =>
         circuitSelectorStartButtonPressed(circuitMap.circuitFile, pageManager, pyodide))
 }

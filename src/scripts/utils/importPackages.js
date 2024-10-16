@@ -25,5 +25,5 @@ async function import_packages(pyodide) {
 
     progressBarContainer.style.display = "none";
     pyodideReady = true;
-    enableStartButtonsOnCircuitSelectors();
+    //enableStartButtonsOnCircuitSelectors();
 }
