@@ -195,10 +195,6 @@ function display_step(pyodide, jsonFilePath_Z,svgFilePath,jsonFilePath_VC=null) 
             })
         }
 
-
-
-
-
         const {pathElements, filteredPaths} = getElementsFromSvgContainer(svgContainer);
 
         if (filteredPaths.length === 1) {
