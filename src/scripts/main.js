@@ -276,11 +276,9 @@ function resetSimplifierPage(pyodide) {
 }
 
 function scrollToBottom() {
-    // Set timeout to make sure the old nextElementsContainer is gone,
-    // and we scroll to the new one on the bottom
-    const nextElementsText = document.getElementById("nextElementsContainer");
     setTimeout(() => {
-        nextElementsText.scrollIntoView()
+        const nextElementsText = document.getElementById("nextElementsContainer");
+        if (nextElementsText != null) {nextElementsText.scrollIntoView()}
     }, 100);
 }
 

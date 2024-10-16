@@ -5,7 +5,7 @@ function setupNextElementsContainer(sanitizedSvgFilePath) {
     nextElementsContainer.classList.add("text-light");
     nextElementsContainer.classList.add("text-center");
     nextElementsContainer.classList.add("py-1");
-    nextElementsContainer.classList.add("mb-5");
+    nextElementsContainer.classList.add("mb-3");
     nextElementsContainer.innerHTML = `
         <h3>Next elements</h3>
         <ul class="px-0" id="next-elements-list-${sanitizedSvgFilePath}"></ul>
@@ -13,13 +13,15 @@ function setupNextElementsContainer(sanitizedSvgFilePath) {
     return nextElementsContainer;
 }
 
-function setupCircuitContainer() {
+function setupCircuitContainer(svgData) {
     const circuitContainer = document.createElement('div');
     circuitContainer.classList.add('circuit-container');
     circuitContainer.classList.add("row"); // use flexbox property for scaling display sizes
     circuitContainer.classList.add("justify-content-center"); // centers the content
     circuitContainer.classList.add("my-2"); // centers the content
-    return circuitContainer;
+    const svgContainer = setupSvgDivContainer(svgData);
+    circuitContainer.appendChild(svgContainer)
+    return {circuitContainer, svgContainer};
 }
 
 function setupSvgDivContainer(svgData) {
@@ -29,10 +31,8 @@ function setupSvgDivContainer(svgData) {
     svgDiv.classList.add("p-2");
     svgDiv.style.width = "350px";
     svgDiv.style.maxWidth = "350px";  // To make the border limit for tablets and bigger screens
-
     let whiteSvgData = svgData.replaceAll("black", "white");
     svgDiv.innerHTML = whiteSvgData;
-
     return svgDiv;
 }
 
@@ -118,6 +118,53 @@ function chooseElement(pathElement, nextElementsList) {
     MathJax.typeset();
 }
 
+function getImpedanceData(pyodide, jsonFilePath_Z) {
+    let jsonDataString = pyodide.FS.readFile(jsonFilePath_Z, {encoding: "utf8"});
+    const jsonData = JSON.parse(jsonDataString);
+    let data = new SolutionObject(
+        jsonData.name1, jsonData.name2, jsonData.newName,
+        jsonData.value1, jsonData.value2, jsonData.result,
+        jsonData.relation, jsonData.latexEquation
+    );
+    return data;
+}
+
+function getVoltageCurrentData(pyodide, jsonFilePath_VC) {
+    let vcData;
+    if (jsonFilePath_VC != null) {
+        let jsonDataString_VC = pyodide.FS.readFile(jsonFilePath_VC, {encoding: "utf8"});
+        let jsonData_VC = JSON.parse(jsonDataString_VC);
+        vcData = new SolutionObject_VC(
+            jsonData_VC.oldNames, jsonData_VC.names1, jsonData_VC.names2,
+            jsonData_VC.oldValues, jsonData_VC.values1, jsonData_VC.values2,
+            jsonData_VC.convOldValue, jsonData_VC.convValue1, jsonData_VC.convValue2,
+            jsonData_VC.relation, jsonData_VC.equation
+        );
+    } else {
+        vcData = new SolutionObject_VC();
+    }
+    return vcData;
+}
+
+function addCalculationButtonBetweenPictures(stepCalculationText, contentCol) {
+    const lastStepCalcBtn = document.getElementById(`calcBtn${pictureCounter - 1}`);
+
+    lastStepCalcBtn.addEventListener("click", () => {
+        if (lastStepCalcBtn.textContent === "show calculation") {
+            lastStepCalcBtn.textContent = "hide calculation";
+            lastStepCalcBtn.insertAdjacentElement("afterend", stepCalculationText);
+            MathJax.typeset();
+        } else {
+            lastStepCalcBtn.textContent = "show calculation";
+            contentCol.removeChild(stepCalculationText);
+        }
+    })
+}
+
+function onlyOneElementLeft(filteredPaths) {
+    return filteredPaths.length === 1;
+}
+
 /*
 Displays the current step of the circuit simplification process using the provided JSON and SVG files.
  */
@@ -127,33 +174,8 @@ function display_step(pyodide, jsonFilePath_Z,svgFilePath,jsonFilePath_VC=null) 
 
     try {
         // Read json data
-        let jsonDataString = pyodide.FS.readFile(jsonFilePath_Z, { encoding: "utf8" });
-        const jsonData = JSON.parse(jsonDataString);
-
-        console.log(jsonData);
-
-        // Instanziiere SolutionObject und SolutionObject_UI
-        let data = new SolutionObject(
-            jsonData.name1, jsonData.name2, jsonData.newName,
-            jsonData.value1, jsonData.value2, jsonData.result,
-            jsonData.relation, jsonData.latexEquation
-        );
-
-        let data_vc=null;
-        if(jsonFilePath_VC != null){
-            //Lade UI-JSON-Datei und logge den Inhalt
-            let jsonDataString_VC = pyodide.FS.readFile(jsonFilePath_VC, { encoding: "utf8" });
-            let jsonData_VC = JSON.parse(jsonDataString_VC);
-            data_vc = new SolutionObject_VC(
-                jsonData_VC.oldNames, jsonData_VC.names1, jsonData_VC.names2,
-                jsonData_VC.oldValues, jsonData_VC.values1, jsonData_VC.values2,
-                jsonData_VC.convOldValue, jsonData_VC.convValue1, jsonData_VC.convValue2,
-                jsonData_VC.relation, jsonData_VC.equation
-            );
-        }
-        else{
-            data_vc = new SolutionObject_VC();
-        }
+        let data = getImpedanceData(pyodide, jsonFilePath_Z);
+        let vcData = getVoltageCurrentData(pyodide, jsonFilePath_VC);
 
         // Load svg file
         const svgData = pyodide.FS.readFile(svgFilePath, { encoding: "utf8" });
@@ -161,55 +183,36 @@ function display_step(pyodide, jsonFilePath_Z,svgFilePath,jsonFilePath_VC=null) 
 
         pictureCounter++;
 
-
-        // Building container for the next step
         // Wrapper around svg div
-        const circuitContainer = setupCircuitContainer();
-        // Wrapper around svg data
-        const svgContainer = setupSvgDivContainer(svgData);
+        const {circuitContainer, svgContainer} = setupCircuitContainer(svgData);
         // Show disabled calculation button
         const newCalcBtn = setupCalculationBtn();
         // Box to show text for which elements are chosen
         const nextElementsContainer = setupNextElementsContainer(sanitizedSvgFilePath);
 
-
-        // Add the svg graphic to the main container
-        circuitContainer.appendChild(svgContainer);
+        // Add the circuit graphic to the main container
         contentCol.append(circuitContainer);
 
         let stepCalculationText = generateTextForZ(data);
         stepCalculationText.style.color = "white";
 
         if (pictureCounter > 1) {
-            const lastStepCalcBtn = document.getElementById(`calcBtn${pictureCounter - 1}`);
-
-            lastStepCalcBtn.addEventListener("click", () => {
-                if (lastStepCalcBtn.textContent === "show calculation") {
-                    lastStepCalcBtn.textContent = "hide calculation";
-                    lastStepCalcBtn.insertAdjacentElement("afterend", stepCalculationText);
-                    MathJax.typeset();
-                } else {
-                    lastStepCalcBtn.textContent = "show calculation";
-                    contentCol.removeChild(stepCalculationText);
-                }
-            })
+            addCalculationButtonBetweenPictures(stepCalculationText, contentCol);
         }
 
         const {pathElements, filteredPaths} = getElementsFromSvgContainer(svgContainer);
 
-        if (filteredPaths.length === 1) {
+        if (onlyOneElementLeft(filteredPaths)) {
             document.getElementById("check-btn").disabled = true;
             showMessage(contentCol, "Well done, you finished the circuit!", "success");
         } else {
-            // if it's not the last step, add the calcBtn and text field
+            // If it's not the last step, add the calcBtn and text field
             contentCol.append(newCalcBtn);
             contentCol.appendChild(nextElementsContainer);
-        }
-
-        if (filteredPaths.length > 1) {
             const nextElementsList = nextElementsContainer.querySelector(`#next-elements-list-${sanitizedSvgFilePath}`);
             pathElements.forEach(pathElement => setStyleAndEvent(pathElement, nextElementsList));
         }
+
         MathJax.typeset();
 
 
@@ -220,11 +223,10 @@ function display_step(pyodide, jsonFilePath_Z,svgFilePath,jsonFilePath_VC=null) 
 }
 
 function setStyleAndEvent(pathElement, nextElementsList) {
-    {
-        pathElement.style.pointerEvents = 'bounding-box';
-        pathElement.style.cursor = 'pointer';
-        pathElement.addEventListener('click', () =>
-            chooseElement(pathElement, nextElementsList)
-        );
-    }
+    pathElement.style.pointerEvents = 'bounding-box';
+    pathElement.style.cursor = 'pointer';
+    // Make elements clickable
+    pathElement.addEventListener('click', () =>
+        chooseElement(pathElement, nextElementsList)
+    );
 }
