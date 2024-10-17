@@ -5,16 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>simpliPFy</title>
 
+    <!-- Load languages -->
+    <script src="src/scripts/languages/lang.en.js"></script>
+    <script src="src/scripts/languages/lang.de.js"></script>
     <!-- JS Scripts Import -->
     <script src="src/scripts/utils/circuitMap.js"></script>
     <script src="src/scripts/utils/pagemanager.js"></script>
+    <script src="src/scripts/utils/explanationTexts.js"></script>
     <script src="src/scripts/main.js"></script>
     <script src="src/scripts/utils/solutionObject.js"></script>
     <script src="src/scripts/utils/solutionObject_VC.js"></script>
     <script src="src/scripts/utils/fetchDirectoryListing.js"></script>
     <script src="src/scripts/utils/loadPackages.js"></script>
     <script src="src/scripts/utils/importPackages.js"></script>
-    <script src="src/scripts/utils/UI_Functions.js"></script>
+    <script src="src/scripts/utils/helperFunctions.js"></script>
     <script src="src/scripts/utils/displaySteps.js"></script>
 
     <!-- Pyodide and MathJax Import -->
@@ -62,7 +66,7 @@
         <div class="container-fluid bg-warning pb-2 mb-0" id="yellow-image-container">
             <img src="src/resources/landingpage/tablet_smartphone.png" class="img-fluid pt-3" alt="smartphone-and-tablet-example">
             <p class="pt-2" id="heading-logo">simpliPFy</p>
-            <p class="pb-2">a free browser tool for learning<br>how to simplify electrical circuits</p>
+            <p id="landing-page-greeting" class="pb-2"></p>
         </div>
 
         <div class="container-fluid" id="start-container">
@@ -73,35 +77,27 @@
             <img src="src/resources/landingpage/tablet_smartphone_darkmode.png" class="img-fluid pt-3" alt="smartphone-and-tablet-example">
             <ul class="py-5 px-0 mb-0 text-center" id="features">
                 <li>
-                    <p>Key feature 1</p>
+                    <p id="key-feature1"></p>
                 </li>
                 <li>
                     <p>•</p>
                 </li>
                 <li>
-                    <p>Key feature 2</p>
+                    <p id="key-feature2"></p>
                 </li>
                 <li>
                     <p>•</p>
                 </li>
                 <li>
-                    <p>Key feature 3</p>
+                    <p id="key-feature3"></p>
                 </li>
             </ul>
         </div>
 
         <div class="container-fluid pt-5" id="circuit-selector-explanation-container">
-            <p class="my-0">
-                There are circuits that you can use. You can try different electrical
-                components (resistors, capacitors and coils). More advanced circuits combine
-                these elements and can also provide you with voltages and currents, even
-                for alternating currents!
-            </p>
+            <p id="landing-page-explanation1" class="my-0"></p>
             <img src="src/resources/landingpage/circuit_selector.png" class="img-fluid pt-3" alt="circuits">
-            <p class="my-0 pb-4">
-                You can also choose between a light and dark mode in further version.
-                Just use the button in the navigation.
-            </p>
+            <p id="landing-page-explanation2" class="my-0 pb-4"></p>
         </div>
     </div>
 
@@ -115,9 +111,10 @@
                 <div id="pgr-bar" class="progress-bar progress-bar-striped progress-bar-animated bg-warning" role="progressbar"
                      style="width: 0" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
             </div>
+            <div id="progress-bar-note" class="justify-content-center"></div>
         </div>
 
-        <p class="pt-3 element-heading">RESISTORS</p>
+        <p id="resistor-heading" class="pt-3 element-heading"></p>
         <div class="container-fluid h-50">
             <div id="resistor-carousel" class="carousel slide" data-interval="false">
                 <div class="carousel-inner">

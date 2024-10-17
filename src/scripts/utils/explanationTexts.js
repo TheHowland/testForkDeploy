@@ -1,47 +1,12 @@
-/*
-Replaces non-alphanumeric characters in a selector string with underscores to ensure it is a valid CSS selector.
- */
-function sanitizeSelector(selector) {
-    return selector.replace(/[^\w-]/g, '_');
-}
-
-function setSvgDarkMode(svgData) {
-    return svgData.replaceAll("black", "white");
-}
-
-function setSvgWidthTo(svgData, width) {
-    // Search the string: width="dd.ddddpt"
-    let match = svgData.match(/width="(\d*.\d*pt)"/);
-    let foundWidth = match[1];   // dd.dddd
-    return svgData.replace(foundWidth, width);   // replace dd.ddd with width
-}
-
-/*
-Displays a temporary message to the user in a message box.
- */
-function showMessage(container, message, prio = "warning") {
-    const msg = document.createElement('div');
-    msg.classList.add("alert");
-    msg.classList.add(`alert-${prio}`);
-    msg.classList.add("fixed-bottom");
-    msg.classList.add("m-5");
-    msg.innerHTML = message;
-    container.appendChild(msg);
-    setTimeout(() => {
-        msg.style.display = 'none';
-    }, 3000);
-}
-
-
 function getRelationText(data) {
     let relationText = "";
     if (!data.isNull()) {
         if (data.noFormat().relation === "parallel") {
-            relationText = "Die Elemente sind parallel zueinander";
+            relationText = currentLang.calcRelationTextParallel;
         } else if (data.noFormat().relation === "series") {
-            relationText = "Die Elemente sind in Reihe zueinander";
+            relationText = currentLang.calcRelationTextSeries;
         } else if (data.noFormat().relation === null) {
-            relationText = "Keine Beziehung zwischen den Elementen";
+            relationText = currentLang.calcRelationTextNoRelation;
         } else {
             throw Error("Unknown relation type");
         }
@@ -49,18 +14,22 @@ function getRelationText(data) {
     return relationText;
 }
 
+
 // Generates and appends a paragraph describing the resistance simplification step
 function generateTextForZ(data) {
     let relationText = getRelationText(data);
     const text = document.createElement('p');
     text.innerHTML = `
-        Die Elemente ${data.inline().name1} und ${data.inline().name2}<br>
-        wurden zu ${data.inline().newName} zusammengefasst<br>
+        ${currentLang.calcBeforeFirstElement} ${data.inline().name1} ${currentLang.calcBetweenElements} ${data.inline().name2}<br>
+        ${currentLang.calcAfterSecondElement} ${data.inline().newName} ${currentLang.calcAfterSimplifiedElement}<br>
+        <br>
         ${data.inline().name1}&nbsp= ${data.inline().value1}<br>
         ${data.inline().name2}&nbsp= ${data.inline().value2}<br>
         ${data.inline().newName}&nbsp= ${data.inline().result}<br>
+        <br>
         ${relationText}<br>
-        Rechnung:<br>
+        <br>
+        ${currentLang.calculationHeading}:<br>
         ${data.inline().latexEquation}
     `;
     return text;
@@ -73,19 +42,21 @@ function generateTextForVoltageCurrent(data) {
 
     // Handle relationText generation based on relation type
     if (relation === "parallel") {
-        relationText = `Die Elemente sind parallel zueinander. Die Spannung ${data.inline().oldValues[1]} bleibt gleich. <br>
-                        Die Stromst&aumlrke ${data.inline().oldValues[2]} teilt sich auf.`;
+        relationText = `${currentLang.calcRelationTextParallel}. ${currentLang.vcBeforeParallelVoltage} ${data.inline().oldValues[1]} ${currentLang.vcAfterParallelVoltage} <br>
+                        ${currentLang.vcBeforeParallelCurrent} ${data.inline().oldValues[2]} ${currentLang.vcAfterParallelCurrent}`;
     } else if (relation === "series") {
-        relationText = `Die Elemente sind in Reihe zueinander. Die Stromst&aumlrke ${data.inline().oldValues[2]} bleibt gleich. <br>
-                        Die Spannung ${data.inline().oldValues[1]} teilt sich auf.`;
+        relationText = `${currentLang.calcRelationTextSeries}. ${currentLang.vcBeforeSeriesCurrent} ${data.inline().oldValues[2]} ${currentLang.vcAfterSeriesCurrent}. <br>
+                        ${currentLang.vcBeforeSeriesVoltage} ${data.inline().oldValues[1]} ${currentLang.vcAfterSeriesVoltage}.`;
     } else {
-        relationText = "Keine Beziehung zwischen den Elementen";
+        relationText = currentLang.calcRelationTextNoRelation;
     }
 
     const text = document.createElement('p');
 
     text.innerHTML = `
-        Das Element ${data.inline().oldNames[0]} setzt sich aus den Elementen ${data.inline().names1[0]} und ${data.inline().names2[0]} zusammen.<br>
+        ${currentLang.vcBeforeSimplifiedElement} ${data.inline().oldNames[0]} ${currentLang.vcAfterSimplifiedElement} 
+        ${data.inline().names1[0]} ${currentLang.vcBetweenElements} ${data.inline().names2[0]} ${currentLang.vcAfterSecondElement}.<br>
+        <br>
         ${data.inline().oldNames[0]}&nbsp= ${data.inline().oldValues[0]}<br>
         ${data.inline().oldNames[1]}&nbsp= ${data.inline().oldValues[1]}<br>
         ${data.inline().oldNames[2]}&nbsp= ${data.inline().oldValues[2]}<br>   
@@ -95,8 +66,10 @@ function generateTextForVoltageCurrent(data) {
         ${data.inline().names2[0]}&nbsp= ${data.inline().values2[0]}<br>
         ${data.inline().names2[1]}&nbsp= ${data.inline().values2[1]}<br>
         ${data.inline().names2[2]}&nbsp= ${data.inline().values2[2]}<br>
+        <br>
         ${relationText}<br>
-        Rechnung:<br>
+        <br>
+        ${currentLang.calculationHeading}:<br>
         ${data.inline().equation[0]}<br>
         ${data.inline().equation[1]}<br>`;
 
