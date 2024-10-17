@@ -49,7 +49,6 @@ class SolveInUserOrder:
         cpts[0] = "Z" + cpts[0][1::]
         cpts[1] = "Z" + cpts[1][1::]
 
-        print(cpts)
         if cpts[1] in self.circuit.in_series(cpts[0]):
             newNet, newCptName = self.circuit.simplify_two_cpts(self.circuit, cpts)
             self.steps.append(SolutionStep(newNet, cpt1=cpts[0], cpt2=cpts[1], newCptName=newCptName,
