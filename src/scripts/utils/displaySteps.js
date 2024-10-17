@@ -78,7 +78,13 @@ function setupSvgDivContainer(svgData) {
     svgDiv.classList.add("p-2");
     svgDiv.style.width = "350px";
     svgDiv.style.maxWidth = "350px";  // To make the border limit for tablets and bigger screens
+
+    // Svg manipulation - set width and color for dark mode
+    let match = svgData.match(/width="(\d*.\d*pt)"/);
+    let foundWidth = match[1];
+    svgData = svgData.replace(foundWidth, "100%");
     let whiteSvgData = svgData.replaceAll("black", "white");
+
     svgDiv.innerHTML = whiteSvgData;
     return svgDiv;
 }

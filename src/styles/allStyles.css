@@ -136,3 +136,15 @@ body, html {
     list-style-type: none;
 }
 
+#bootstrap-overrides #check-btn {
+    background-color: #FFC107;
+    border: none;
+    color: #222222;
+}
+
+#bootstrap-overrides #reset-btn {
+    background-color: #b61117;
+    border: none;
+    color: white;
+}
+
