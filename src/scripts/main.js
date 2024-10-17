@@ -157,14 +157,14 @@ function setupSpecificCircuitSelector(circuitMap, pageManager, pyodide) {
     const circuitDiv = document.getElementById(circuitMap.circuitDivID);
     const startBtn = document.getElementById(circuitMap.btn);
     const btnOverlay = document.getElementById(circuitMap.btnOverlay);
-    //startBtn.disabled = true;
+    //startBtn.disabled = true; currently not necessary because it's only shown when all is ready
 
 
     // Fill div with svg
     let svgData = pyodide.FS.readFile(circuitMap.svgFile, {encoding: "utf8"});
-    svgData = svgData.replaceAll("black", "white");
+    svgData = setSvgWidthTo(svgData, "100%");
+    svgData = setSvgDarkMode(svgData);
     circuitDiv.innerHTML = svgData;
-
 
     setupSelectionCircuit(circuitDiv, startBtn, btnOverlay);
     startBtn.addEventListener("click", () =>

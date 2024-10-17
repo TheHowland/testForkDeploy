@@ -5,7 +5,16 @@ function sanitizeSelector(selector) {
     return selector.replace(/[^\w-]/g, '_');
 }
 
+function setSvgDarkMode(svgData) {
+    return svgData.replaceAll("black", "white");
+}
 
+function setSvgWidthTo(svgData, width) {
+    // Search the string: width="dd.ddddpt"
+    let match = svgData.match(/width="(\d*.\d*pt)"/);
+    let foundWidth = match[1];   // dd.dddd
+    return svgData.replace(foundWidth, width);   // replace dd.ddd with width
+}
 
 /*
 Displays a temporary message to the user in a message box.
