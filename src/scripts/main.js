@@ -196,7 +196,6 @@ function setupSpecificCircuitSelector(circuitMap, pageManager, pyodide) {
         circuitSelectorStartButtonPressed(circuitMap.circuitFile, pageManager, pyodide))
 }
 
-
 function resetSelectorResistorSelections() {
     resetSelection(Resistor1);
     resetSelection(Resistor2);
