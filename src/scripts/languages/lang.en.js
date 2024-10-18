@@ -39,6 +39,8 @@ const english = {
         "hide",
     msgVoltAndCurrentAvailable:
         "You can now go back and check how to calculate the voltages and currents",
+    msgShowVoltage:
+        "See if you can calculate the voltages and currents yourself, assuming that",
     msgCongratsFinishedCircuit:
         "Well done, you finished the circuit!",
     alertChooseTwoElements:
@@ -47,12 +49,14 @@ const english = {
         "Can not simplify those elements",
 
     // Calculation text
-    calcRelationTextParallel:
+    relationTextParallel:
         "The elements are in parallel",
-    calcRelationTextSeries:
+    relationTextSeries:
         "The elements are in series",
-    calcRelationTextNoRelation:
+    relationTextNoRelation:
         "No relation between those elements",
+
+    // Impedance
     calcBeforeFirstElement:
         "The elements",
     calcBetweenElements:
@@ -64,30 +68,17 @@ const english = {
     calculationHeading:
         "Calculation",
 
-    vcBeforeSeriesCurrent:
-        "The current",
-    vcAfterSeriesCurrent:
-        "stays the same",
-    vcBeforeSeriesVoltage:
-        "The voltage",
-    vcAfterSeriesVoltage:
-        "splits up",
+    // Voltage Current text
+    currentCalcHeading:
+        "Calculate current for",
+    currentStaysTheSame:
+        "The current stays the same",
+    voltageSplits:
+        "The voltage splits up",
+    voltageStaysTheSame:
+        "The voltage stays the same",
+    currentSplits:
+        "The current splits up",
 
-    vcBeforeParallelVoltage:
-        "The voltage",
-    vcAfterParallelVoltage:
-        "stays the same",
-    vcBeforeParallelCurrent:
-        "The current",
-    vcAfterParallelCurrent:
-        "splits up",
 
-    vcBeforeSimplifiedElement:
-        "The element",
-    vcAfterSimplifiedElement:
-        "was simplified from",
-    vcBetweenElements:
-        "and",
-    vcAfterSecondElement:
-        "",
 }

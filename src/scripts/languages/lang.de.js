@@ -40,6 +40,8 @@ const german = {
         "ausblenden",
     msgVoltAndCurrentAvailable:
         "Du kannst nun zur&uumlckscrollen und schauen wie die Spannungen und Str&oumlme berechnet werden k&oumlnnen",
+    msgShowVoltage:
+        "Probiere selbst die Spannungen und Str&oumlme auszurechnen, mit der Annahme, dass",
     msgCongratsFinishedCircuit:
         "Bravo, du hast die Schaltung vereinfacht",
     alertChooseTwoElements:
@@ -48,12 +50,14 @@ const german = {
         "Diese Elemente k&oumlnnen nicht vereinfacht werden",
 
     // Calculation text
-    calcRelationTextParallel:
+    relationTextParallel:
         "Die Elemente sind parallel zueinander",
-    calcRelationTextSeries:
+    relationTextSeries:
         "Die Elemente sind in Reihe zueinander",
-    calcRelationTextNoRelation:
+    relationTextNoRelation:
         "Keine Beziehung zwischen den Elementen",
+
+    // Impedance text
     calcBeforeFirstElement:
         "Die Elemente",
     calcBetweenElements:
@@ -65,30 +69,20 @@ const german = {
     calculationHeading:
         "Rechnung",
 
-    vcBeforeSeriesCurrent:
-        "Der Strom",
-    vcAfterSeriesCurrent:
-        "bleibt gleich",
-    vcBeforeSeriesVoltage:
-        "Die Spannung",
-    vcAfterSeriesVoltage:
-        "teilt sich auf",
+    // Voltage Current text
+    currentCalcHeading:
+        "Berechnen des Stroms f&uuml",
+    currentStaysTheSame:
+        "Der Strom bleibt gleich",
+    voltageSplits:
+        "Die Spannung teilt sich auf",
+    voltageStaysTheSame:
+        "Die Spannung bleibt gleich",
+    currentSplits:
+        "Der Strom teilt sich auf",
 
-    vcBeforeParallelVoltage:
-        "Die Spannung",
-    vcAfterParallelVoltage:
-        "bleibt gleich",
-    vcBeforeParallelCurrent:
-        "Der Strom",
-    vcAfterParallelCurrent:
-        "teilt sich auf",
 
-    vcBeforeSimplifiedElement:
-        "Das Element",
-    vcAfterSimplifiedElement:
-        "setzt sich aus den Elementen",
-    vcBetweenElements:
-        "und",
-    vcAfterSecondElement:
-        "zusammen",
+
+
+
 }
