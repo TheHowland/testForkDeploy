@@ -21,8 +21,8 @@ const english = {
     keyFeature3:
         "Not only can you simplify resistors, but capacitors, inductors and even mixed circuits",
     landingPageExplanation1:
-        "There are circuits that you can use. You can try different electrical " +
-        "components (resistors, capacitors and coils). More advanced circuits combine " +
+        "There are pre-made circuits that you can use. You can try different electrical " +
+        "components (resistors, capacitors and inductors). More advanced circuits combine " +
         "these elements and can also provide you with voltages and currents, even " +
         "for alternating currents!",
     landingPageExplanation2:

@@ -49,10 +49,11 @@ img {
     font-family: 'Roboto', sans-serif;
     font-size: medium;
     font-weight: normal;
+    margin-bottom: 0;
 }
 
 #bootstrap-overrides .feature-container {
-    height: 200px;
+    height: 220px;
 }
 
 #bootstrap-overrides #feature-container1 {

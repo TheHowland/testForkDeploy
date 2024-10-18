@@ -11,20 +11,20 @@ const german = {
     keyFeature1heading:
         "Verstehen",
     keyFeature1:
-        "Bekomme ein intuitives Gef&uuml daf&uumlr, wie Schaltkreise vereinfacht werden",
+        "Bekomme ein intuitives Gef&uumlhl daf&uumlr, wie Schaltkreise vereinfacht werden",
     keyFeature2heading:
         "Browserbasiert",
     keyFeature2:
-        "Du brauchst keine weitere App auf deinem Smartphone, das Tool l&auml komplett in deinem Browser",
+        "Du brauchst keine weitere App auf deinem Smartphone, das Tool l&aumluft komplett in deinem Browser",
     keyFeature3heading:
         "Vielfalt",
     keyFeature3:
-        "Du kannst nicht nur Widerstandsnetzwerke zusammenfassen, sondern auch Kondensatoren, Spulen oder gemischte Schaltungen",
+        "Du kannst nicht nur Widerst&aumlnde nutzen, sondern auch Kondensatoren und Spulen",
     landingPageExplanation1:
         "Es gibt vorhandene Schaltungen die benutzt werden k&oumlnnen. " +
         "Du kannst verschiedene elektrische Komponenten vereinfachen, z.B. " +
-        "Widerst&aumlnde, Kondensatoren oder Spulen." +
-        "Schwierigere Netze kombinieren die verschiedenen Elemente." +
+        "Widerst&aumlnde, Kondensatoren oder Spulen. " +
+        "Schwierigere Netze kombinieren die verschiedenen Elemente. " +
         "Es kann f&uumlr jeden Schritt die Rechnung angezeigt werden, " +
         "sowohl f&uumlr den Gesamtwiderstand, als auch f&uumlr Spannungen und Str&oumlme.",
     landingPageExplanation2:
