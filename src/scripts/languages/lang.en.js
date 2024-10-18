@@ -23,8 +23,13 @@ const english = {
         "Just use the button in the navigation.",
 
     // Selector page text
-    resistorCarouselHeading:
-        "RESISTORS",
+    carouselHeadings:
+        {
+            "res": "RESISTORS",
+            "cap": "CAPACITORS",
+            "ind": "INDUCTORS",
+            "mix": "MIXED",
+        },
 
     // Simplifier page text
     nextElementsHeading:

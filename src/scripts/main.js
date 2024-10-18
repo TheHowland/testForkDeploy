@@ -34,6 +34,13 @@ let solveFilePath = serverAddress + "/solve.py";
 
 // ####################################################################################################################
 // ########################################################## MAIN ####################################################
+function showWaitingNote() {
+    const note = document.getElementById("progress-bar-note");
+    note.style.color = "white";
+    note.innerHTML = currentLang.selectorWaitingNote;
+    return note;
+}
+
 // ####################################################################################################################
 async function main() {
 
@@ -57,12 +64,14 @@ async function main() {
     setupNavigation(pageManager, pyodide);
 
     hideSelectorsWhileLoading();
+    const note = showWaitingNote();
 
     await doLoadsAndImports(pyodide);
     await importSolverModule(pyodide);
     await createSvgsForSelectors(pyodide);
 
     showSelectorsAfterLoading();
+    note.remove();
     setupSelectPage(pageManager, pyodide);
 }
 
@@ -71,25 +80,24 @@ async function main() {
 // ####################################################################################################################
 
 function hideSelectorsWhileLoading() {
-    const resCarousel = document.getElementById("resistor-carousel");
-    const resHeading = document.getElementById("resistor-heading");
-    const note = document.getElementById("progress-bar-note");
-    resCarousel.hidden = true;
-    resHeading.hidden = true;
-    note.style.color = "white";
-    note.innerHTML = currentLang.selectorWaitingNote;
+    for (const circuitSet of CircuitSets) {
+        const carousel = document.getElementById(`${circuitSet.identifier}-carousel`);
+        const heading = document.getElementById(`${circuitSet.identifier}-heading`);
+        carousel.hidden = true;
+        heading.hidden = true;
+    }
 }
 
 function showSelectorsAfterLoading() {
-    const resCarousel = document.getElementById("resistor-carousel");
-    const resHeading = document.getElementById("resistor-heading");
-    const note = document.getElementById("progress-bar-note");
-    resCarousel.hidden = false;
-    resHeading.hidden = false;
-    note.remove();
+    for (const circuitSet of CircuitSets) {
+        const carousel = document.getElementById(`${circuitSet.identifier}-carousel`);
+        const heading = document.getElementById(`${circuitSet.identifier}-heading`);
+        carousel.hidden = false;
+        heading.hidden = false;
+    }
 }
 
-async function createSvgsForSelectors(pyodide) {
+async function prepareSolutionsDir(pyodide) {
     try {
         //An array of file names representing the solution files in the Solutions directory.
         let solutionFiles = await pyodide.FS.readdir("Solutions");
@@ -101,13 +109,18 @@ async function createSvgsForSelectors(pyodide) {
     } catch (error) {
         console.warn("Solutions directory not found or already cleared.");
     }
+}
 
-    stepSolve = solve.SolveInUserOrder(Resistor1.circuitFile, "Circuits/", "Solutions/");
-    await stepSolve.createStep0().toJs();
-    stepSolve = solve.SolveInUserOrder(Resistor2.circuitFile, "Circuits/", "Solutions/");
-    await stepSolve.createStep0().toJs();
-    stepSolve = solve.SolveInUserOrder(Resistor3.circuitFile, "Circuits/", "Solutions/");
-    await stepSolve.createStep0().toJs();
+async function createSvgsForSelectors(pyodide) {
+    await prepareSolutionsDir(pyodide);
+    // For all circuit sets (e.g. Resistors, Capacitors, ..)
+    for (const circuitSet of CircuitSets) {
+        // For all circuits in this set (e.g., Resistor1, Resistor2, ...)
+        for (const circuit of circuitSet.set) {
+            stepSolve = solve.SolveInUserOrder(circuit.circuitFile, "Circuits/", "Solutions/");
+            await stepSolve.createStep0().toJs();
+        }
+    }
 }
 
 async function importSolverModule(pyodide) {
@@ -196,32 +209,45 @@ function setupSpecificCircuitSelector(circuitMap, pageManager, pyodide) {
         circuitSelectorStartButtonPressed(circuitMap.circuitFile, pageManager, pyodide))
 }
 
-function resetSelectorResistorSelections() {
-    resetSelection(Resistor1);
-    resetSelection(Resistor2);
-    resetSelection(Resistor3);
+function resetSelectorSelections(circuitSet) {
+    for (const circuit of circuitSet) {
+        resetSelection(circuit);
+    }
 }
 
-function setupResNextAndPrevButtons() {
-    const resNext = document.getElementById("res-next-btn");
-    const resPrev = document.getElementById("res-prev-btn");
+function setupNextAndPrevButtons(circuitSet) {
+    const next = document.getElementById(`${circuitSet.identifier}-next-btn`);
+    const prev = document.getElementById(`${circuitSet.identifier}-prev-btn`);
 
-    resNext.addEventListener("click", () => {
-        resetSelectorResistorSelections();
+    next.addEventListener("click", () => {
+        resetSelectorSelections(circuitSet.set);
     })
-    resPrev.addEventListener("click", () => {
-        resetSelectorResistorSelections();
+    prev.addEventListener("click", () => {
+        resetSelectorSelections(circuitSet.set);
     })
 }
 
-function setupResistorSelector(pageManager, pyodide) {
-    setupSpecificCircuitSelector(Resistor1, pageManager, pyodide);
-    setupSpecificCircuitSelector(Resistor2, pageManager, pyodide);
-    setupSpecificCircuitSelector(Resistor3, pageManager, pyodide);
-
-    setupResNextAndPrevButtons();
+function setupSelector(circuitSet, pageManager, pyodide) {
+    for (const circuit of circuitSet.set) {
+        setupSpecificCircuitSelector(circuit, pageManager, pyodide);
+    }
+    if (moreThanOneCircuitInSet(circuitSet)) {
+        setupNextAndPrevButtons(circuitSet);
+    } else {
+        hideNextAndPrevButtons(circuitSet);
+    }
 }
 
+function moreThanOneCircuitInSet(circuitSet) {
+    return circuitSet.set.length > 1;
+}
+
+function hideNextAndPrevButtons(circuitSet) {
+    const next = document.getElementById(`${circuitSet.identifier}-next-btn`);
+    const prev = document.getElementById(`${circuitSet.identifier}-prev-btn`);
+    next.hidden = true;
+    prev.hidden = true;
+}
 
 function circuitSelectorStartButtonPressed(circuitName, pageManager, pyodide){
     clearSimplifierPageContent();
@@ -256,8 +282,11 @@ function updateLanguageLandingAndSelectPage() {
     expl1.innerHTML = currentLang.landingPageExplanation1;
     const expl2 = document.getElementById("landing-page-explanation2");
     expl2.innerHTML = currentLang.landingPageExplanation2;
-    const resHeading = document.getElementById("resistor-heading");
-    resHeading.innerHTML = currentLang.resistorCarouselHeading;
+
+    for (const circuitSet of CircuitSets) {
+        const heading = document.getElementById(`${circuitSet.identifier}-heading`);
+        heading.innerHTML = currentLang.carouselHeadings[circuitSet.identifier];
+    }
 }
 
 function closeNavbar() {
@@ -375,10 +404,16 @@ async function loadCircuits(pyodide) {
     console.timeEnd(loadCircuits);
 }
 
+function updateSelectorHeadings(circuitSetId) {
+    const heading = document.getElementById(`${circuitSetId}-heading`);
+    heading.innerHTML = currentLang.carouselHeadings[circuitSetId];
+}
+
 function setupSelectPage(pageManager, pyodide) {
-    const resHeading = document.getElementById("resistor-heading");
-    resHeading.innerHTML = currentLang.resistorCarouselHeading;
-    setupResistorSelector(pageManager, pyodide);
+    for (const circuitSet of CircuitSets) {
+        updateSelectorHeadings(circuitSet.identifier);
+        setupSelector(circuitSet, pageManager, pyodide);
+    }
 }
 
 async function importPyodidePackages(pyodide) {

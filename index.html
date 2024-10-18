@@ -9,7 +9,7 @@
     <script src="src/scripts/languages/lang.en.js"></script>
     <script src="src/scripts/languages/lang.de.js"></script>
     <!-- JS Scripts Import -->
-    <script src="src/scripts/utils/circuitMap.js"></script>
+    <script src="src/scripts/circuitMap.js"></script>
     <script src="src/scripts/utils/pagemanager.js"></script>
     <script src="src/scripts/utils/explanationTexts.js"></script>
     <script src="src/scripts/main.js"></script>
@@ -128,9 +128,9 @@
             <div id="progress-bar-note" class="justify-content-center"></div>
         </div>
 
-        <p id="resistor-heading" class="pt-3 element-heading"></p>
+        <p id="res-heading" class="pt-3 element-heading"></p>
         <div class="container-fluid h-50">
-            <div id="resistor-carousel" class="carousel slide" data-interval="false">
+            <div id="res-carousel" class="carousel slide" data-interval="false">
                 <div class="carousel-inner">
                     <div class="carousel-item active justify-content-center">
                         <div id="res1-overlay" class="img-overlay">
@@ -154,16 +154,100 @@
                         </div>
                     </div>
                 </div>
-                <button id="res-prev-btn" class="carousel-control-prev" type="button" data-bs-target="#resistor-carousel" data-bs-slide="prev">
+                <button id="res-prev-btn" class="carousel-control-prev" type="button" data-bs-target="#res-carousel" data-bs-slide="prev">
                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                     <span class="visually-hidden">Previous</span>
                 </button>
-                <button id="res-next-btn" class="carousel-control-next" type="button" data-bs-target="#resistor-carousel" data-bs-slide="next">
+                <button id="res-next-btn" class="carousel-control-next" type="button" data-bs-target="#res-carousel" data-bs-slide="next">
                     <span class="carousel-control-next-icon" aria-hidden="true"></span>
                     <span class="visually-hidden">Next</span>
                 </button>
             </div>
         </div>
+
+        <p id="cap-heading" class="pt-3 element-heading"></p>
+        <div class="container-fluid h-50">
+            <div id="cap-carousel" class="carousel slide" data-interval="false">
+                <div class="carousel-inner">
+                    <div class="carousel-item active justify-content-center">
+                        <div id="cap1-overlay" class="img-overlay">
+                            <button id="cap1-btn" class="btn btn-warning text-dark px-5 circuitStartBtn">start</button>
+                        </div>
+                        <div id="cap1" class="svg-selector mx-auto">
+                        </div>
+                    </div>
+                </div>
+                <button id="cap-prev-btn" class="carousel-control-prev" type="button" data-bs-target="#cap-carousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button id="cap-next-btn" class="carousel-control-next" type="button" data-bs-target="#cap-carousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+        </div>
+
+        <p id="ind-heading" class="pt-3 element-heading"></p>
+        <div class="container-fluid h-50">
+            <div id="ind-carousel" class="carousel slide" data-interval="false">
+                <div class="carousel-inner">
+                    <div class="carousel-item active justify-content-center">
+                        <div id="ind1-overlay" class="img-overlay">
+                            <button id="ind1-btn" class="btn btn-warning text-dark px-5 circuitStartBtn">start</button>
+                        </div>
+                        <div id="ind1" class="svg-selector mx-auto">
+                        </div>
+                    </div>
+                </div>
+                <button id="ind-prev-btn" class="carousel-control-prev" type="button" data-bs-target="#ind-carousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button id="ind-next-btn" class="carousel-control-next" type="button" data-bs-target="#ind-carousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+        </div>
+
+        <p id="mix-heading" class="pt-3 element-heading"></p>
+        <div class="container-fluid h-50">
+            <div id="mix-carousel" class="carousel slide" data-interval="false">
+                <div class="carousel-inner">
+                    <div class="carousel-item active justify-content-center">
+                        <div id="mix1-overlay" class="img-overlay">
+                            <button id="mix1-btn" class="btn btn-warning text-dark px-5 circuitStartBtn">start</button>
+                        </div>
+                        <div id="mix1" class="svg-selector mx-auto">
+                        </div>
+                    </div>
+                    <div class="carousel-item justify-content-center">
+                        <div id="mix2-overlay" class="img-overlay">
+                            <button id="mix2-btn" class="btn btn-warning text-dark px-5 circuitStartBtn">start</button>
+                        </div>
+                        <div id="mix2" class="svg-selector mx-auto">
+                        </div>
+                    </div>
+                    <div class="carousel-item justify-content-center">
+                        <div id="mix3-overlay" class="img-overlay">
+                            <button id="mix3-btn" class="btn btn-warning text-dark px-5 circuitStartBtn">start</button>
+                        </div>
+                        <div id="mix3" class="svg-selector mx-auto">
+                        </div>
+                    </div>
+                </div>
+                <button id="mix-prev-btn" class="carousel-control-prev" type="button" data-bs-target="#mix-carousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button id="mix-next-btn" class="carousel-control-next" type="button" data-bs-target="#mix-carousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+        </div>
+
     </div>
 
     <!--####################################################################################################

@@ -24,8 +24,14 @@ const german = {
         "In kommenden Versionen kannst du außerdem zwischen einen Dark- und Light-Mode w&aumlhlen",
 
     // Selector page text
-    resistorCarouselHeading:
-        "Widerst&aumlnde",
+    carouselHeadings:
+        {
+            "res": "WIDERST&AumlNDE",
+            "cap": "KONDENSATOREN",
+            "ind": "SPULEN",
+            "mix": "GEMISCHT",
+        },
+
 
     // Simplifier page text
     nextElementsHeading:
