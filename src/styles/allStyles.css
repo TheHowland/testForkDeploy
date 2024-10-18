@@ -7,6 +7,10 @@ body, html {
     overflow-x: hidden;
 }
 
+img {
+    max-height: 375px;
+}
+
 #bootstrap-overrides #nav-select{
     color: #FFC107;
 }
@@ -51,7 +55,15 @@ body, html {
 /* Hero section */
 #bootstrap-overrides #start-button {
     font-weight: bolder;
+    background-color: white;
     border-color: #222222;
+    border-radius: 20px;
+}
+
+#bootstrap-overrides #start-button:hover {
+    font-weight: bolder;
+    background-color: #eeeeee;
+    border-color: black;
     border-radius: 20px;
 }
 
@@ -103,7 +115,8 @@ body, html {
     border: 1px solid white;
     border-radius: 10px;
     position: relative;
-    width: 100%;
+    width: 350px;
+    max-width: 350px;
 }
 
 #bootstrap-overrides .img-overlay {
@@ -139,6 +152,8 @@ body, html {
 #bootstrap-overrides .svg-container {
     border: 1px solid #eeeeee;
     border-radius: 6px;
+    width: 350px;
+    max-width: 350px;  /* To make the box limit in width for tablets and bigger screens */
 }
 
 #bootstrap-overrides ul {

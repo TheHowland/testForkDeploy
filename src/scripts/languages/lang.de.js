@@ -2,7 +2,7 @@ const german = {
     // Landing page text
     landingPageGreeting:
         "Ein kostenloses Browsertool um<br>" +
-        "zu lernen wie Schaltungsnetzte vereinfacht werden",
+        "zu lernen wie Schaltungsnetze vereinfacht werden",
     selectorWaitingNote:
         "Das braucht ein paar Sekunden<br>\n" +
         "Danach kannst du unten verschiedene<br>\n" +
