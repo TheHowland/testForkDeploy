@@ -260,6 +260,13 @@ function updateLanguageLandingAndSelectPage() {
     resHeading.innerHTML = currentLang.resistorCarouselHeading;
 }
 
+function closeNavbar() {
+    const navbarToggler = document.getElementById("nav-toggler");
+    navbarToggler.classList.remove("collapsed");
+    const navDropdown = document.getElementById("navbarSupportedContent");
+    navDropdown.classList.remove("show");
+}
+
 function setupNavigation(pageManager, pyodide) {
     const navHomeLink = document.getElementById("nav-home");
     const navSimplifierLink = document.getElementById("nav-select");
@@ -269,26 +276,31 @@ function setupNavigation(pageManager, pyodide) {
 
     navHomeLink.addEventListener("click", () => {
         checkIfSimplifierPageNeedsReset(pyodide);  // must be in front of page change
+        closeNavbar();
         pageManager.showLandingPage();
     })
     navSimplifierLink.addEventListener("click", () => {
         checkIfSimplifierPageNeedsReset(pyodide);  // must be in front of page change
+        closeNavbar();
         pageManager.showSelectPage();
     })
     navLogo.addEventListener("click", () => {
         checkIfSimplifierPageNeedsReset(pyodide);  // must be in front of page change
+        closeNavbar();
         pageManager.showLandingPage();
     })
     selectEnglish.addEventListener("click", () => {
         currentLang = english;
         const activeFlagIcon = document.getElementById("activeLanguageFlag");
         activeFlagIcon.setAttribute("src", "src/resources/navigation/uk.png");
+        closeNavbar();
         updateLanguageLandingAndSelectPage();
     })
     selectGerman.addEventListener("click", () => {
         currentLang = german;
         const activeFlagIcon = document.getElementById("activeLanguageFlag");
         activeFlagIcon.setAttribute("src", "src/resources/navigation/germany.png");
+        closeNavbar();
         updateLanguageLandingAndSelectPage();
     })
 
@@ -299,18 +311,7 @@ function setupLandingPage(pageManager) {
     landingStartButton.addEventListener("click", () => {
         pageManager.showSelectPage();
     })
-    const greeting = document.getElementById("landing-page-greeting");
-    greeting.innerHTML = currentLang.landingPageGreeting;
-    const keyFeature1 = document.getElementById("key-feature1");
-    keyFeature1.innerHTML = currentLang.keyFeature1;
-    const keyFeature2 = document.getElementById("key-feature2");
-    keyFeature2.innerHTML = currentLang.keyFeature2;
-    const keyFeature3 = document.getElementById("key-feature3");
-    keyFeature3.innerHTML = currentLang.keyFeature3;
-    const expl1 = document.getElementById("landing-page-explanation1");
-    expl1.innerHTML = currentLang.landingPageExplanation1;
-    const expl2 = document.getElementById("landing-page-explanation2");
-    expl2.innerHTML = currentLang.landingPageExplanation2;
+    updateLanguageLandingAndSelectPage();
 }
 
 function twoElementsChosen() {

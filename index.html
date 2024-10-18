@@ -35,7 +35,7 @@
 <!-- add arbitrary id to add weight to manually fine tune css styles. See more under "weight of selectors" in css -->
 <body id="bootstrap-overrides" class="bg-dark">
     <nav class="navbar navbar-dark bg-dark p-2">
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <button id="nav-toggler" class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <a class="navbar-brand" id="nav-logo" href="#">simpliPFy</a>
@@ -49,32 +49,25 @@
                 </li>
                 <li>
                     <div id="lang-dropdown" class="dropdown">
-                        <a class="dropdown-toggle" id="Dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="dropdown-toggle" style="color: white" id="Dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <img src="src/resources/navigation/uk.png" id="activeLanguageFlag" class="flag"></a>
                         <ul class="dropdown-menu" aria-labelledby="Dropdown" style="background-color: #33393f; width: min-content">
                             <li>
                                 <a id="select-english" class="d-flex" style="text-decoration: none; color:white">
                                     <img src="src/resources/navigation/uk.png" class="flag my-auto mx-2">
-                                    <p class="my-auto">English</p>
+                                    <p class="my-auto" style="font-size: 20px">English</p>
                                 </a>
                             </li>
                             <li>
                                 <a id="select-german" class="d-flex" style="text-decoration: none; color:white">
                                     <img src="src/resources/navigation/germany.png" class="flag my-auto mx-2">
-                                    <p class="my-auto">Deutsch</p>
+                                    <p class="my-auto" style="font-size: 20px">Deutsch</p>
                                 </a>
                             </li>
                         </ul>
                     </div>
                 </li>
-                <!--li class="nav-item">
-                    <a class="nav-link m-0 p-0">CHEAT SHEET</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link m-0 p-0">ABOUT</a>
-                </li-->
-
-            </ul>
+              </ul>
         </div>
     </nav>
 

@@ -16,20 +16,20 @@ img {
 }
 
 #bootstrap-overrides .flag {
-    width: 15px;
-    max-width: 15px;
-    margin-left: 5px;
+    width: 25px;
+    max-width: 25px;
+    margin-left: 0;
 }
 
 /* Landing page shadows*/
 #bootstrap-overrides #yellow-image-container {
-    box-shadow: 0 6px 6px 0px lightgray;
+    box-shadow: 0 6px 6px 0 lightgray;
     z-index: 2;
     position: relative;
 }
 
 #bootstrap-overrides #feature-container {
-    box-shadow: 0 6px 6px 0px gray;
+    box-shadow: 0 6px 6px 0 gray;
     z-index: 1;
     position: relative;
 }
