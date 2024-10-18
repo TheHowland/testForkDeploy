@@ -272,16 +272,25 @@ function checkIfSimplifierPageNeedsReset(pyodide) {
 function updateLanguageLandingAndSelectPage() {
     const greeting = document.getElementById("landing-page-greeting");
     greeting.innerHTML = currentLang.landingPageGreeting;
+    const keyFeature1heading = document.getElementById("key-feature1heading");
+    keyFeature1heading.innerHTML = currentLang.keyFeature1heading;
     const keyFeature1 = document.getElementById("key-feature1");
     keyFeature1.innerHTML = currentLang.keyFeature1;
     const keyFeature2 = document.getElementById("key-feature2");
     keyFeature2.innerHTML = currentLang.keyFeature2;
+    const keyFeature2heading = document.getElementById("key-feature2heading");
+    keyFeature2heading.innerHTML = currentLang.keyFeature2heading;
     const keyFeature3 = document.getElementById("key-feature3");
     keyFeature3.innerHTML = currentLang.keyFeature3;
+    const keyFeature3heading = document.getElementById("key-feature3heading");
+    keyFeature3heading.innerHTML = currentLang.keyFeature3heading;
     const expl1 = document.getElementById("landing-page-explanation1");
     expl1.innerHTML = currentLang.landingPageExplanation1;
     const expl2 = document.getElementById("landing-page-explanation2");
     expl2.innerHTML = currentLang.landingPageExplanation2;
+    const expl3 = document.getElementById("landing-page-explanation3");
+    expl3.innerHTML = currentLang.landingPageExplanation3;
+
 
     for (const circuitSet of CircuitSets) {
         const heading = document.getElementById(`${circuitSet.identifier}-heading`);

@@ -2,11 +2,11 @@ function getRelationText(data) {
     let relationText = "";
     if (!data.isNull()) {
         if (data.noFormat().relation === "parallel") {
-            relationText = currentLang.calcRelationTextParallel;
+            relationText = currentLang.relationTextParallel;
         } else if (data.noFormat().relation === "series") {
-            relationText = currentLang.calcRelationTextSeries;
+            relationText = currentLang.relationTextSeries;
         } else if (data.noFormat().relation === null) {
-            relationText = currentLang.calcRelationTextNoRelation;
+            relationText = currentLang.relationTextNoRelation;
         } else {
             throw Error("Unknown relation type");
         }

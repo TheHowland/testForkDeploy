@@ -7,12 +7,19 @@ const german = {
         "Das braucht ein paar Sekunden<br>\n" +
         "Danach kannst du unten verschiedene<br>\n" +
         "Schaltungen ausw&aumlhlen",
+
+    keyFeature1heading:
+        "Verstehen",
     keyFeature1:
-        "Hammer",
+        "Bekomme ein intuitives Gef&uuml daf&uumlr, wie Schaltkreise vereinfacht werden",
+    keyFeature2heading:
+        "Browserbasiert",
     keyFeature2:
-        "Irre",
+        "Du brauchst keine weitere App auf deinem Smartphone, das Tool l&auml komplett in deinem Browser",
+    keyFeature3heading:
+        "Vielfalt",
     keyFeature3:
-        "Unglaublich",
+        "Du kannst nicht nur Widerstandsnetzwerke zusammenfassen, sondern auch Kondensatoren, Spulen oder gemischte Schaltungen",
     landingPageExplanation1:
         "Es gibt vorhandene Schaltungen die benutzt werden k&oumlnnen. " +
         "Du kannst verschiedene elektrische Komponenten vereinfachen, z.B. " +

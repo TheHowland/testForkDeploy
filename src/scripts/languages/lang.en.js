@@ -7,18 +7,29 @@ const english = {
         "This will take a few seconds.<br>\n" +
         "After that, you will be able<br>\n" +
         "to choose different circuits below",
+
+    keyFeature1heading:
+        "Understanding",
     keyFeature1:
-        "Soooooo good",
+        "Get a intuitive understanding how electrical circuits are simplified",
+    keyFeature2heading:
+        "Browser based",
     keyFeature2:
-        "Incredible",
+        "No need for an additional app on your phone, this tool works completely inside your browser",
+    keyFeature3heading:
+        "Variety",
     keyFeature3:
-        "Amazing",
+        "Not only can you simplify resistors, but capacitors, inductors and even mixed circuits",
     landingPageExplanation1:
         "There are circuits that you can use. You can try different electrical " +
         "components (resistors, capacitors and coils). More advanced circuits combine " +
         "these elements and can also provide you with voltages and currents, even " +
         "for alternating currents!",
     landingPageExplanation2:
+        "If you step through the circuits, you can see how to calculate the different " +
+        "impedance values, but you can also see how to calculate each of the voltages " +
+        "and currents for the elements.",
+    landingPageExplanation3:
         "You can also choose between a light and dark mode in a further version. " +
         "Just use the button in the navigation.",
 

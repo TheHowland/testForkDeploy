@@ -7,9 +7,16 @@ body, html {
     overflow-x: hidden;
 }
 
+p {
+    font-family: 'Roboto', sans-serif;
+    font-size: medium;
+    font-weight: normal;
+}
+
 img {
     max-height: 375px;
 }
+
 
 #bootstrap-overrides #nav-select{
     color: #FFC107;
@@ -22,17 +29,48 @@ img {
 }
 
 /* Landing page shadows*/
+#bootstrap-overrides #landing-page-container {
+    background-color: white;
+}
+
 #bootstrap-overrides #yellow-image-container {
     box-shadow: 0 6px 6px 0 lightgray;
     z-index: 2;
     position: relative;
 }
 
-#bootstrap-overrides #feature-container {
-    box-shadow: 0 6px 6px 0 gray;
-    z-index: 1;
-    position: relative;
+#bootstrap-overrides .feature-heading {
+    font-family: 'Roboto Condensed', sans-serif;
+    font-size: x-large;
+    font-weight: bold;
 }
+
+#bootstrap-overrides .feature-body {
+    font-family: 'Roboto', sans-serif;
+    font-size: medium;
+    font-weight: normal;
+}
+
+#bootstrap-overrides .feature-container {
+    height: 200px;
+}
+
+#bootstrap-overrides #feature-container1 {
+    background-color: #222222;
+    color: white;
+}
+#bootstrap-overrides #key-feature1heading {
+    color: white;
+}
+#bootstrap-overrides #feature-container2 {
+    background-color: white;
+    color: black;
+}
+#bootstrap-overrides #feature-container3 {
+    background-color: #FFC107;
+    color: black;
+}
+
 
 /* navbar */
 #bootstrap-overrides #nav-logo {
@@ -75,25 +113,14 @@ img {
 }
 
 /* Feature section */
-#bootstrap-overrides #features {
-    list-style-type: none;
-    font-weight: bold;
-}
 
 #bootstrap-overrides #start-container {
     background-color: white;
 }
-
-#bootstrap-overrides #feature-container {
-    background-color: white;
+#bootstrap-overrides #containerCalculationExplanation {
+    background-color: #222222;
+    color: white;
 }
-
-#bootstrap-overrides #circuit-selector-explanation-container {
-    background-color: white;
-    z-index: 0;
-    position: relative;
-}
-
 /* Selection page */
 
 #bootstrap-overrides .carousel-control-next {
