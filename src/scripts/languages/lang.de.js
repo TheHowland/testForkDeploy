@@ -35,10 +35,9 @@ const german = {
     // Selector page text
     carouselHeadings:
         {
-            "res": "WIDERST&AumlNDE",
-            "cap": "KONDENSATOREN",
-            "ind": "SPULEN",
-            "mix": "GEMISCHT",
+            "substitute":  "ERSATZSWERTE",
+            "acdc": "INTRO SPANNUNG/STROM",
+            "mix": "GEMISCHTE SCHALTUNGEN",
         },
 
 

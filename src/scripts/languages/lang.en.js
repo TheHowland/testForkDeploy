@@ -36,10 +36,9 @@ const english = {
     // Selector page text
     carouselHeadings:
         {
-            "res": "RESISTORS",
-            "cap": "CAPACITORS",
-            "ind": "INDUCTORS",
-            "mix": "MIXED",
+            "substitute":  "SUBSTITUTE VALUES",
+            "acdc": "INTRO VOLTAGE/CURRENT",
+            "mix": "MIXED CIRCUITS",
         },
 
     // Simplifier page text
