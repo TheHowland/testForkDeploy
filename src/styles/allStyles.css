@@ -99,6 +99,12 @@ img {
     border-radius: 20px;
 }
 
+#bootstrap-overrides #darkmode-label {
+    font-family: 'Roboto Condensed', sans-serif;
+    font-size: small;
+    color: white;
+}
+
 #bootstrap-overrides #start-button:hover {
     font-weight: bolder;
     background-color: #eeeeee;
@@ -114,7 +120,6 @@ img {
 }
 
 /* Feature section */
-
 #bootstrap-overrides #start-container {
     background-color: white;
 }
@@ -124,6 +129,9 @@ img {
 }
 /* Selection page */
 
+#bootstrap-overrides .selector-container {
+    max-width: 500px; /* to limit the distance of the next/prev buttons from the picture */
+}
 #bootstrap-overrides .carousel-control-next {
     z-index: 3;
 }

@@ -171,7 +171,9 @@ function chooseElement(pathElement, nextElementsList) {
 
 function getImpedanceData(pyodide, jsonFilePath_Z) {
     let jsonDataString = pyodide.FS.readFile(jsonFilePath_Z, {encoding: "utf8"});
+    console.log(jsonDataString);
     const jsonData = JSON.parse(jsonDataString);
+
     let data = new SolutionObject(
         jsonData.name1, jsonData.name2, jsonData.newName,
         jsonData.value1, jsonData.value2, jsonData.result,

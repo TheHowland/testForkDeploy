@@ -11,7 +11,7 @@ const english = {
     keyFeature1heading:
         "Understanding",
     keyFeature1:
-        "Get a intuitive understanding how electrical circuits are simplified",
+        "Get an intuitive understanding for how electrical circuits are simplified",
     keyFeature2heading:
         "Browser based",
     keyFeature2:

@@ -17,27 +17,56 @@ function getRelationText(data) {
 
 // Generates and appends a paragraph describing the resistance simplification step
 function generateTextForZ(data) {
+    let relation = data.noFormat().relation;
     let relationText = getRelationText(data);
+
+    /*
+    relation = data.relation;
+    componentTypes = data.componentTypes; (R, C, L, RCL)
+
+    // selektor 1 - simple
+    if (component == "R" or "L")
+    { series, parallel
+    }
+    else if (C)
+    {
+    }
+
+    *
+    * */
+
     const text = document.createElement('p');
-    text.innerHTML = `
-        ${currentLang.calcBeforeFirstElement} ${data.inline().name1} ${currentLang.calcBetweenElements} ${data.inline().name2}<br>
-        ${currentLang.calcAfterSecondElement} ${data.inline().newName} ${currentLang.calcAfterSimplifiedElement}<br>
-        <br>
-        ${data.inline().name1}&nbsp= ${data.inline().value1}<br>
-        ${data.inline().name2}&nbsp= ${data.inline().value2}<br>
-        ${data.inline().newName}&nbsp= ${data.inline().result}<br>
-        <br>
-        ${relationText}<br>
-        <br>
-        ${currentLang.calculationHeading}:<br>
-        ${data.inline().latexEquation}
-    `;
+
+    const firstPart = `
+            ${currentLang.calcBeforeFirstElement} ${data.inline().name1} ${currentLang.calcBetweenElements} ${data.inline().name2}<br>
+            ${currentLang.calcAfterSecondElement} ${data.inline().newName} ${currentLang.calcAfterSimplifiedElement}<br>
+            <br>
+            ${data.inline().name1}&nbsp= ${data.inline().value1}<br>
+            ${data.inline().name2}&nbsp= ${data.inline().value2}<br>
+            <br>
+            ${relationText}<br>
+            <br>`;
+
+    if (relation === "series") {
+        text.innerHTML = firstPart + `
+         $$${data.noFormat().newName} = ${data.noFormat().name1} + ${data.noFormat().name2}$$
+         $$${data.noFormat().newName} = ${data.noFormat().value1} + ${data.noFormat().value2}$$
+         $$${data.noFormat().newName} = ${data.noFormat().result}$$
+        `;
+    }
+    else if (relation === "parallel") {
+        text.innerHTML = firstPart + `
+         $$\\frac{1}{${data.noFormat().newName}} = \\frac{1}{${data.noFormat().name1}} + \\frac{1}{${data.noFormat().name2}}$$
+         $$\\frac{1}{${data.noFormat().newName}} = \\frac{1}{${data.noFormat().value1}} + \\frac{1}{${data.noFormat().value2}}$$
+         <br>
+         $$${data.noFormat().newName} = ${data.noFormat().result}$$
+        `;
+    }
     return text;
 }
 
 function generateTextForVoltageCurrent(data) {
     let relation = data.noFormat().relation[0]
-    console.log("Relation: " + data.noFormat().relation[0])
 
     // For a better understanding which fields are what value :)
     let simZName = data.inline().oldNames[0];
@@ -68,8 +97,8 @@ function generateTextForVoltageCurrent(data) {
         text.innerHTML = `
             ${currentLang.currentCalcHeading} ${simZName}<br>
             <br>
-            ${simIName} = ${simUName} / ${simZName}<br>
-            = ${simUValue} / ${simZValue}<br>
+            ${simIName} = ${simUName}/${simZName}<br>
+            = ${simUValue}/${simZValue}<br>
             = ${simIValue}<br>
             <br>
             ${currentLang.relationTextSeries}.<br>
@@ -86,7 +115,7 @@ function generateTextForVoltageCurrent(data) {
             <br>
             ${secondUName} = ${secondZName} • ${secondIName}<br>
             = ${secondZValue} • ${secondIValue}<br>
-            = ${secondUValue}
+            = ${secondUValue}<br>
             <br>
         `;
     } else if (relation === "parallel") {
@@ -117,6 +146,6 @@ function generateTextForVoltageCurrent(data) {
     } else {
         text.innerHTML = currentLang.relationTextNoRelation;
     }
-
+    MathJax.typeset();
     return text;
 }

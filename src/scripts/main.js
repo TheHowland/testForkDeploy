@@ -34,13 +34,6 @@ let solveFilePath = serverAddress + "/solve.py";
 
 // ####################################################################################################################
 // ########################################################## MAIN ####################################################
-function showWaitingNote() {
-    const note = document.getElementById("progress-bar-note");
-    note.style.color = "white";
-    note.innerHTML = currentLang.selectorWaitingNote;
-    return note;
-}
-
 // ####################################################################################################################
 async function main() {
 
@@ -78,6 +71,13 @@ async function main() {
 // ####################################################################################################################
 // ############################################# Helper functions #####################################################
 // ####################################################################################################################
+
+function showWaitingNote() {
+    const note = document.getElementById("progress-bar-note");
+    note.style.color = "white";
+    note.innerHTML = currentLang.selectorWaitingNote;
+    return note;
+}
 
 function hideSelectorsWhileLoading() {
     for (const circuitSet of CircuitSets) {
@@ -308,6 +308,7 @@ function closeNavbar() {
 function setupNavigation(pageManager, pyodide) {
     const navHomeLink = document.getElementById("nav-home");
     const navSimplifierLink = document.getElementById("nav-select");
+    const navCheatLink = document.getElementById("nav-cheat");
     const navLogo = document.getElementById("nav-logo");
     const selectEnglish = document.getElementById("select-english");
     const selectGerman = document.getElementById("select-german");
@@ -321,6 +322,11 @@ function setupNavigation(pageManager, pyodide) {
         checkIfSimplifierPageNeedsReset(pyodide);  // must be in front of page change
         closeNavbar();
         pageManager.showSelectPage();
+    })
+    navCheatLink.addEventListener("click", () => {
+        checkIfSimplifierPageNeedsReset();
+        closeNavbar();
+        pageManager.showCheatSheet();
     })
     navLogo.addEventListener("click", () => {
         checkIfSimplifierPageNeedsReset(pyodide);  // must be in front of page change
@@ -465,6 +471,9 @@ async function solveCircuit(circuit, pyodide) {
     const files = await pyodide.FS.readdir("Solutions");
     jsonFiles_Z = files.filter(file => !file.endsWith("VC.json")&& file.endsWith(".json"));
     console.log(jsonFiles_Z);
+    /*TODO circuitinfo = await pyodide.FS.readFile("circuitInfo.json")
+    * components = circuitInfo["components"]
+    * */
     jsonFiles_VC = files.filter(file => file.endsWith("VC.json"));
     if(jsonFiles_VC===[]){
         jsonFiles_VC = null;
