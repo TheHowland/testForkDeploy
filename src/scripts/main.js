@@ -179,9 +179,9 @@ function resetSelection(circuitMap) {
     overlay.style.display = "none";
 }
 
-function startSolving(pyodide) {
+function startSolving(pyodide, circuitMap) {
     //resetCongratsDisplayed();
-    setTimeout(()=>{solveCircuit(currentCircuit, pyodide)},300);
+    setTimeout(()=>{solveCircuit(currentCircuit, circuitMap, pyodide)},300);
     //The div element that contains the SVG representation of the circuit diagram.
     const svgDiv = document.querySelector('.svg-container');
     //The div element that contains the list of elements that have been clicked or selected in the circuit diagram.
@@ -206,7 +206,7 @@ function setupSpecificCircuitSelector(circuitMap, pageManager, pyodide) {
 
     setupSelectionCircuit(circuitDiv, startBtn, btnOverlay);
     startBtn.addEventListener("click", () =>
-        circuitSelectorStartButtonPressed(circuitMap.circuitFile, pageManager, pyodide))
+        circuitSelectorStartButtonPressed(circuitMap.circuitFile, circuitMap, pageManager, pyodide))
 }
 
 function resetSelectorSelections(circuitSet) {
@@ -249,13 +249,13 @@ function hideNextAndPrevButtons(circuitSet) {
     prev.hidden = true;
 }
 
-function circuitSelectorStartButtonPressed(circuitName, pageManager, pyodide){
+function circuitSelectorStartButtonPressed(circuitName, circuitMap, pageManager, pyodide){
     clearSimplifierPageContent();
     pageManager.showSimplifierPage();
     currentCircuit = circuitName;
     pictureCounter = 0;
     if (pyodideReady) {
-        startSolving(pyodide);
+        startSolving(pyodide, circuitMap);
     }
 }
 
@@ -443,7 +443,7 @@ async function importPyodidePackages(pyodide) {
  clears old solution files, solves the circuit based on the selected mode,
  and displays the initial step.
  */
-async function solveCircuit(circuit, pyodide) {
+async function solveCircuit(circuit, circuitMap, pyodide) {
     //A string used as a label for timing the circuit solving process.
     let timeSolve = "Solve circuit";
     console.time(timeSolve);
@@ -482,11 +482,16 @@ async function solveCircuit(circuit, pyodide) {
     svgFiles = files.filter(file => file.endsWith(".svg"));
     console.log(svgFiles);
     currentStep = 0;
+    let showVoltageButton = true;
+    if (circuitMap.selectorGroup === "substitute") {
+        showVoltageButton = false;
+    }
+
     if(jsonFiles_VC===null)
     {
-        display_step(pyodide, `Solutions/${jsonFiles_Z[currentStep]}`, `Solutions/${svgFiles[currentStep]}`);
+        display_step(pyodide, showVoltageButton,`Solutions/${jsonFiles_Z[currentStep]}`, `Solutions/${svgFiles[currentStep]}`);
     }
     else{
-        display_step(pyodide, `Solutions/${jsonFiles_Z[currentStep]}`, `Solutions/${svgFiles[currentStep]}`,`Solutions/${jsonFiles_VC[currentStep]}`);
+        display_step(pyodide, showVoltageButton, `Solutions/${jsonFiles_Z[currentStep]}`, `Solutions/${svgFiles[currentStep]}`,`Solutions/${jsonFiles_VC[currentStep]}`);
     }
 }
