@@ -1,10 +1,11 @@
 // ####################################################################################################################
 // #################################### Key function for displaying new svgs ##########################################
 // ####################################################################################################################
-function display_step(pyodide, showVoltageButton, jsonFilePath_Z,svgFilePath,jsonFilePath_VC=null) {
+function display_step(pyodide,stepDetails) {
     // Load data
-    // TODO paths object
-    let {data,vcData,svgData,sanitizedSvgFilePath} = loadData(pyodide, jsonFilePath_Z, jsonFilePath_VC, svgFilePath);
+    let showVoltageButton = stepDetails.showVCButton;
+
+    let {data,vcData,svgData,sanitizedSvgFilePath} = loadData(pyodide, stepDetails);
     pictureCounter++;  // increment before usage in the below functions
 
     // Create the new elements for the current step
@@ -30,7 +31,7 @@ function display_step(pyodide, showVoltageButton, jsonFilePath_Z,svgFilePath,jso
     div.appendChild(newCalcBtn);
     if (showVoltageButton) div.appendChild(newVCBtn);
 
-    setupStepButtonsFunctionality(pyodide, div, showVoltageButton);
+    setupStepButtonsFunctionality(pyodide, div, stepDetails);
     congratsAndVCDisplayIfFinished(filteredPaths, contentCol, showVoltageButton);
     MathJax.typeset();
 }
@@ -223,7 +224,7 @@ function getVoltageCurrentData(pyodide, jsonFilePath_VC) {
     return vcData;
 }
 
-async function checkAndSimplifyNext(pyodide, div, showVoltageButton){
+async function checkAndSimplifyNext(pyodide, div, stepDetails){
     const contentCol = document.getElementById("content-col");
     const nextElementsContainer = document.getElementById("nextElementsContainer");
     const svgDiv = document.getElementById(`svgDiv${pictureCounter}`);
@@ -232,18 +233,19 @@ async function checkAndSimplifyNext(pyodide, div, showVoltageButton){
 
     if (twoElementsChosen()) {
         const simplifyObject = await stepSolve.simplifyTwoCpts(selectedElements).toJs();
-        checkAndSimplify(simplifyObject, pyodide, contentCol, div, showVoltageButton);
+        checkAndSimplify(simplifyObject, pyodide, contentCol, div, stepDetails);
     } else {
         showMessage(contentCol, currentLang.alertChooseTwoElements);
     }
     MathJax.typeset();
 }
 
-function checkAndSimplify(simplifyObject, pyodide, contentCol, div, showVoltageButton) {
+function checkAndSimplify(simplifyObject, pyodide, contentCol, div, stepDetails) {
     let elementsCanBeSimplified = simplifyObject[0];
-    let jsonFilePathZ = simplifyObject[1][0];
-    let jsonFilePathVC = simplifyObject[1][1];
-    let svgFilePath = simplifyObject[2];
+    // Update paths, showVC and componentType is still the same
+    stepDetails.jsonZPath = simplifyObject[1][0];
+    stepDetails.jsonZVCath = simplifyObject[1][1];
+    stepDetails.svgPath = simplifyObject[2];
 
     if (elementsCanBeSimplified) {
         if (notLastPicture()) {
@@ -251,7 +253,7 @@ function checkAndSimplify(simplifyObject, pyodide, contentCol, div, showVoltageB
             enableLastCalcButton();
             scrollToBottom();
         }
-        display_step(pyodide, showVoltageButton, jsonFilePathZ, svgFilePath, jsonFilePathVC);
+        display_step(pyodide, stepDetails);
     } else {
         showMessage(contentCol, currentLang.alertCanNotSimplify);
     }
@@ -353,12 +355,12 @@ function finishCircuit(contentCol, showVoltageButton) {
     if (showVoltageButton) enableVoltageCurrentBtns();
 }
 
-function setupStepButtonsFunctionality(pyodide, div, showVoltageButton) {
+function setupStepButtonsFunctionality(pyodide, div, stepDetails) {
     document.getElementById("reset-btn").addEventListener('click', () =>
         resetSimplifierPage(pyodide)
     );
     document.getElementById("check-btn").addEventListener('click', async () => {
-        checkAndSimplifyNext(pyodide, div, showVoltageButton);
+        checkAndSimplifyNext(pyodide, div, stepDetails);
     });
 }
 
@@ -377,11 +379,11 @@ function setupExplanationButtons(showVoltageButton) {
     return {newCalcBtn, empty};
 }
 
-function loadData(pyodide, jsonFilePath_Z, jsonFilePath_VC, svgFilePath) {
-    let data = getImpedanceData(pyodide, jsonFilePath_Z);
-    let vcData = getVoltageCurrentData(pyodide, jsonFilePath_VC);
-    const svgData = pyodide.FS.readFile(svgFilePath, {encoding: "utf8"});
-    const sanitizedSvgFilePath = sanitizeSelector(svgFilePath);
+function loadData(pyodide, stepDetails) {
+    let data = getImpedanceData(pyodide, stepDetails.jsonZPath);
+    let vcData = getVoltageCurrentData(pyodide, stepDetails.jsonVCPath);
+    const svgData = pyodide.FS.readFile(stepDetails.svgPath, {encoding: "utf8"});
+    const sanitizedSvgFilePath = sanitizeSelector(stepDetails.svgPath);
     return {data, vcData, svgData, sanitizedSvgFilePath};
 }
 

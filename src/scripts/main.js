@@ -15,6 +15,7 @@ let circuitFiles = [];
 let selectedElements = [];
 //Stores the currently selected circuit file name.
 let currentCircuit = "";
+let currentCircuitMap;
 //The Python module imported from the Pyodide environment for solving circuits.
 let solve;
 //Variable to store the step solving object.
@@ -179,9 +180,9 @@ function resetSelection(circuitMap) {
     overlay.style.display = "none";
 }
 
-function startSolving(pyodide, circuitMap) {
+function startSolving(pyodide) {
     //resetCongratsDisplayed();
-    setTimeout(()=>{solveCircuit(currentCircuit, circuitMap, pyodide)},300);
+    setTimeout(()=>{solveCircuit(currentCircuit, currentCircuitMap, pyodide)},300);
     //The div element that contains the SVG representation of the circuit diagram.
     const svgDiv = document.querySelector('.svg-container');
     //The div element that contains the list of elements that have been clicked or selected in the circuit diagram.
@@ -253,9 +254,10 @@ function circuitSelectorStartButtonPressed(circuitName, circuitMap, pageManager,
     clearSimplifierPageContent();
     pageManager.showSimplifierPage();
     currentCircuit = circuitName;
+    currentCircuitMap = circuitMap;
     pictureCounter = 0;
     if (pyodideReady) {
-        startSolving(pyodide, circuitMap);
+        startSolving(pyodide);
     }
 }
 
@@ -437,6 +439,13 @@ async function importPyodidePackages(pyodide) {
 }
 
 
+function circuitIsNotSubstituteCircuit(circuitMap) {
+    let showVoltageButton = true;
+    if (circuitMap.selectorGroup === "substitute") {
+        showVoltageButton = false;
+    }
+    return showVoltageButton;
+}
 
 /*
  Imports the Python script for solving circuits,
@@ -482,16 +491,15 @@ async function solveCircuit(circuit, circuitMap, pyodide) {
     svgFiles = files.filter(file => file.endsWith(".svg"));
     console.log(svgFiles);
     currentStep = 0;
-    let showVoltageButton = true;
-    if (circuitMap.selectorGroup === "substitute") {
-        showVoltageButton = false;
-    }
 
-    if(jsonFiles_VC===null)
-    {
-        display_step(pyodide, showVoltageButton,`Solutions/${jsonFiles_Z[currentStep]}`, `Solutions/${svgFiles[currentStep]}`);
-    }
-    else{
-        display_step(pyodide, showVoltageButton, `Solutions/${jsonFiles_Z[currentStep]}`, `Solutions/${svgFiles[currentStep]}`,`Solutions/${jsonFiles_VC[currentStep]}`);
-    }
+    let showVoltageButton = circuitIsNotSubstituteCircuit(circuitMap);
+
+    let stepDetails = new StepDetails;
+    stepDetails.showVCButton = showVoltageButton;
+    stepDetails.jsonZPath = `Solutions/${jsonFiles_Z[currentStep]}`;
+    stepDetails.jsonZVCath = (jsonFiles_VC === null)? null : `Solutions/${jsonFiles_VC[currentStep]}`;
+    stepDetails.svgPath = `Solutions/${svgFiles[currentStep]}`;
+    stepDetails.componentType = "R";
+
+    display_step(pyodide, stepDetails);
 }
