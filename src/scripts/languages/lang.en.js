@@ -36,8 +36,8 @@ const english = {
     // Selector page text
     carouselHeadings:
         {
-            "substitute":  "SUBSTITUTE VALUES",
-            "acdc": "INTRO VOLTAGE/CURRENT",
+            "substitute":  "SUBSTITUTE CIRCUITS",
+            "acdc": "AC/DC CIRCUITS",
             "mix": "MIXED CIRCUITS",
         },
 
