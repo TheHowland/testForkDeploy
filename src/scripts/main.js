@@ -98,22 +98,8 @@ function showSelectorsAfterLoading() {
     }
 }
 
-async function prepareSolutionsDir(pyodide) {
-    try {
-        //An array of file names representing the solution files in the Solutions directory.
-        let solutionFiles = await pyodide.FS.readdir("Solutions");
-        solutionFiles.forEach(file => {
-            if (file !== "." && file !== "..") {
-                pyodide.FS.unlink(`Solutions/${file}`);
-            }
-        });
-    } catch (error) {
-        console.warn("Solutions directory not found or already cleared.");
-    }
-}
-
 async function createSvgsForSelectors(pyodide) {
-    await prepareSolutionsDir(pyodide);
+    await clearSolutionsDir(pyodide);
     // For all circuit sets (e.g. Resistors, Capacitors, ..)
     for (const circuitSet of CircuitSets) {
         // For all circuits in this set (e.g., Resistor1, Resistor2, ...)
@@ -447,17 +433,25 @@ function circuitIsNotSubstituteCircuit(circuitMap) {
     return showVoltageButton;
 }
 
-/*
- Imports the Python script for solving circuits,
- clears old solution files, solves the circuit based on the selected mode,
- and displays the initial step.
- */
-async function solveCircuit(circuit, circuitMap, pyodide) {
-    //A string used as a label for timing the circuit solving process.
-    let timeSolve = "Solve circuit";
-    console.time(timeSolve);
+async function getCircuitComponentTypes(pyodide) {
+    let circuitInfoPath = await stepSolve.createCircuitInfo();
+    let circuitInfoFile = await pyodide.FS.readFile(circuitInfoPath, {encoding: "utf8"});
+    const circuitInfo = JSON.parse(circuitInfoFile);
+    return circuitInfo["componentTypes"];
+}
 
-    // Clear old solution files
+async function getJsonAndSvgStepFiles(pyodide) {
+    const files = await pyodide.FS.readdir("Solutions");
+    jsonFiles_Z = files.filter(file => !file.endsWith("VC.json") && file.endsWith(".json"));
+    jsonFiles_VC = files.filter(file => file.endsWith("VC.json"));
+    if (jsonFiles_VC === []) {
+        jsonFiles_VC = null;
+    }
+    svgFiles = files.filter(file => file.endsWith(".svg"));
+    currentStep = 0;
+}
+
+async function clearSolutionsDir(pyodide) {
     try {
         //An array of file names representing the solution files in the Solutions directory.
         let solutionFiles = await pyodide.FS.readdir("Solutions");
@@ -469,41 +463,29 @@ async function solveCircuit(circuit, circuitMap, pyodide) {
     } catch (error) {
         console.warn("Solutions directory not found or already cleared.");
     }
+}
 
-    stepSolve = solve.SolveInUserOrder(circuit, "Circuits/", "Solutions/");
-    //The initial step object created when solving the circuit in user mode.
-    let initialStep = await stepSolve.createStep0().toJs();
-    console.log("Initial Step:", initialStep);
-
-    // Get information which components are used in this circuit
-    let circuitInfoPath = await stepSolve.createCircuitInfo();
-    let circuitInfoFile = await pyodide.FS.readFile(circuitInfoPath, { encoding: "utf8" });
-    const circuitInfo = JSON.parse(circuitInfoFile);
-    const componentTypes = circuitInfo["componentTypes"];
-
-    console.timeEnd(timeSolve);
-    //An array of file names representing the JSON and SVG files in the Solutions directory.
-    const files = await pyodide.FS.readdir("Solutions");
-    jsonFiles_Z = files.filter(file => !file.endsWith("VC.json")&& file.endsWith(".json"));
-    console.log(jsonFiles_Z);
-
-    jsonFiles_VC = files.filter(file => file.endsWith("VC.json"));
-    if(jsonFiles_VC===[]){
-        jsonFiles_VC = null;
-    }
-    console.log(jsonFiles_VC);
-    svgFiles = files.filter(file => file.endsWith(".svg"));
-    console.log(svgFiles);
-    currentStep = 0;
-
-    let showVoltageButton = circuitIsNotSubstituteCircuit(circuitMap);
-
+function fillStepDetailsObject(circuitMap, componentTypes) {
     let stepDetails = new StepDetails;
-    stepDetails.showVCButton = showVoltageButton;
+    stepDetails.showVCButton = circuitIsNotSubstituteCircuit(circuitMap);
     stepDetails.jsonZPath = `Solutions/${jsonFiles_Z[currentStep]}`;
-    stepDetails.jsonZVCath = (jsonFiles_VC === null)? null : `Solutions/${jsonFiles_VC[currentStep]}`;
+    stepDetails.jsonZVCath = (jsonFiles_VC === null) ? null : `Solutions/${jsonFiles_VC[currentStep]}`;
     stepDetails.svgPath = `Solutions/${svgFiles[currentStep]}`;
     stepDetails.componentTypes = componentTypes;
+    return stepDetails;
+}
+
+async function solveCircuit(circuit, circuitMap, pyodide) {
+    await clearSolutionsDir(pyodide);
+
+    stepSolve = solve.SolveInUserOrder(circuit, "Circuits/", "Solutions/");
+    await stepSolve.createStep0().toJs();
+
+    // Get information which components are used in this circuit
+    const componentTypes = await getCircuitComponentTypes(pyodide);
+
+    await getJsonAndSvgStepFiles(pyodide);
+    let stepDetails = fillStepDetailsObject(circuitMap, componentTypes);
 
     display_step(pyodide, stepDetails);
 }

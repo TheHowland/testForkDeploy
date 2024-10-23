@@ -1,5 +1,14 @@
 // ####################################################################################################################
 // #################################### Key function for displaying new svgs ##########################################
+function createExplanationBtnContainer(newCalcBtn) {
+    const div = document.createElement("div");
+    div.id = `explBtnContainer${pictureCounter}`
+    div.classList.add("container");
+    div.classList.add("justify-content-center");
+    div.appendChild(newCalcBtn);
+    return div;
+}
+
 // ####################################################################################################################
 function display_step(pyodide,stepDetails) {
     // Load data
@@ -23,12 +32,7 @@ function display_step(pyodide,stepDetails) {
     // The order of function-calls is important
     checkIfStillNotFinishedAndMakeClickable(filteredPaths, nextElementsContainer, sanitizedSvgFilePath, pathElements);
     prepareNextElementsContainer(contentCol, nextElementsContainer);
-
-    const div = document.createElement("div");
-    div.id = `explBtnContainer${pictureCounter}`
-    div.classList.add("container");
-    div.classList.add("justify-content-center");
-    div.appendChild(newCalcBtn);
+    const div = createExplanationBtnContainer(newCalcBtn);
     if (showVoltageButton) div.appendChild(newVCBtn);
 
     setupStepButtonsFunctionality(pyodide, div, stepDetails);
@@ -43,6 +47,7 @@ function display_step(pyodide,stepDetails) {
 function getFinishMsg(vcData, showVoltageButton) {
     let msg;
     if (showVoltageButton) {
+        // Give a note what voltage is used and that voltage/current is available
         msg = `
         <p>${currentLang.msgVoltAndCurrentAvailable}.<br></p>
         <p>${currentLang.msgShowVoltage}<br>V1 = ${vcData.inline().oldValues[1]}</p>
@@ -50,13 +55,12 @@ function getFinishMsg(vcData, showVoltageButton) {
         <button class="btn btn-primary mx-1" id="check-btn">check</button>
     `;
     } else {
+        // No msg, just the two buttons
         msg = `
         <button class="btn btn-primary mx-1" id="reset-btn">reset</button>
         <button class="btn btn-primary mx-1" id="check-btn">check</button>
     `;
     }
-
-
     return msg;
 }
 
@@ -267,6 +271,7 @@ function setupVCBtnFunctionality(vcText, contentCol, stepCalculationText) {
     lastVCBtn.addEventListener("click", () => {
         if (lastVCBtn.textContent === currentLang.showVoltageBtn) {
             lastVCBtn.textContent = currentLang.hideVoltageBtn;
+            // Add text after container
             explContainer.insertAdjacentElement("afterend", vcText);
             if (lastStepCalcBtn.textContent === currentLang.hideImpedanceBtn) {
                 lastStepCalcBtn.textContent = currentLang.showImpedanceBtn;
@@ -290,16 +295,13 @@ function setupCalcBtnFunctionality(showVoltageButton, stepCalculationText, conte
         if (lastStepCalcBtn.textContent === currentLang.showImpedanceBtn) {
             lastStepCalcBtn.textContent = currentLang.hideImpedanceBtn;
             if (showVoltageButton) {
-                // Add text after VC button
-                explContainer.insertAdjacentElement("afterend", stepCalculationText);
                 if (lastVCBtn.textContent === currentLang.hideVoltageBtn) {
                     lastVCBtn.textContent = currentLang.showVoltageBtn;
                     contentCol.removeChild(vcText);
                 }
-            } else {
-                // Add text after calc button
-                explContainer.insertAdjacentElement("afterend", stepCalculationText);
             }
+            // Add explanation text after container
+            explContainer.insertAdjacentElement("afterend", stepCalculationText);
             MathJax.typeset();
         } else {
             lastStepCalcBtn.textContent = currentLang.showImpedanceBtn;
