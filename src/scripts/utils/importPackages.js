@@ -1,7 +1,7 @@
 function enableStartButtonsOnCircuitSelectors() {
-    document.getElementById(Resistor1.btn).disabled = false;
-    document.getElementById(Resistor2.btn).disabled = false;
-    document.getElementById(Resistor3.btn).disabled = false;
+    document.getElementById(SubResistor1.btn).disabled = false;
+    document.getElementById(SubResistor2.btn).disabled = false;
+    document.getElementById(SubResistor3.btn).disabled = false;
 }
 
 async function import_packages(pyodide) {

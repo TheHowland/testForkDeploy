@@ -36,7 +36,7 @@ const english = {
     // Selector page text
     carouselHeadings:
         {
-            "substitute":  "SUBSTITUTE CIRCUITS",
+            "sub":  "SUBSTITUTE CIRCUITS",
             "acdc": "AC/DC CIRCUITS",
             "mix": "MIXED CIRCUITS",
         },

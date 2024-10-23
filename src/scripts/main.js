@@ -441,7 +441,7 @@ async function importPyodidePackages(pyodide) {
 
 function circuitIsNotSubstituteCircuit(circuitMap) {
     let showVoltageButton = true;
-    if (circuitMap.selectorGroup === "substitute") {
+    if (circuitMap.selectorGroup === substituteSelector) {
         showVoltageButton = false;
     }
     return showVoltageButton;

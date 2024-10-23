@@ -35,7 +35,7 @@ const german = {
     // Selector page text
     carouselHeadings:
         {
-            "substitute":  "ERSATZSCHALTUNGEN",
+            "sub":  "ERSATZSCHALTUNGEN",
             "acdc": "GLEICH-/WECHSELSTROMKREISE",
             "mix": "GEMISCHTE SCHALTUNGEN",
         },

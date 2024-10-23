@@ -244,7 +244,7 @@ function checkAndSimplify(simplifyObject, pyodide, contentCol, div, stepDetails)
     let elementsCanBeSimplified = simplifyObject[0];
     // Update paths, showVC and componentType is still the same
     stepDetails.jsonZPath = simplifyObject[1][0];
-    stepDetails.jsonZVCath = simplifyObject[1][1];
+    stepDetails.jsonVCPath = simplifyObject[1][1];
     stepDetails.svgPath = simplifyObject[2];
 
     if (elementsCanBeSimplified) {
