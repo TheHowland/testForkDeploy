@@ -1,10 +1,13 @@
 // ###################################################################
 // If you add a new circuit, remember to add it to the set list below
+// The ids for div, btn and overlay are practically arbitrary
+// Just make sure the circuitFile is correct and the svgFile is
+// Solutions/{circuitFile without.txt}_step0.svg
 // ###################################################################
 
-let substituteSelector = "sub";
-let acdcSelector = "acdc";
-let mixedSelector = "mixed";
+let substituteSelectorIdentifier = "sub";
+let acdcSelectorIdentifier = "acdc";
+let mixedSelectorIdentifier = "mixed";
 
 // ###################################################################
 // Substitute Circuits
@@ -13,12 +16,12 @@ let mixedSelector = "mixed";
 // Resistors
 
 const SubResistor1 = {
-    circuitDivID: "sub-res1",
+    circuitDivID: "test-res1",
     btn: "sub-res1-btn",
     btnOverlay: "sub-res1-overlay",
     circuitFile: "Circuit_resistors.txt",
     svgFile: "Solutions/Circuit_resistors_step0.svg",
-    selectorGroup: substituteSelector
+    selectorGroup: substituteSelectorIdentifier
 };
 
 const SubResistor2 = {
@@ -27,7 +30,7 @@ const SubResistor2 = {
     btnOverlay: "sub-res2-overlay",
     circuitFile: "Circuit_resistor_task1.txt",
     svgFile: "Solutions/Circuit_resistor_task1_step0.svg",
-    selectorGroup: substituteSelector
+    selectorGroup: substituteSelectorIdentifier
 };
 
 const SubResistor3 = {
@@ -36,7 +39,7 @@ const SubResistor3 = {
     btnOverlay: "sub-res3-overlay",
     circuitFile: "Circuit_resistor_task2.txt",
     svgFile: "Solutions/Circuit_resistor_task2_step0.svg",
-    selectorGroup: substituteSelector
+    selectorGroup: substituteSelectorIdentifier
 };
 
 // Capacitors
@@ -47,7 +50,7 @@ const SubCapacitor1 = {
     btnOverlay: "sub-cap1-overlay",
     circuitFile: "Circuit_capacitors.txt",
     svgFile: "Solutions/Circuit_capacitors_step0.svg",
-    selectorGroup: substituteSelector
+    selectorGroup: substituteSelectorIdentifier
 };
 
 // Inductors
@@ -58,7 +61,7 @@ const SubInductor1 = {
     btnOverlay: "sub-ind1-overlay",
     circuitFile: "Circuit_inductors.txt",
     svgFile: "Solutions/Circuit_inductors_step0.svg",
-    selectorGroup: substituteSelector
+    selectorGroup: substituteSelectorIdentifier
 };
 // ###################################################################
 // ACDC Circuits
@@ -72,7 +75,7 @@ const AcdcResistor1 = {
     btnOverlay: "acdc-res1-overlay",
     circuitFile: "Circuit_resistors.txt",
     svgFile: "Solutions/Circuit_resistors_step0.svg",
-    selectorGroup: acdcSelector
+    selectorGroup: acdcSelectorIdentifier
 };
 
 const AcdcResistor2 = {
@@ -81,7 +84,7 @@ const AcdcResistor2 = {
     btnOverlay: "acdc-res2-overlay",
     circuitFile: "Circuit_resistor_task1.txt",
     svgFile: "Solutions/Circuit_resistor_task1_step0.svg",
-    selectorGroup: acdcSelector
+    selectorGroup: acdcSelectorIdentifier
 };
 
 const AcdcResistor3 = {
@@ -90,7 +93,7 @@ const AcdcResistor3 = {
     btnOverlay: "acdc-res3-overlay",
     circuitFile: "Circuit_resistor_task2.txt",
     svgFile: "Solutions/Circuit_resistor_task2_step0.svg",
-    selectorGroup: acdcSelector
+    selectorGroup: acdcSelectorIdentifier
 };
 
 // Capacitors
@@ -101,7 +104,7 @@ const AcdcCapacitor1 = {
     btnOverlay: "acdc-cap1-overlay",
     circuitFile: "Circuit_capacitors.txt",
     svgFile: "Solutions/Circuit_capacitors_step0.svg",
-    selectorGroup: acdcSelector
+    selectorGroup: acdcSelectorIdentifier
 };
 
 // Inductors
@@ -112,7 +115,7 @@ const AcdcInductor1 = {
     btnOverlay: "acdc-ind1-overlay",
     circuitFile: "Circuit_inductors.txt",
     svgFile: "Solutions/Circuit_inductors_step0.svg",
-    selectorGroup: acdcSelector
+    selectorGroup: acdcSelectorIdentifier
 };
 
 // ###################################################################
@@ -125,7 +128,7 @@ const Mixed1 = {
     btnOverlay: "mix1-overlay",
     circuitFile: "Circuit_mixed_30.txt",
     svgFile: "Solutions/Circuit_mixed_30_step0.svg",
-    selectorGroup: mixedSelector
+    selectorGroup: mixedSelectorIdentifier
 };
 
 const Mixed2 = {
@@ -134,7 +137,7 @@ const Mixed2 = {
     btnOverlay: "mix2-overlay",
     circuitFile: "Circuit_mixed_2pi30.txt",
     svgFile: "Solutions/Circuit_mixed_2pi30_step0.svg",
-    selectorGroup: mixedSelector
+    selectorGroup: mixedSelectorIdentifier
 };
 
 const Mixed3 = {
@@ -143,7 +146,7 @@ const Mixed3 = {
     btnOverlay: "mix3-overlay",
     circuitFile: "Circuit_mixed_omega0.txt",
     svgFile: "Solutions/Circuit_mixed_omega0_step0.svg",
-    selectorGroup: mixedSelector
+    selectorGroup: mixedSelectorIdentifier
 };
 
 // ###################################################################
@@ -151,17 +154,16 @@ const Mixed3 = {
 // ###################################################################
 
 const Substitute = {
-    identifier: "sub",
+    identifier: substituteSelectorIdentifier,
     set: [SubResistor1, SubResistor2, SubResistor3, SubCapacitor1, SubInductor1]
 }
 const ACDC = {
-    identifier: "acdc",
+    identifier: acdcSelectorIdentifier,
     set: [AcdcResistor1, AcdcResistor2, AcdcResistor3, AcdcCapacitor1, AcdcInductor1]
 }
 const Mixed = {
-    identifier: "mix",
+    identifier: mixedSelectorIdentifier,
     set: [Mixed1, Mixed2, Mixed3]
 };
-
 
 const CircuitSets = [Substitute, ACDC, Mixed];

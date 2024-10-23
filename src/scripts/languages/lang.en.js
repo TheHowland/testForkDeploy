@@ -4,9 +4,7 @@ const english = {
         "a free browser tool for learning<br>" +
         "how to simplify electrical circuits",
     selectorWaitingNote:
-        "This will take a few seconds.<br>\n" +
-        "After that, you will be able<br>\n" +
-        "to choose different circuits below",
+        "This will take a few seconds",
 
     keyFeature1heading:
         "Understanding",
@@ -38,7 +36,7 @@ const english = {
         {
             "sub":  "SUBSTITUTE CIRCUITS",
             "acdc": "AC/DC CIRCUITS",
-            "mix": "MIXED CIRCUITS",
+            "mixed": "MIXED CIRCUITS",
         },
 
     // Simplifier page text

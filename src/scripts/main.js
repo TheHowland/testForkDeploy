@@ -51,6 +51,8 @@ async function main() {
     let pageManager = new PageManager(document);
     setupLandingPage(pageManager);
     pageManager.showLandingPage();
+    let selectorBuilder = new SelectorBuilder();
+    selectorBuilder.buildSelectorsForAllCircuitSets();
 
     // Get the pyodide instance and setup pages with functionality
     let pyodide = await loadPyodide();
@@ -257,7 +259,7 @@ function checkIfSimplifierPageNeedsReset(pyodide) {
     }
 }
 
-function updateLanguageLandingAndSelectPage() {
+function updateLanguageLandingPage() {
     const greeting = document.getElementById("landing-page-greeting");
     greeting.innerHTML = currentLang.landingPageGreeting;
     const keyFeature1heading = document.getElementById("key-feature1heading");
@@ -278,8 +280,9 @@ function updateLanguageLandingAndSelectPage() {
     expl2.innerHTML = currentLang.landingPageExplanation2;
     const expl3 = document.getElementById("landing-page-explanation3");
     expl3.innerHTML = currentLang.landingPageExplanation3;
+}
 
-
+function updateLanguageSelectorPage() {
     for (const circuitSet of CircuitSets) {
         const heading = document.getElementById(`${circuitSet.identifier}-heading`);
         heading.innerHTML = currentLang.carouselHeadings[circuitSet.identifier];
@@ -326,14 +329,16 @@ function setupNavigation(pageManager, pyodide) {
         const activeFlagIcon = document.getElementById("activeLanguageFlag");
         activeFlagIcon.setAttribute("src", "src/resources/navigation/uk.png");
         closeNavbar();
-        updateLanguageLandingAndSelectPage();
+        updateLanguageLandingPage();
+        updateLanguageSelectorPage();
     })
     selectGerman.addEventListener("click", () => {
         currentLang = german;
         const activeFlagIcon = document.getElementById("activeLanguageFlag");
         activeFlagIcon.setAttribute("src", "src/resources/navigation/germany.png");
         closeNavbar();
-        updateLanguageLandingAndSelectPage();
+        updateLanguageLandingPage();
+        updateLanguageSelectorPage();
     })
 
 }
@@ -343,7 +348,7 @@ function setupLandingPage(pageManager) {
     landingStartButton.addEventListener("click", () => {
         pageManager.showSelectPage();
     })
-    updateLanguageLandingAndSelectPage();
+    updateLanguageLandingPage();
 }
 
 function twoElementsChosen() {
@@ -427,7 +432,7 @@ async function importPyodidePackages(pyodide) {
 
 function circuitIsNotSubstituteCircuit(circuitMap) {
     let showVoltageButton = true;
-    if (circuitMap.selectorGroup === substituteSelector) {
+    if (circuitMap.selectorGroup === substituteSelectorIdentifier) {
         showVoltageButton = false;
     }
     return showVoltageButton;

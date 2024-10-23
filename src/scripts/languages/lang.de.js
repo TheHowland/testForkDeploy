@@ -4,9 +4,7 @@ const german = {
         "Ein kostenloses Browsertool um<br>" +
         "zu lernen wie Schaltungsnetze vereinfacht werden",
     selectorWaitingNote:
-        "Das braucht ein paar Sekunden<br>\n" +
-        "Danach kannst du unten verschiedene<br>\n" +
-        "Schaltungen ausw&aumlhlen",
+        "Das kann ein paar Sekunden brauchen",
 
     keyFeature1heading:
         "Verstehen",
@@ -30,14 +28,14 @@ const german = {
     landingPageExplanation2:
         "In kommenden Versionen kannst du außerdem zwischen einen Dark- und Light-Mode w&aumlhlen",
     landingPageExplanation3:
-        "In kommenden Versionen kannst du außerdem zwischen einen Dark- und Light-Mode w&aumlhlen",
+        "",
 
     // Selector page text
     carouselHeadings:
         {
             "sub":  "ERSATZSCHALTUNGEN",
             "acdc": "GLEICH-/WECHSELSTROMKREISE",
-            "mix": "GEMISCHTE SCHALTUNGEN",
+            "mixed": "GEMISCHTE SCHALTUNGEN",
         },
 
 
