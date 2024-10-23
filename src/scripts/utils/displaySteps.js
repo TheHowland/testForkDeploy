@@ -17,7 +17,7 @@ function display_step(pyodide,stepDetails) {
     contentCol.append(circuitContainer);
 
     // Create the texts and buttons for the detailed calculation explanation
-    let {stepCalculationText, stepVoltageCurrentText} = generateTexts(data, vcData);
+    let {stepCalculationText, stepVoltageCurrentText} = generateTexts(data, vcData, stepDetails.componentTypes);
     checkAndAddExplanationButtons(showVoltageButton, stepCalculationText, contentCol, stepVoltageCurrentText);
 
     // The order of function-calls is important
@@ -340,8 +340,8 @@ function checkAndAddExplanationButtons(showVoltageButton, stepCalculationText, c
     }
 }
 
-function generateTexts(data, vcData) {
-    let stepCalculationText = generateTextForZ(data);
+function generateTexts(data, vcData, componentTypes) {
+    let stepCalculationText = generateTextForZ(data, componentTypes);
     stepCalculationText.style.color = "white";
 
     let stepVoltageCurrentText = generateTextForVoltageCurrent(vcData);

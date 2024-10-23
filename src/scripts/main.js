@@ -475,14 +475,18 @@ async function solveCircuit(circuit, circuitMap, pyodide) {
     let initialStep = await stepSolve.createStep0().toJs();
     console.log("Initial Step:", initialStep);
 
+    // Get information which components are used in this circuit
+    let circuitInfoPath = await stepSolve.createCircuitInfo();
+    let circuitInfoFile = await pyodide.FS.readFile(circuitInfoPath, { encoding: "utf8" });
+    const circuitInfo = JSON.parse(circuitInfoFile);
+    const componentTypes = circuitInfo["componentTypes"];
+
     console.timeEnd(timeSolve);
     //An array of file names representing the JSON and SVG files in the Solutions directory.
     const files = await pyodide.FS.readdir("Solutions");
     jsonFiles_Z = files.filter(file => !file.endsWith("VC.json")&& file.endsWith(".json"));
     console.log(jsonFiles_Z);
-    /*TODO circuitinfo = await pyodide.FS.readFile("circuitInfo.json")
-    * components = circuitInfo["components"]
-    * */
+
     jsonFiles_VC = files.filter(file => file.endsWith("VC.json"));
     if(jsonFiles_VC===[]){
         jsonFiles_VC = null;
@@ -499,7 +503,7 @@ async function solveCircuit(circuit, circuitMap, pyodide) {
     stepDetails.jsonZPath = `Solutions/${jsonFiles_Z[currentStep]}`;
     stepDetails.jsonZVCath = (jsonFiles_VC === null)? null : `Solutions/${jsonFiles_VC[currentStep]}`;
     stepDetails.svgPath = `Solutions/${svgFiles[currentStep]}`;
-    stepDetails.componentType = "R";
+    stepDetails.componentTypes = componentTypes;
 
     display_step(pyodide, stepDetails);
 }

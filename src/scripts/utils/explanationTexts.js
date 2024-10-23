@@ -16,24 +16,9 @@ function getRelationText(data) {
 
 
 // Generates and appends a paragraph describing the resistance simplification step
-function generateTextForZ(data) {
+function generateTextForZ(data, componentTypes) {
     let relation = data.noFormat().relation;
     let relationText = getRelationText(data);
-
-    /*
-    relation = data.relation;
-    componentTypes = data.componentTypes; (R, C, L, RCL)
-
-    // selektor 1 - simple
-    if (component == "R" or "L")
-    { series, parallel
-    }
-    else if (C)
-    {
-    }
-
-    *
-    * */
 
     const text = document.createElement('p');
 
@@ -47,23 +32,38 @@ function generateTextForZ(data) {
             ${relationText}<br>
             <br>`;
 
-    // TODO R C L separation
-
-    if (relation === "series") {
-        text.innerHTML = firstPart + `
-         $$${data.noFormat().newName} = ${data.noFormat().name1} + ${data.noFormat().name2}$$
-         $$${data.noFormat().newName} = ${data.noFormat().value1} + ${data.noFormat().value2}$$
-         $$${data.noFormat().newName} = ${data.noFormat().result}$$
-        `;
-    }
-    else if (relation === "parallel") {
-        text.innerHTML = firstPart + `
-         $$\\frac{1}{${data.noFormat().newName}} = \\frac{1}{${data.noFormat().name1}} + \\frac{1}{${data.noFormat().name2}}$$
-         $$\\frac{1}{${data.noFormat().newName}} = \\frac{1}{${data.noFormat().value1}} + \\frac{1}{${data.noFormat().value2}}$$
-         $$\\frac{1}{${data.noFormat().newName}} = \\frac{1}{${data.noFormat().result}}$$
-         <br>
-         $$${data.noFormat().newName} = ${data.noFormat().result}$$
-        `;
+    if (componentTypes === "R" || componentTypes === "L") {
+        if (relation === "series") {
+            text.innerHTML = firstPart + `
+             $$${data.noFormat().newName} = ${data.noFormat().name1} + ${data.noFormat().name2}$$
+             $$${data.noFormat().newName} = ${data.noFormat().value1} + ${data.noFormat().value2}$$
+             $$${data.noFormat().newName} = ${data.noFormat().result}$$
+            `;
+        } else if (relation === "parallel") {
+            text.innerHTML = firstPart + `
+             $$\\frac{1}{${data.noFormat().newName}} = \\frac{1}{${data.noFormat().name1}} + \\frac{1}{${data.noFormat().name2}}$$
+             $$\\frac{1}{${data.noFormat().newName}} = \\frac{1}{${data.noFormat().value1}} + \\frac{1}{${data.noFormat().value2}}$$
+             $$\\frac{1}{${data.noFormat().newName}} = \\frac{1}{${data.noFormat().result}}$$
+             <br>
+             $$${data.noFormat().newName} = ${data.noFormat().result}$$
+            `;
+        }
+    } else if (componentTypes === "C") {
+        if (relation === "parallel") {
+            text.innerHTML = firstPart + `
+             $$${data.noFormat().newName} = ${data.noFormat().name1} + ${data.noFormat().name2}$$
+             $$${data.noFormat().newName} = ${data.noFormat().value1} + ${data.noFormat().value2}$$
+             $$${data.noFormat().newName} = ${data.noFormat().result}$$
+            `;
+        } else if (relation === "series") {
+            text.innerHTML = firstPart + `
+             $$\\frac{1}{${data.noFormat().newName}} = \\frac{1}{${data.noFormat().name1}} + \\frac{1}{${data.noFormat().name2}}$$
+             $$\\frac{1}{${data.noFormat().newName}} = \\frac{1}{${data.noFormat().value1}} + \\frac{1}{${data.noFormat().value2}}$$
+             $$\\frac{1}{${data.noFormat().newName}} = \\frac{1}{${data.noFormat().result}}$$
+             <br>
+             $$${data.noFormat().newName} = ${data.noFormat().result}$$
+            `;
+        }
     }
     return text;
 }

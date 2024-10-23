@@ -45,13 +45,13 @@ const german = {
     nextElementsHeading:
         "N&aumlchste Elemente",
     showImpedanceBtn:
-        "widerstand",
+        "Rechnung",
     hideImpedanceBtn:
-        "ausblenden",
+        "Ausblenden",
     showVoltageBtn:
-        "spannung/strom",
+        "Spannung/Strom",
     hideVoltageBtn:
-        "ausblenden",
+        "Ausblenden",
     msgVoltAndCurrentAvailable:
         "Du kannst nun zur&uumlckscrollen und schauen wie die Spannungen und Str&oumlme berechnet werden k&oumlnnen",
     msgShowVoltage:

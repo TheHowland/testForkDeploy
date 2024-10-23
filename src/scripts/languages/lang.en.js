@@ -45,13 +45,13 @@ const english = {
     nextElementsHeading:
         "Next elements",
     showImpedanceBtn:
-        "impedance",
+        "Calculation",
     hideImpedanceBtn:
-        "hide",
+        "Hide",
     showVoltageBtn:
-        "voltage/current",
+        "Voltage/Current",
     hideVoltageBtn:
-        "hide",
+        "Hide",
     msgVoltAndCurrentAvailable:
         "You can now go back and check how to calculate the voltages and currents",
     msgShowVoltage:

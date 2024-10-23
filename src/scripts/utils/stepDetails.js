@@ -1,9 +1,9 @@
 class StepDetails {
-    constructor(showVC, jsonZPath, jsonVCPath, svgPath, componentType) {
+    constructor(showVC, jsonZPath, jsonVCPath, svgPath, componentTypes) {
         this.showVCButton = showVC;
         this.jsonZPath = jsonZPath;
         this.jsonVCPath = jsonVCPath;
         this.svgPath = svgPath;
-        this.componentType = componentType;
+        this.componentTypes = componentTypes;
     }
 }
