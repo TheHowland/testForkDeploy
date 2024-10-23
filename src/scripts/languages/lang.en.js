@@ -11,7 +11,7 @@ const english = {
     keyFeature1heading:
         "Understanding",
     keyFeature1:
-        "Get a intuitive understanding how electrical circuits are simplified",
+        "Get an intuitive understanding for how electrical circuits are simplified",
     keyFeature2heading:
         "Browser based",
     keyFeature2:
@@ -21,8 +21,8 @@ const english = {
     keyFeature3:
         "Not only can you simplify resistors, but capacitors, inductors and even mixed circuits",
     landingPageExplanation1:
-        "There are circuits that you can use. You can try different electrical " +
-        "components (resistors, capacitors and coils). More advanced circuits combine " +
+        "There are pre-made circuits that you can use. You can try different electrical " +
+        "components (resistors, capacitors and inductors). More advanced circuits combine " +
         "these elements and can also provide you with voltages and currents, even " +
         "for alternating currents!",
     landingPageExplanation2:
@@ -36,10 +36,9 @@ const english = {
     // Selector page text
     carouselHeadings:
         {
-            "res": "RESISTORS",
-            "cap": "CAPACITORS",
-            "ind": "INDUCTORS",
-            "mix": "MIXED",
+            "substitute":  "SUBSTITUTE CIRCUITS",
+            "acdc": "AC/DC CIRCUITS",
+            "mix": "MIXED CIRCUITS",
         },
 
     // Simplifier page text

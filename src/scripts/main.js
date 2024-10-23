@@ -15,6 +15,7 @@ let circuitFiles = [];
 let selectedElements = [];
 //Stores the currently selected circuit file name.
 let currentCircuit = "";
+let currentCircuitMap;
 //The Python module imported from the Pyodide environment for solving circuits.
 let solve;
 //Variable to store the step solving object.
@@ -34,13 +35,6 @@ let solveFilePath = serverAddress + "/solve.py";
 
 // ####################################################################################################################
 // ########################################################## MAIN ####################################################
-function showWaitingNote() {
-    const note = document.getElementById("progress-bar-note");
-    note.style.color = "white";
-    note.innerHTML = currentLang.selectorWaitingNote;
-    return note;
-}
-
 // ####################################################################################################################
 async function main() {
 
@@ -78,6 +72,13 @@ async function main() {
 // ####################################################################################################################
 // ############################################# Helper functions #####################################################
 // ####################################################################################################################
+
+function showWaitingNote() {
+    const note = document.getElementById("progress-bar-note");
+    note.style.color = "white";
+    note.innerHTML = currentLang.selectorWaitingNote;
+    return note;
+}
 
 function hideSelectorsWhileLoading() {
     for (const circuitSet of CircuitSets) {
@@ -181,7 +182,7 @@ function resetSelection(circuitMap) {
 
 function startSolving(pyodide) {
     //resetCongratsDisplayed();
-    setTimeout(()=>{solveCircuit(currentCircuit, pyodide)},300);
+    setTimeout(()=>{solveCircuit(currentCircuit, currentCircuitMap, pyodide)},300);
     //The div element that contains the SVG representation of the circuit diagram.
     const svgDiv = document.querySelector('.svg-container');
     //The div element that contains the list of elements that have been clicked or selected in the circuit diagram.
@@ -206,7 +207,7 @@ function setupSpecificCircuitSelector(circuitMap, pageManager, pyodide) {
 
     setupSelectionCircuit(circuitDiv, startBtn, btnOverlay);
     startBtn.addEventListener("click", () =>
-        circuitSelectorStartButtonPressed(circuitMap.circuitFile, pageManager, pyodide))
+        circuitSelectorStartButtonPressed(circuitMap.circuitFile, circuitMap, pageManager, pyodide))
 }
 
 function resetSelectorSelections(circuitSet) {
@@ -249,10 +250,11 @@ function hideNextAndPrevButtons(circuitSet) {
     prev.hidden = true;
 }
 
-function circuitSelectorStartButtonPressed(circuitName, pageManager, pyodide){
+function circuitSelectorStartButtonPressed(circuitName, circuitMap, pageManager, pyodide){
     clearSimplifierPageContent();
     pageManager.showSimplifierPage();
     currentCircuit = circuitName;
+    currentCircuitMap = circuitMap;
     pictureCounter = 0;
     if (pyodideReady) {
         startSolving(pyodide);
@@ -308,6 +310,7 @@ function closeNavbar() {
 function setupNavigation(pageManager, pyodide) {
     const navHomeLink = document.getElementById("nav-home");
     const navSimplifierLink = document.getElementById("nav-select");
+    const navCheatLink = document.getElementById("nav-cheat");
     const navLogo = document.getElementById("nav-logo");
     const selectEnglish = document.getElementById("select-english");
     const selectGerman = document.getElementById("select-german");
@@ -321,6 +324,11 @@ function setupNavigation(pageManager, pyodide) {
         checkIfSimplifierPageNeedsReset(pyodide);  // must be in front of page change
         closeNavbar();
         pageManager.showSelectPage();
+    })
+    navCheatLink.addEventListener("click", () => {
+        checkIfSimplifierPageNeedsReset();
+        closeNavbar();
+        pageManager.showCheatSheet();
     })
     navLogo.addEventListener("click", () => {
         checkIfSimplifierPageNeedsReset(pyodide);  // must be in front of page change
@@ -431,13 +439,20 @@ async function importPyodidePackages(pyodide) {
 }
 
 
+function circuitIsNotSubstituteCircuit(circuitMap) {
+    let showVoltageButton = true;
+    if (circuitMap.selectorGroup === "substitute") {
+        showVoltageButton = false;
+    }
+    return showVoltageButton;
+}
 
 /*
  Imports the Python script for solving circuits,
  clears old solution files, solves the circuit based on the selected mode,
  and displays the initial step.
  */
-async function solveCircuit(circuit, pyodide) {
+async function solveCircuit(circuit, circuitMap, pyodide) {
     //A string used as a label for timing the circuit solving process.
     let timeSolve = "Solve circuit";
     console.time(timeSolve);
@@ -465,6 +480,9 @@ async function solveCircuit(circuit, pyodide) {
     const files = await pyodide.FS.readdir("Solutions");
     jsonFiles_Z = files.filter(file => !file.endsWith("VC.json")&& file.endsWith(".json"));
     console.log(jsonFiles_Z);
+    /*TODO circuitinfo = await pyodide.FS.readFile("circuitInfo.json")
+    * components = circuitInfo["components"]
+    * */
     jsonFiles_VC = files.filter(file => file.endsWith("VC.json"));
     if(jsonFiles_VC===[]){
         jsonFiles_VC = null;
@@ -473,11 +491,15 @@ async function solveCircuit(circuit, pyodide) {
     svgFiles = files.filter(file => file.endsWith(".svg"));
     console.log(svgFiles);
     currentStep = 0;
-    if(jsonFiles_VC===null)
-    {
-        display_step(pyodide, `Solutions/${jsonFiles_Z[currentStep]}`, `Solutions/${svgFiles[currentStep]}`);
-    }
-    else{
-        display_step(pyodide, `Solutions/${jsonFiles_Z[currentStep]}`, `Solutions/${svgFiles[currentStep]}`,`Solutions/${jsonFiles_VC[currentStep]}`);
-    }
+
+    let showVoltageButton = circuitIsNotSubstituteCircuit(circuitMap);
+
+    let stepDetails = new StepDetails;
+    stepDetails.showVCButton = showVoltageButton;
+    stepDetails.jsonZPath = `Solutions/${jsonFiles_Z[currentStep]}`;
+    stepDetails.jsonZVCath = (jsonFiles_VC === null)? null : `Solutions/${jsonFiles_VC[currentStep]}`;
+    stepDetails.svgPath = `Solutions/${svgFiles[currentStep]}`;
+    stepDetails.componentType = "R";
+
+    display_step(pyodide, stepDetails);
 }

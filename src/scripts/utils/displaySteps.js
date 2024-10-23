@@ -1,28 +1,38 @@
 // ####################################################################################################################
 // #################################### Key function for displaying new svgs ##########################################
 // ####################################################################################################################
-function display_step(pyodide, jsonFilePath_Z,svgFilePath,jsonFilePath_VC=null) {
+function display_step(pyodide,stepDetails) {
     // Load data
-    let {data,vcData,svgData,sanitizedSvgFilePath} = loadData(pyodide, jsonFilePath_Z, jsonFilePath_VC, svgFilePath);
+    let showVoltageButton = stepDetails.showVCButton;
+
+    let {data,vcData,svgData,sanitizedSvgFilePath} = loadData(pyodide, stepDetails);
     pictureCounter++;  // increment before usage in the below functions
 
     // Create the new elements for the current step
     const {circuitContainer, svgContainer} = setupCircuitContainer(svgData);
-    const {newCalcBtn, newVCBtn} = setupExplanationButtons();
+    const {newCalcBtn, newVCBtn} = setupExplanationButtons(showVoltageButton);
     const {pathElements, filteredPaths} = getElementsFromSvgContainer(svgContainer);
-    const nextElementsContainer = setupNextElementsContainer(sanitizedSvgFilePath, filteredPaths, vcData);
+    const nextElementsContainer = setupNextElementsContainer(sanitizedSvgFilePath, filteredPaths, vcData, showVoltageButton);
     const contentCol = document.getElementById("content-col");
     contentCol.append(circuitContainer);
 
     // Create the texts and buttons for the detailed calculation explanation
     let {stepCalculationText, stepVoltageCurrentText} = generateTexts(data, vcData);
-    checkAndAddExplanationButtons(stepCalculationText, contentCol, stepVoltageCurrentText);
+    checkAndAddExplanationButtons(showVoltageButton, stepCalculationText, contentCol, stepVoltageCurrentText);
 
     // The order of function-calls is important
     checkIfStillNotFinishedAndMakeClickable(filteredPaths, nextElementsContainer, sanitizedSvgFilePath, pathElements);
     prepareNextElementsContainer(contentCol, nextElementsContainer);
-    setupButtonFunctionality(pyodide, newCalcBtn, newVCBtn);
-    congratsAndVCDisplayIfFinished(filteredPaths, contentCol);
+
+    const div = document.createElement("div");
+    div.id = `explBtnContainer${pictureCounter}`
+    div.classList.add("container");
+    div.classList.add("justify-content-center");
+    div.appendChild(newCalcBtn);
+    if (showVoltageButton) div.appendChild(newVCBtn);
+
+    setupStepButtonsFunctionality(pyodide, div, stepDetails);
+    congratsAndVCDisplayIfFinished(filteredPaths, contentCol, showVoltageButton);
     MathJax.typeset();
 }
 
@@ -30,7 +40,27 @@ function display_step(pyodide, jsonFilePath_Z,svgFilePath,jsonFilePath_VC=null) 
 // ############################################# Helper functions #####################################################
 // ####################################################################################################################
 
-function setupNextElementsContainer(sanitizedSvgFilePath, filteredPaths, vcData) {
+function getFinishMsg(vcData, showVoltageButton) {
+    let msg;
+    if (showVoltageButton) {
+        msg = `
+        <p>${currentLang.msgVoltAndCurrentAvailable}.<br></p>
+        <p>${currentLang.msgShowVoltage}<br>V1 = ${vcData.inline().oldValues[1]}</p>
+        <button class="btn btn-primary mx-1" id="reset-btn">reset</button>
+        <button class="btn btn-primary mx-1" id="check-btn">check</button>
+    `;
+    } else {
+        msg = `
+        <button class="btn btn-primary mx-1" id="reset-btn">reset</button>
+        <button class="btn btn-primary mx-1" id="check-btn">check</button>
+    `;
+    }
+
+
+    return msg;
+}
+
+function setupNextElementsContainer(sanitizedSvgFilePath, filteredPaths, vcData, showVoltageButton) {
     const nextElementsContainer = document.createElement('div');
     nextElementsContainer.className = 'next-elements-container';
     nextElementsContainer.id = "nextElementsContainer";
@@ -39,12 +69,7 @@ function setupNextElementsContainer(sanitizedSvgFilePath, filteredPaths, vcData)
     nextElementsContainer.classList.add("py-1");
     nextElementsContainer.classList.add("mb-3");
     if (onlyOneElementLeft(filteredPaths)) {
-        nextElementsContainer.innerHTML = `
-        <p>${currentLang.msgVoltAndCurrentAvailable}.<br></p>
-        <p>${currentLang.msgShowVoltage}<br>V1 = ${vcData.inline().oldValues[1]}</p>
-        <button class="btn btn-primary mx-1" id="reset-btn">reset</button>
-        <button class="btn btn-primary mx-1" id="check-btn">check</button>
-    `;
+        nextElementsContainer.innerHTML = getFinishMsg(vcData, showVoltageButton);
     } else {
         nextElementsContainer.innerHTML = `
         <h3>${currentLang.nextElementsHeading}</h3>
@@ -171,7 +196,9 @@ function chooseElement(pathElement, nextElementsList) {
 
 function getImpedanceData(pyodide, jsonFilePath_Z) {
     let jsonDataString = pyodide.FS.readFile(jsonFilePath_Z, {encoding: "utf8"});
+    console.log(jsonDataString);
     const jsonData = JSON.parse(jsonDataString);
+
     let data = new SolutionObject(
         jsonData.name1, jsonData.name2, jsonData.newName,
         jsonData.value1, jsonData.value2, jsonData.result,
@@ -197,7 +224,7 @@ function getVoltageCurrentData(pyodide, jsonFilePath_VC) {
     return vcData;
 }
 
-async function checkAndSimplifyNext(pyodide, newCalcBtn, newVCBtn){
+async function checkAndSimplifyNext(pyodide, div, stepDetails){
     const contentCol = document.getElementById("content-col");
     const nextElementsContainer = document.getElementById("nextElementsContainer");
     const svgDiv = document.getElementById(`svgDiv${pictureCounter}`);
@@ -206,40 +233,41 @@ async function checkAndSimplifyNext(pyodide, newCalcBtn, newVCBtn){
 
     if (twoElementsChosen()) {
         const simplifyObject = await stepSolve.simplifyTwoCpts(selectedElements).toJs();
-        checkAndSimplify(simplifyObject, pyodide, contentCol, newCalcBtn, newVCBtn);
+        checkAndSimplify(simplifyObject, pyodide, contentCol, div, stepDetails);
     } else {
         showMessage(contentCol, currentLang.alertChooseTwoElements);
     }
     MathJax.typeset();
 }
 
-function checkAndSimplify(simplifyObject, pyodide, contentCol, newCalcBtn, newVCBtn) {
+function checkAndSimplify(simplifyObject, pyodide, contentCol, div, stepDetails) {
     let elementsCanBeSimplified = simplifyObject[0];
-    let jsonFilePathZ = simplifyObject[1][0];
-    let jsonFilePathVC = simplifyObject[1][1];
-    let svgFilePath = simplifyObject[2];
+    // Update paths, showVC and componentType is still the same
+    stepDetails.jsonZPath = simplifyObject[1][0];
+    stepDetails.jsonZVCath = simplifyObject[1][1];
+    stepDetails.svgPath = simplifyObject[2];
 
     if (elementsCanBeSimplified) {
         if (notLastPicture()) {
-            contentCol.append(newCalcBtn);
-            contentCol.append(newVCBtn);
+            contentCol.append(div);
             enableLastCalcButton();
             scrollToBottom();
         }
-        display_step(pyodide, jsonFilePathZ, svgFilePath, jsonFilePathVC);
+        display_step(pyodide, stepDetails);
     } else {
         showMessage(contentCol, currentLang.alertCanNotSimplify);
     }
 }
 
-function addVoltageCurrentButtonBetweenPictures(vcText, contentCol, stepCalculationText) {
+function setupVCBtnFunctionality(vcText, contentCol, stepCalculationText) {
     const lastStepCalcBtn = document.getElementById(`calcBtn${pictureCounter - 1}`);
     const lastVCBtn = document.getElementById(`vcBtn${pictureCounter - 1}`);
+    const explContainer = document.getElementById(`explBtnContainer${pictureCounter - 1}`);
 
     lastVCBtn.addEventListener("click", () => {
         if (lastVCBtn.textContent === currentLang.showVoltageBtn) {
             lastVCBtn.textContent = currentLang.hideVoltageBtn;
-            lastVCBtn.insertAdjacentElement("afterend", vcText);
+            explContainer.insertAdjacentElement("afterend", vcText);
             if (lastStepCalcBtn.textContent === currentLang.hideImpedanceBtn) {
                 lastStepCalcBtn.textContent = currentLang.showImpedanceBtn;
                 contentCol.removeChild(stepCalculationText);
@@ -252,17 +280,25 @@ function addVoltageCurrentButtonBetweenPictures(vcText, contentCol, stepCalculat
     })
 }
 
-function addCalculationButtonBetweenPictures(stepCalculationText, contentCol, vcText) {
+function setupCalcBtnFunctionality(showVoltageButton, stepCalculationText, contentCol, vcText) {
     const lastStepCalcBtn = document.getElementById(`calcBtn${pictureCounter - 1}`);
-    const lastVCBtn = document.getElementById(`vcBtn${pictureCounter - 1}`);
+    const explContainer = document.getElementById(`explBtnContainer${pictureCounter - 1}`);
+    let lastVCBtn;
+    if (showVoltageButton) lastVCBtn = document.getElementById(`vcBtn${pictureCounter - 1}`);
 
     lastStepCalcBtn.addEventListener("click", () => {
         if (lastStepCalcBtn.textContent === currentLang.showImpedanceBtn) {
             lastStepCalcBtn.textContent = currentLang.hideImpedanceBtn;
-            lastVCBtn.insertAdjacentElement("afterend", stepCalculationText);
-            if (lastVCBtn.textContent === currentLang.hideVoltageBtn) {
-                lastVCBtn.textContent = currentLang.showVoltageBtn;
-                contentCol.removeChild(vcText);
+            if (showVoltageButton) {
+                // Add text after VC button
+                explContainer.insertAdjacentElement("afterend", stepCalculationText);
+                if (lastVCBtn.textContent === currentLang.hideVoltageBtn) {
+                    lastVCBtn.textContent = currentLang.showVoltageBtn;
+                    contentCol.removeChild(vcText);
+                }
+            } else {
+                // Add text after calc button
+                explContainer.insertAdjacentElement("afterend", stepCalculationText);
             }
             MathJax.typeset();
         } else {
@@ -297,10 +333,10 @@ function prepareNextElementsContainer(contentCol, nextElementsContainer) {
     enableCheckBtn();
 }
 
-function checkAndAddExplanationButtons(stepCalculationText, contentCol, stepVoltageCurrentText) {
+function checkAndAddExplanationButtons(showVoltageButton, stepCalculationText, contentCol, stepVoltageCurrentText) {
     if (pictureCounter > 1) {
-        addCalculationButtonBetweenPictures(stepCalculationText, contentCol, stepVoltageCurrentText);
-        addVoltageCurrentButtonBetweenPictures(stepVoltageCurrentText, contentCol, stepCalculationText);
+        setupCalcBtnFunctionality(showVoltageButton, stepCalculationText, contentCol, stepVoltageCurrentText);
+        if (showVoltageButton) setupVCBtnFunctionality(stepVoltageCurrentText, contentCol, stepCalculationText);
     }
 }
 
@@ -313,18 +349,18 @@ function generateTexts(data, vcData) {
     return {stepCalculationText, stepVoltageCurrentText};
 }
 
-function finishCircuit(contentCol) {
+function finishCircuit(contentCol, showVoltageButton) {
     document.getElementById("check-btn").disabled = true;
     showMessage(contentCol, currentLang.msgCongratsFinishedCircuit, "success");
-    enableVoltageCurrentBtns();
+    if (showVoltageButton) enableVoltageCurrentBtns();
 }
 
-function setupButtonFunctionality(pyodide, newCalcBtn, newVCBtn) {
+function setupStepButtonsFunctionality(pyodide, div, stepDetails) {
     document.getElementById("reset-btn").addEventListener('click', () =>
         resetSimplifierPage(pyodide)
     );
     document.getElementById("check-btn").addEventListener('click', async () => {
-        checkAndSimplifyNext(pyodide, newCalcBtn, newVCBtn);
+        checkAndSimplifyNext(pyodide, div, stepDetails);
     });
 }
 
@@ -333,17 +369,21 @@ function getAllElementsAndMakeClickable(nextElementsContainer, sanitizedSvgFileP
     pathElements.forEach(pathElement => setStyleAndEvent(pathElement, nextElementsList));
 }
 
-function setupExplanationButtons() {
+function setupExplanationButtons(showVoltageButton) {
     const newCalcBtn = setupCalculationBtn();
-    const newVCBtn = setupVoltageCurrentBtn();
-    return {newCalcBtn, newVCBtn};
+    if (showVoltageButton) {
+        const newVCBtn = setupVoltageCurrentBtn();
+        return {newCalcBtn, newVCBtn};
+    }
+    let empty = null;
+    return {newCalcBtn, empty};
 }
 
-function loadData(pyodide, jsonFilePath_Z, jsonFilePath_VC, svgFilePath) {
-    let data = getImpedanceData(pyodide, jsonFilePath_Z);
-    let vcData = getVoltageCurrentData(pyodide, jsonFilePath_VC);
-    const svgData = pyodide.FS.readFile(svgFilePath, {encoding: "utf8"});
-    const sanitizedSvgFilePath = sanitizeSelector(svgFilePath);
+function loadData(pyodide, stepDetails) {
+    let data = getImpedanceData(pyodide, stepDetails.jsonZPath);
+    let vcData = getVoltageCurrentData(pyodide, stepDetails.jsonVCPath);
+    const svgData = pyodide.FS.readFile(stepDetails.svgPath, {encoding: "utf8"});
+    const sanitizedSvgFilePath = sanitizeSelector(stepDetails.svgPath);
     return {data, vcData, svgData, sanitizedSvgFilePath};
 }
 
@@ -353,9 +393,9 @@ function checkIfStillNotFinishedAndMakeClickable(filteredPaths, nextElementsCont
     }
 }
 
-function congratsAndVCDisplayIfFinished(filteredPaths, contentCol) {
+function congratsAndVCDisplayIfFinished(filteredPaths, contentCol, showVoltageButton) {
     if (onlyOneElementLeft(filteredPaths)) {
-        finishCircuit(contentCol);
+        finishCircuit(contentCol, showVoltageButton);
     }
 }
 
