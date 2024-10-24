@@ -2,6 +2,7 @@
 function generateTextForZ(data, componentTypes) {
     let relation = data.noFormat().relation;
     const paragraphElement = document.createElement('p');
+    paragraphElement.classList.add("explText");
     const firstPart = getElementsAndRelationDescription(data);
 
     // Calculation descriptions are swapped for R/L and C
@@ -24,6 +25,7 @@ function generateTextForZ(data, componentTypes) {
 function generateTextForVoltageCurrent(data) {
     let relation = data.noFormat().relation[0]
     const text = document.createElement('p');
+    text.classList.add("explText");
 
     if (relation === "series") {
         text.innerHTML = getSeriesVCDescription(data);

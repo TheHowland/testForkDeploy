@@ -26,7 +26,7 @@ const german = {
         "Es kann f&uumlr jeden Schritt die Rechnung angezeigt werden, " +
         "sowohl f&uumlr den Gesamtwiderstand, als auch f&uumlr Spannungen und Str&oumlme.",
     landingPageExplanation2:
-        "In kommenden Versionen kannst du außerdem zwischen einen Dark- und Light-Mode w&aumlhlen",
+        "",
     landingPageExplanation3:
         "",
 

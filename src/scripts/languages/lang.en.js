@@ -28,8 +28,7 @@ const english = {
         "impedance values, but you can also see how to calculate each of the voltages " +
         "and currents for the elements.",
     landingPageExplanation3:
-        "You can also choose between a light and dark mode in a further version. " +
-        "Just use the button in the navigation.",
+        "",
 
     // Selector page text
     carouselHeadings:

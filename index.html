@@ -35,7 +35,7 @@
 </head>
 
 <body id="bootstrap-overrides" class="bg-dark">
-    <nav class="navbar navbar-dark bg-dark p-2">
+    <nav class="navbar navbar-dark bg-dark p-2" id="navbar">
         <button id="nav-toggler" class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -51,8 +51,8 @@
                 <li class="nav-item">
                     <a class="nav-link m-0 p-0" id="nav-cheat">CHEAT SHEET</a>
                 </li>
-                <li>
-                    <div class="form-check form-switch">
+                <li style="margin-top: 30px;">
+                    <div class="form-check form-switch" id="darkmode-div">
                         <input class="form-check-input" type="checkbox" id="darkmode-switch">
                         <label class="form-check-label" for="darkmode-switch" id="darkmode-label">DARKMODE</label>
                     </div>
@@ -61,7 +61,7 @@
                     <div id="lang-dropdown" class="dropdown">
                         <a class="dropdown-toggle" style="color: white" id="Dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <img src="src/resources/navigation/uk.png" id="activeLanguageFlag" class="flag"></a>
-                        <ul class="dropdown-menu" aria-labelledby="Dropdown" style="background-color: #33393f; width: min-content">
+                        <ul class="dropdown-menu" id="languagesDropdown" aria-labelledby="Dropdown" style="background-color: #33393f; width: min-content">
                             <li>
                                 <a id="select-english" class="d-flex" style="text-decoration: none; color:white">
                                     <img src="src/resources/navigation/uk.png" class="flag my-auto mx-2">

@@ -130,7 +130,6 @@ th, td {
     color: white;
 }
 
-/* Feature section */
 #bootstrap-overrides #start-container {
     background-color: white;
 }
@@ -138,6 +137,8 @@ th, td {
     background-color: #222222;
     color: white;
 }
+
+
 /* Selection page */
 
 #bootstrap-overrides .selector-container {
@@ -194,13 +195,6 @@ th, td {
 /* Simplifier page */
 #bootstrap-overrides svg{
     height: 400px; /* set an absolute height, so changing images always have the same size */
-}
-
-#bootstrap-overrides .svg-container {
-    border: 1px solid #eeeeee;
-    border-radius: 6px;
-    width: 350px;
-    max-width: 350px;  /* To make the box limit in width for tablets and bigger screens */
 }
 
 #bootstrap-overrides ul {

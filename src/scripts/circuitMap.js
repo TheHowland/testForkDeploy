@@ -16,7 +16,7 @@ let mixedSelectorIdentifier = "mixed";
 // Resistors
 
 const SubResistor1 = {
-    circuitDivID: "test-res1",
+    circuitDivID: "sub-res1",
     btn: "sub-res1-btn",
     btnOverlay: "sub-res1-overlay",
     circuitFile: "Circuit_resistors.txt",

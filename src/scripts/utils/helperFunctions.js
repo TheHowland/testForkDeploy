@@ -5,8 +5,12 @@ function sanitizeSelector(selector) {
     return selector.replace(/[^\w-]/g, '_');
 }
 
-function setSvgDarkMode(svgData) {
-    return svgData.replaceAll("black", "white");
+function setSvgColorMode(svgData) {
+    if (foregroundColor === "white") {
+        return svgData.replaceAll("black", "white");
+    } else {
+        return svgData.replaceAll("white", "black");
+    }
 }
 
 function setSvgWidthTo(svgData, width) {

@@ -1,14 +1,5 @@
 // ####################################################################################################################
 // #################################### Key function for displaying new svgs ##########################################
-function createExplanationBtnContainer(newCalcBtn) {
-    const div = document.createElement("div");
-    div.id = `explBtnContainer${pictureCounter}`
-    div.classList.add("container");
-    div.classList.add("justify-content-center");
-    div.appendChild(newCalcBtn);
-    return div;
-}
-
 // ####################################################################################################################
 function display_step(pyodide,stepDetails) {
     // Load data
@@ -44,6 +35,15 @@ function display_step(pyodide,stepDetails) {
 // ############################################# Helper functions #####################################################
 // ####################################################################################################################
 
+function createExplanationBtnContainer(element) {
+    const div = document.createElement("div");
+    div.id = `explBtnContainer${pictureCounter}`
+    div.classList.add("container");
+    div.classList.add("justify-content-center");
+    div.appendChild(element);
+    return div;
+}
+
 function getFinishMsg(vcData, showVoltageButton) {
     let msg;
     if (showVoltageButton) {
@@ -68,10 +68,10 @@ function setupNextElementsContainer(sanitizedSvgFilePath, filteredPaths, vcData,
     const nextElementsContainer = document.createElement('div');
     nextElementsContainer.className = 'next-elements-container';
     nextElementsContainer.id = "nextElementsContainer";
-    nextElementsContainer.classList.add("text-light");
     nextElementsContainer.classList.add("text-center");
     nextElementsContainer.classList.add("py-1");
     nextElementsContainer.classList.add("mb-3");
+    nextElementsContainer.style.color = foregroundColor;
     if (onlyOneElementLeft(filteredPaths)) {
         nextElementsContainer.innerHTML = getFinishMsg(vcData, showVoltageButton);
     } else {
@@ -101,9 +101,13 @@ function setupSvgDivContainer(svgData) {
     svgDiv.id = `svgDiv${pictureCounter}`;
     svgDiv.classList.add("svg-container");
     svgDiv.classList.add("p-2");
-    // Svg manipulation - set width and color for dark mode
     svgData = setSvgWidthTo(svgData, "100%");
-    svgData = setSvgDarkMode(svgData);
+    svgDiv.style.border = `1px solid ${foregroundColor}`;
+    svgDiv.style.borderRadius = "6px";
+    svgDiv.style.width = "350px";
+    svgDiv.style.maxWidth = "350px;";
+    // Svg manipulation - set width and color for dark mode
+    svgData = setSvgColorMode(svgData);
 
     svgDiv.innerHTML = svgData;
     return svgDiv;
@@ -161,10 +165,11 @@ function setupVoltageCurrentBtn() {
     const vcBtn = document.createElement("button");
     vcBtn.id = `vcBtn${pictureCounter}`
     vcBtn.classList.add("btn");
+    vcBtn.classList.add("explBtn");
     vcBtn.classList.add("my-3");
     vcBtn.classList.add("mx-2");
-    vcBtn.style.color = "white";
-    vcBtn.style.borderColor = "#eeeeee";
+    vcBtn.style.color = foregroundColor;
+    vcBtn.style.borderColor = foregroundColor;
     vcBtn.textContent = currentLang.showVoltageBtn;
     vcBtn.disabled = true;
     return vcBtn;
@@ -174,10 +179,11 @@ function setupCalculationBtn() {
     const calcBtn = document.createElement("button");
     calcBtn.id = `calcBtn${pictureCounter}`
     calcBtn.classList.add("btn");
+    calcBtn.classList.add("explBtn");
     calcBtn.classList.add("my-3");
     calcBtn.classList.add("mx-2");
-    calcBtn.style.color = "white";
-    calcBtn.style.borderColor = "#eeeeee";
+    calcBtn.style.color = foregroundColor;
+    calcBtn.style.borderColor = foregroundColor;
     calcBtn.textContent = currentLang.showImpedanceBtn;
     calcBtn.disabled = true;
     return calcBtn;
@@ -344,10 +350,10 @@ function checkAndAddExplanationButtons(showVoltageButton, stepCalculationText, c
 
 function generateTexts(data, vcData, componentTypes) {
     let stepCalculationText = generateTextForZ(data, componentTypes);
-    stepCalculationText.style.color = "white";
+    stepCalculationText.style.color = foregroundColor;
 
     let stepVoltageCurrentText = generateTextForVoltageCurrent(vcData);
-    stepVoltageCurrentText.style.color = "white";
+    stepVoltageCurrentText.style.color = foregroundColor;
     return {stepCalculationText, stepVoltageCurrentText};
 }
 
