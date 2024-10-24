@@ -23,6 +23,11 @@ mjx-container {
     padding-bottom: 5px;
 }
 
+th, td {
+    vertical-align: middle;
+    text-align: center
+}
+
 
 #bootstrap-overrides #nav-select{
     color: #FFC107;
@@ -146,7 +151,7 @@ mjx-container {
 }
 
 
-#bootstrap-overrides .element-heading {
+#bootstrap-overrides .big-heading {
     color: #FFC107;
     font-family: 'Roboto Condensed', sans-serif;
     font-size: 24px;

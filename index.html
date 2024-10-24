@@ -152,8 +152,69 @@
     ###################################           Cheat sheet      #########################################
     #####################################################################################################-->
     <div class="container-fluid m-0 p-0 text-center justify-content-center bg-dark" id="cheat-sheet-container">
-        <div class="container-fluid pb-5 mb-5">
-            <img src="src/resources/cheat_sheet/table.png" class="img-fluid">
+        <div class="container-fluid pb-5 mb-5" style="max-width: 600px;">
+
+            <p id="substitutionTableHeading" class="big-heading"></p>
+            <div class="table-responsive">
+                <table class="table table-dark">
+                    <thead>
+                    <tr>
+                        <th scope="col" id=""></th>
+                        <th scope="col" id="seriesHeading"></th>
+                        <th scope="col" id="parallelHeading"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <th scope="row" id="subTableResHeading"></th>
+                        <td id="resistorSeries"></td>
+                        <td id="resistorParallel"></td>
+                    </tr>
+                    <tr>
+                        <th scope="row" id="subTableCapHeading"></th>
+                        <td id="capacitorSeries"></td>
+                        <td id="capacitorParallel"></td>
+                    </tr>
+                    <tr>
+                        <th scope="row" id="subTableIndHeading"></th>
+                        <td id="inductorSeries"></td>
+                        <td id="inductorParallel"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p id="pSub"></p>
+
+            <p id="resistanceReactanceTableHeading" class="big-heading"></p>
+            <div class="table-responsive">
+                <table class="table table-dark">
+                    <thead>
+                    <tr>
+                        <th scope="col"></th>
+                        <th scope="col" id="resistance"></th>
+                        <th scope="col" id="reactance"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <th scope="row" id="resistor"></th>
+                        <td id="resistorResistance"></td>
+                        <td id="resistorReactance"></td>
+                    </tr>
+                    <tr>
+                        <th scope="row" id="capacitor"></th>
+                        <td id="capacitorResistance"></td>
+                        <td id="capacitorReactance"></td>
+                    </tr>
+                    <tr>
+                        <th scope="row" id="inductor"></th>
+                        <td id="inductorResistance"></td>
+                        <td id="inductorReactance"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <p id="pRX"></p>
         </div>
     </div>
 

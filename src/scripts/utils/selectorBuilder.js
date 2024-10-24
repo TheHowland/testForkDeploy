@@ -28,7 +28,7 @@ class SelectorBuilder {
         const heading = document.createElement("p");
         heading.id = `${identifier}-heading`;
         heading.classList.add("pt-3");
-        heading.classList.add("element-heading");
+        heading.classList.add("big-heading");
         return heading;
     }
 

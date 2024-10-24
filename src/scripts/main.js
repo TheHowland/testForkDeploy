@@ -59,6 +59,8 @@ async function main() {
     // Setup up first page
     setupNavigation(pageManager, pyodide);
 
+    setupCheatSheet();
+
     hideSelectorsWhileLoading();
     const note = showWaitingNote();
 
@@ -69,6 +71,8 @@ async function main() {
     showSelectorsAfterLoading();
     note.remove();
     setupSelectPage(pageManager, pyodide);
+
+
 }
 
 // ####################################################################################################################
@@ -289,6 +293,36 @@ function updateLanguageSelectorPage() {
     }
 }
 
+function updateLanguageCheatSheetPage() {
+
+    const subHeading = document.getElementById("substitutionTableHeading");
+    subHeading.innerHTML = currentLang.subTableHeading;
+    const series = document.getElementById("seriesHeading");
+    series.innerHTML = currentLang.subTableSeriesHeading;
+    const parallel = document.getElementById("parallelHeading");
+    parallel.innerHTML = currentLang.subTableParallelHeading;
+    const subResCol = document.getElementById("subTableResHeading");
+    subResCol.innerHTML = currentLang.resistorRowHeading;
+    const subCapCol = document.getElementById("subTableCapHeading");
+    subCapCol.innerHTML = currentLang.capacitorRowHeading;
+    const subIndCol = document.getElementById("subTableIndHeading");
+    subIndCol.innerHTML = currentLang.inductorRowHeading;
+
+    const resReaHeading = document.getElementById("resistanceReactanceTableHeading");
+    resReaHeading.innerHTML = currentLang.resReaTableHeading;
+    const resCol = document.getElementById("resistance");
+    resCol.innerHTML = currentLang.resistanceColHeading;
+    const reaCol = document.getElementById("reactance");
+    reaCol.innerHTML = currentLang.reactanceColHeading;
+    const res = document.getElementById("resistor");
+    res.innerHTML = currentLang.resistorRowHeading;
+    const cap = document.getElementById("capacitor");
+    cap.innerHTML = currentLang.capacitorRowHeading;
+    const ind = document.getElementById("inductor");
+    ind.innerHTML = currentLang.inductorRowHeading;
+
+}
+
 function closeNavbar() {
     const navbarToggler = document.getElementById("nav-toggler");
     navbarToggler.classList.remove("collapsed");
@@ -331,6 +365,7 @@ function setupNavigation(pageManager, pyodide) {
         closeNavbar();
         updateLanguageLandingPage();
         updateLanguageSelectorPage();
+        updateLanguageCheatSheetPage();
     })
     selectGerman.addEventListener("click", () => {
         currentLang = german;
@@ -339,6 +374,7 @@ function setupNavigation(pageManager, pyodide) {
         closeNavbar();
         updateLanguageLandingPage();
         updateLanguageSelectorPage();
+        updateLanguageCheatSheetPage();
     })
 
 }
@@ -422,6 +458,53 @@ function setupSelectPage(pageManager, pyodide) {
         updateSelectorHeadings(circuitSet.identifier);
         setupSelector(circuitSet, pageManager, pyodide);
     }
+}
+
+function setupCheatSheet() {
+    updateLanguageCheatSheetPage();
+
+    // Substitution table
+    const resSer = document.getElementById("resistorSeries");
+    const resPar = document.getElementById("resistorParallel");
+    const capSer = document.getElementById("capacitorSeries");
+    const capPar = document.getElementById("capacitorParallel");
+    const indSer = document.getElementById("inductorSeries");
+    const indPar = document.getElementById("inductorParallel");
+
+    resSer.innerHTML = "$$R = R1 + R2 + ...$$";
+    resPar.innerHTML = "$$\\frac{1}{R} = \\frac{1}{R1} + \\frac{1}{R2} + ...$$";
+
+    capSer.innerHTML = "$$\\frac{1}{C} = \\frac{1}{C1} + \\frac{1}{C2} + ...$$";
+    capPar.innerHTML = "$$C = C1 + C2 + ...$$";
+
+    indSer.innerHTML = "$$L = L1 + L2 + ...$$";
+    indPar.innerHTML = "$$\\frac{1}{L} = \\frac{1}{L1} + \\frac{1}{L2} + ...$$";
+
+    const pSub = document.getElementById("pSub");
+    pSub.innerHTML = "<br><br><br>"
+
+
+    // Complex R X table
+    const resRes = document.getElementById("resistorResistance");
+    resRes.innerHTML = "$$R$$";
+    const resRea = document.getElementById("resistorReactance");
+    resRea.innerHTML = "$$0$$";
+
+    const capRes = document.getElementById("capacitorResistance");
+    capRes.innerHTML = "$$0$$";
+    const capRea = document.getElementById("capacitorReactance");
+    capRea.innerHTML = "$$-\\frac{1}{ \\omega \\cdot C}$$";
+
+    const indRes = document.getElementById("inductorResistance");
+    indRes.innerHTML = "$$0$$";
+    const indRea = document.getElementById("inductorReactance");
+    indRea.innerHTML = "$$ \\omega \\cdot L$$";
+
+    const pRX = document.getElementById("pRX");
+    pRX.innerHTML = "$$\\underline{Z} = R + j \\cdot X$$"
+    pRX.style.color = "white";
+
+    MathJax.typeset();
 }
 
 async function importPyodidePackages(pyodide) {
