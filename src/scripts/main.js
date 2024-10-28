@@ -1,6 +1,6 @@
 //ToDo this could be an Object better than global variables
 //--------------------------------------------------------------
-let currentLang;
+let currentLang = english;
 //Tracks the current step in the circuit simplification process.
 let currentStep = 0;
 //Array to store JSON file paths for Z simplification steps.
@@ -27,89 +27,52 @@ let congratsDisplayed = false;
 let pyodideReady = false;
 //To count how many svgs are on the screen right now
 let pictureCounter = 0;
+//Containing the map of all circuits, circuit filenames, directories, etc...
+let circuitMapper;
 
 //Stores the server address for fetching resources.
 let serverAddress = "http://localhost:8000"
 let circuitPath = serverAddress + "/Circuits.zip";
 let solveFilePath = serverAddress + "/solve.py";
 
+// Dark/Light mode color definitions
 let foregroundColor = "white";
 let backgroundColor = "black";
 let bsColorSchemeLight = "light";
 let bsColorSchemeDark = "dark";
 
 
+// #####################################################################################################################
+// ##################################              MAIN            #####################################################
+// #####################################################################################################################
 
-// ####################################################################################################################
-// ########################################################## MAIN ####################################################
+// #####################################################################################################################
+// The navigation for this website is not via different html files, but by showing and not
+// showing different containers that act as pages
+// In the functions below all callbacks to buttons and links are set.
+// The functionality of the simplifier is then called via these functions
+// #####################################################################################################################
 
-
-function updateNavigationColorsTo(navigationToggleBgColor, navLinkColor, languagesBgColor) {
-    document.getElementById("navbarSupportedContent").style.backgroundColor = navigationToggleBgColor;
-    updateNavLinkColorTo(navLinkColor);
-    updateLanguageSelectorColor(languagesBgColor);
-}
-
-// ####################################################################################################################
 async function main() {
 
-    // ############################################################################################
-    // The navigation for this website is not via different html files, but by showing and not
-    // showing different containers that act as pages
-    // In the functions below all callbacks to buttons and links are set.
-    // The functionality of the simplifier is then called via these functions
-    // ############################################################################################
-    // Disable mathjax menu
-    window.MathJax = { options: {enableMenu: false}}
-    // Set default language
-    currentLang = english;
+    disableMathjaxMenu();
 
-    // First statement to make sure nothing else is shown at start
+    // Setup landing page first to make sure nothing else is shown at start
     let pageManager = new PageManager(document);
     setupLandingPage(pageManager);
     pageManager.showLandingPage();
-    let selectorBuilder = new SelectorBuilder();
-    selectorBuilder.buildSelectorsForAllCircuitSets();
 
     // Get the pyodide instance and setup pages with functionality
     let pyodide = await loadPyodide();
-    // Setup up first page
+    // Map all circuits into map and build the selectors
+    circuitMapper = new CircuitMapper(pyodide);
+    await circuitMapper.mapCircuits();
+    let selectorBuilder = new SelectorBuilder();
+    selectorBuilder.buildSelectorsForAllCircuitSets();
+
     setupNavigation(pageManager, pyodide);
-
     setupCheatSheet();
-
-    const darkModeSwitch = document.getElementById("darkmode-switch");
-    darkModeSwitch.checked = true;
-
-    darkModeSwitch.addEventListener("change", () => {
-
-        const bootstrapWhite = "#f8f9fa";
-        const bootstrapDark = "#212529";
-        const languagesDarkBg = "#33393f";
-        const languagesLightBg = "#efefef";
-
-        let changeToDark = darkModeSwitch.checked;
-
-        if (changeToDark) {
-            foregroundColor = "white";
-            backgroundColor = "black";
-            updateAvailableBsClassesTo(bsColorSchemeDark);
-            updateNavigationColorsTo(bootstrapDark, foregroundColor, languagesDarkBg);
-            updateCheatSheetPageColorsTo(bsColorSchemeDark);
-            updateSelectorPageColor("black", "white");
-        } else {
-            foregroundColor = "black";
-            backgroundColor = "white";
-
-            updateAvailableBsClassesTo(bsColorSchemeLight);
-            updateNavigationColorsTo(bootstrapWhite, foregroundColor, languagesLightBg);
-            updateCheatSheetPageColorsTo(bsColorSchemeLight);
-            updateSelectorPageColor("white", "black");
-        }
-
-    });
-
-
+    setupDarkModeSwitch();
 
     hideSelectorsWhileLoading();
     const note = showWaitingNote();
@@ -120,18 +83,57 @@ async function main() {
 
     showSelectorsAfterLoading();
     note.remove();
+
+    // Page is only shown after loading modules, so setup can be last
     setupSelectPage(pageManager, pyodide);
-
-
-
 }
-
-
 
 // ####################################################################################################################
 // ############################################# Helper functions #####################################################
 // ####################################################################################################################
+function disableMathjaxMenu() {
+    window.MathJax = {options: {enableMenu: false}}
+}
 
+function setupDarkModeSwitch() {
+    const darkModeSwitch = document.getElementById("darkmode-switch");
+    darkModeSwitch.checked = true;
+    darkModeSwitch.addEventListener("change", () => {
+        if (darkModeSwitch.checked) {
+            changeToDarkMode();
+        } else {
+            changeToLightMode();
+        }
+    });
+}
+
+function changeToDarkMode() {
+    const bootstrapDark = "#212529";
+    const languagesDarkBg = "#33393f";
+    foregroundColor = "white";
+    backgroundColor = "black";
+    updateAvailableBsClassesTo(bsColorSchemeDark);
+    updateNavigationColorsTo(bootstrapDark, foregroundColor, languagesDarkBg);
+    updateCheatSheetPageColorsTo(bsColorSchemeDark);
+    updateSelectorPageColor("black", "white");
+}
+
+function changeToLightMode() {
+    const bootstrapWhite = "#f8f9fa";
+    const languagesLightBg = "#efefef";
+    foregroundColor = "black";
+    backgroundColor = "white";
+    updateAvailableBsClassesTo(bsColorSchemeLight);
+    updateNavigationColorsTo(bootstrapWhite, foregroundColor, languagesLightBg);
+    updateCheatSheetPageColorsTo(bsColorSchemeLight);
+    updateSelectorPageColor("white", "black");
+}
+
+function updateNavigationColorsTo(navigationToggleBgColor, navLinkColor, languagesBgColor) {
+    document.getElementById("navbarSupportedContent").style.backgroundColor = navigationToggleBgColor;
+    updateNavLinkColorTo(navLinkColor);
+    updateLanguageSelectorColor(languagesBgColor);
+}
 
 function updateAvailableBsClassesTo(colorScheme) {
     updateBsClassesTo(colorScheme, "bg", document.getElementById("bootstrap-overrides"));  // body
@@ -173,7 +175,7 @@ function updateSelectorPageColor(fromSvgColor, toSvgColor) {
         svgSelector.style.borderColor = foregroundColor;
     }
     // Change svg color
-    for (const circuitSet of CircuitSets) {
+    for (const circuitSet of circuitMapper.circuitSets) {
         for (const circuit of circuitSet.set) {
             let svgData = document.getElementById(circuit.circuitDivID).innerHTML;
             svgData = svgData.replaceAll(fromSvgColor, toSvgColor);
@@ -209,7 +211,7 @@ function showWaitingNote() {
 }
 
 function hideSelectorsWhileLoading() {
-    for (const circuitSet of CircuitSets) {
+    for (const circuitSet of circuitMapper.circuitSets) {
         const carousel = document.getElementById(`${circuitSet.identifier}-carousel`);
         const heading = document.getElementById(`${circuitSet.identifier}-heading`);
         carousel.hidden = true;
@@ -218,7 +220,7 @@ function hideSelectorsWhileLoading() {
 }
 
 function showSelectorsAfterLoading() {
-    for (const circuitSet of CircuitSets) {
+    for (const circuitSet of circuitMapper.circuitSets) {
         const carousel = document.getElementById(`${circuitSet.identifier}-carousel`);
         const heading = document.getElementById(`${circuitSet.identifier}-heading`);
         carousel.hidden = false;
@@ -229,10 +231,10 @@ function showSelectorsAfterLoading() {
 async function createSvgsForSelectors(pyodide) {
     await clearSolutionsDir(pyodide);
     // For all circuit sets (e.g. Resistors, Capacitors, ..)
-    for (const circuitSet of CircuitSets) {
+    for (const circuitSet of circuitMapper.circuitSets) {
         // For all circuits in this set (e.g., Resistor1, Resistor2, ...)
         for (const circuit of circuitSet.set) {
-            stepSolve = solve.SolveInUserOrder(circuit.circuitFile, "Circuits/", "Solutions/");
+            stepSolve = solve.SolveInUserOrder(circuit.circuitFile, `Circuits/${circuit.sourceDir}`, "Solutions/");
             await stepSolve.createStep0().toJs();
         }
     }
@@ -409,7 +411,7 @@ function updateLanguageLandingPage() {
 }
 
 function updateLanguageSelectorPage() {
-    for (const circuitSet of CircuitSets) {
+    for (const circuitSet of circuitMapper.circuitSets) {
         const heading = document.getElementById(`${circuitSet.identifier}-heading`);
         heading.innerHTML = currentLang.carouselHeadings[circuitSet.identifier];
     }
@@ -514,7 +516,7 @@ function twoElementsChosen() {
 }
 
 function resetSolverObject() {
-    stepSolve = solve.SolveInUserOrder(currentCircuit, "Circuits/", "Solutions/");
+    stepSolve = solve.SolveInUserOrder(currentCircuit, `Circuits/${currentCircuitMap.sourceDir}`, "Solutions/");
 }
 
 function enableCheckBtn() {
@@ -576,7 +578,7 @@ function updateSelectorHeadings(circuitSetId) {
 }
 
 function setupSelectPage(pageManager, pyodide) {
-    for (const circuitSet of CircuitSets) {
+    for (const circuitSet of circuitMapper.circuitSets) {
         updateSelectorHeadings(circuitSet.identifier);
         setupSelector(circuitSet, pageManager, pyodide);
     }
@@ -637,7 +639,7 @@ async function importPyodidePackages(pyodide) {
 
 function circuitIsNotSubstituteCircuit(circuitMap) {
     let showVoltageButton = true;
-    if (circuitMap.selectorGroup === substituteSelectorIdentifier) {
+    if (circuitMap.selectorGroup === circuitMapper.selectorIds.subId) {
         showVoltageButton = false;
     }
     return showVoltageButton;
@@ -688,7 +690,7 @@ function fillStepDetailsObject(circuitMap, componentTypes) {
 async function solveCircuit(circuit, circuitMap, pyodide) {
     await clearSolutionsDir(pyodide);
 
-    stepSolve = solve.SolveInUserOrder(circuit, "Circuits/", "Solutions/");
+    stepSolve = solve.SolveInUserOrder(circuit, `Circuits/${circuitMap.sourceDir}`, "Solutions/");
     await stepSolve.createStep0().toJs();
 
     // Get information which components are used in this circuit

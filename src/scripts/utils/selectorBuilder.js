@@ -5,7 +5,7 @@ class SelectorBuilder {
     // ############################# Necessary function for outside ###############################
 
     buildSelectorsForAllCircuitSets() {
-        for (const circuitSet of CircuitSets.reverse()) {
+        for (const circuitSet of circuitMapper.circuitSets.reverse()) {
             this.buildSelector(circuitSet.identifier);
         }
     }
@@ -62,7 +62,7 @@ class SelectorBuilder {
 
     createCarouselElements(identifier) {
         let carouselElementString = "";
-        for (const circuitSet of CircuitSets) {
+        for (const circuitSet of circuitMapper.circuitSets) {
             if (circuitSet.identifier !== identifier) continue;
             // Create selector for the circuitSet with identifier
             for (const circuit of circuitSet.set) {
