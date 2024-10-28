@@ -59,7 +59,9 @@ async function main() {
     // In the functions below all callbacks to buttons and links are set.
     // The functionality of the simplifier is then called via these functions
     // ############################################################################################
-
+    // Disable mathjax menu
+    window.MathJax = { options: {enableMenu: false}}
+    // Set default language
     currentLang = english;
 
     // First statement to make sure nothing else is shown at start
@@ -119,6 +121,7 @@ async function main() {
     showSelectorsAfterLoading();
     note.remove();
     setupSelectPage(pageManager, pyodide);
+
 
 
 }
