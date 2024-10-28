@@ -24,7 +24,7 @@ Write-Host "removed all files except .git from destination"
 
 # update Circuits.zip
 Set-Location $sourcePath
-Compress-Archive -Path ".\Circuits" ".\Circuits.zip" -Force
+Compress-Archive -Path ".\Circuits" ".\Circuits.zip" -Force -CompressionLevel Optimal
 
 # copie files from source to destination folder
 $excludeList = @(".git", "Circuits", "Scripts", ".idea", "GzipSimplePythonHttpServer.py")
