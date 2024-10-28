@@ -41,9 +41,9 @@ const english = {
     // Simplifier page text
     nextElementsHeading:
         "Next elements",
-    showImpedanceBtn:
+    showCalculationBtn:
         "Calculation",
-    hideImpedanceBtn:
+    hideCalculationBtn:
         "Hide",
     showVoltageBtn:
         "Voltage/Current",

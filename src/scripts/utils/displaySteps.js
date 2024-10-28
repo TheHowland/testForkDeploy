@@ -184,7 +184,7 @@ function setupCalculationBtn() {
     calcBtn.classList.add("mx-2");
     calcBtn.style.color = foregroundColor;
     calcBtn.style.borderColor = foregroundColor;
-    calcBtn.textContent = currentLang.showImpedanceBtn;
+    calcBtn.textContent = currentLang.showCalculationBtn;
     calcBtn.disabled = true;
     return calcBtn;
 }
@@ -279,8 +279,8 @@ function setupVCBtnFunctionality(vcText, contentCol, stepCalculationText) {
             lastVCBtn.textContent = currentLang.hideVoltageBtn;
             // Add text after container
             explContainer.insertAdjacentElement("afterend", vcText);
-            if (lastStepCalcBtn.textContent === currentLang.hideImpedanceBtn) {
-                lastStepCalcBtn.textContent = currentLang.showImpedanceBtn;
+            if (lastStepCalcBtn.textContent === currentLang.hideCalculationBtn) {
+                lastStepCalcBtn.textContent = currentLang.showCalculationBtn;
                 contentCol.removeChild(stepCalculationText);
             }
             MathJax.typeset();
@@ -298,8 +298,8 @@ function setupCalcBtnFunctionality(showVoltageButton, stepCalculationText, conte
     if (showVoltageButton) lastVCBtn = document.getElementById(`vcBtn${pictureCounter - 1}`);
 
     lastStepCalcBtn.addEventListener("click", () => {
-        if (lastStepCalcBtn.textContent === currentLang.showImpedanceBtn) {
-            lastStepCalcBtn.textContent = currentLang.hideImpedanceBtn;
+        if (lastStepCalcBtn.textContent === currentLang.showCalculationBtn) {
+            lastStepCalcBtn.textContent = currentLang.hideCalculationBtn;
             if (showVoltageButton) {
                 if (lastVCBtn.textContent === currentLang.hideVoltageBtn) {
                     lastVCBtn.textContent = currentLang.showVoltageBtn;
@@ -310,7 +310,7 @@ function setupCalcBtnFunctionality(showVoltageButton, stepCalculationText, conte
             explContainer.insertAdjacentElement("afterend", stepCalculationText);
             MathJax.typeset();
         } else {
-            lastStepCalcBtn.textContent = currentLang.showImpedanceBtn;
+            lastStepCalcBtn.textContent = currentLang.showCalculationBtn;
             contentCol.removeChild(stepCalculationText);
         }
     })

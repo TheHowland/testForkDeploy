@@ -42,9 +42,9 @@ const german = {
     // Simplifier page text
     nextElementsHeading:
         "N&aumlchste Elemente",
-    showImpedanceBtn:
+    showCalculationBtn:
         "Rechnung",
-    hideImpedanceBtn:
+    hideCalculationBtn:
         "Ausblenden",
     showVoltageBtn:
         "Spannung/Strom",
