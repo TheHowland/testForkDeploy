@@ -4,8 +4,9 @@ class PageManager {
         this.selectPage = document.getElementById("select-page-container");
         this.simplifierPage = document.getElementById("simplifier-page-container");
         this.cheatSheet = document.getElementById("cheat-sheet-container");
-        this.languageSelect = document.getElementById("lang-dropdown");
-        this.darkModeSwitch = document.getElementById("darkmode-div");
+        this.languageSelect = document.getElementById("Dropdown");
+        this.darkModeSwitch = document.getElementById("darkmode-switch");
+        this.activeLangFlag = document.getElementById("activeLanguageFlag");
     }
 
     showLandingPage() {
@@ -13,8 +14,9 @@ class PageManager {
         this.selectPage.style.display = "none";
         this.simplifierPage.style.display = "none";
         this.cheatSheet.style.display = "none";
-        this.languageSelect.hidden = false;
-        this.darkModeSwitch.hidden = false;
+        this.languageSelect.disabled = false;
+        this.darkModeSwitch.disabled = false;
+        this.activeLangFlag.style.filter = "brightness(1)";
     }
 
     showSelectPage() {
@@ -22,8 +24,9 @@ class PageManager {
         this.selectPage.style.display = "block";
         this.simplifierPage.style.display = "none";
         this.cheatSheet.style.display = "none";
-        this.languageSelect.hidden = false;
-        this.darkModeSwitch.hidden = false;
+        this.languageSelect.disabled = false;
+        this.darkModeSwitch.disabled = false;
+        this.activeLangFlag.style.filter = "brightness(1)";
     }
 
     showSimplifierPage() {
@@ -31,8 +34,9 @@ class PageManager {
         this.selectPage.style.display = "none";
         this.simplifierPage.style.display = "block";
         this.cheatSheet.style.display = "none";
-        this.languageSelect.hidden = true;
-        this.darkModeSwitch.hidden = true;
+        this.languageSelect.disabled = true;
+        this.darkModeSwitch.disabled = true;
+        this.activeLangFlag.style.filter = "brightness(0.5)";
     }
 
     showCheatSheet() {
@@ -40,8 +44,9 @@ class PageManager {
         this.selectPage.style.display = "none";
         this.simplifierPage.style.display = "none";
         this.cheatSheet.style.display = "block";
-        this.languageSelect.hidden = false;
-        this.darkModeSwitch.hidden = false;
+        this.languageSelect.disabled = false;
+        this.darkModeSwitch.disabled = false;
+        this.activeLangFlag.style.filter = "brightness(1)";
     }
 
 }
