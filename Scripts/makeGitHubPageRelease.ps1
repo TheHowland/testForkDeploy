@@ -5,6 +5,8 @@ param (
 $localURL = 'http://localhost:8000'
 $releaseURL = 'https://thehowland.github.io/InskaLE'
 
+
+
 # remeber directory that called the script
 $curDir = Get-Location
 # set location of skript as current directory
@@ -32,7 +34,9 @@ Write-Host "Files copied to source"
 # update url in index.html
 $indexPath = Join-Path $destinationPath "index.html"
 if (Test-Path $indexPath) {
-    (Get-Content $indexPath) -replace '<script src="'+$localURL+'/pyodide.js"></script>', '<script src="'+$releaseURL+'/pyodide.js"></script>' | Set-Content $indexPath
+    $toReplace = '<script src="'+$localURL+'/pyodide.js"></script>'
+    $replaceString = '<script src="'+$releaseURL+'/pyodide.js"></script>'
+    (Get-Content $indexPath) -replace $toReplace, $replaceString  | Set-Content $indexPath
     Write-Host "updated url in index.html"
 } else {
     Write-Host "index.html not found" -ForegroundColor Red
@@ -42,7 +46,9 @@ if (Test-Path $indexPath) {
 # update url in main.js
 $mainJsPath = Join-Path $destinationPath "src\scripts\main.js"
 if (Test-Path $mainJsPath) {
-    (Get-Content $mainJsPath) -replace 'let serverAddress = "'+$localURL+'"', 'let serverAddress = "'+$releaseURL+'"' | Set-Content $mainJsPath
+    $toReplace = 'let serverAddress = "'+$localURL+'"'
+    $replaceString = 'let serverAddress = "'+$releaseURL+'"'
+    (Get-Content $mainJsPath) -replace $toReplace, $replaceString | Set-Content $mainJsPath
     Write-Host "updated url in main.js"
 } else {
     Write-Host "main.js not found" -ForegroundColor Red
@@ -66,10 +72,11 @@ if (-not $commitMessage){
  $commitMessage = Read-Host "Gib eine Commit-Nachricht ein"
 }
 
+git pull
 git add .
 git status
 git commit -m $commitMessage
-# git push
+git push
 
 Write-Host "files copied to GitHub Page folder, commited and pushed new site should be online in a few minutes" -ForegroundColor Green
 
