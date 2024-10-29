@@ -1,6 +1,9 @@
 param (
-[string]$commitMessage
+[string]$commitMessage,
+[string]$7zPath
 )
+if (-not $7zPath){ $7zPath = "C:\Program Files\7-Zip\7z.exe" }
+
 # server adresses
 $localURL = 'http://localhost:8000'
 $releaseURL = 'https://thehowland.github.io/InskaLE'
@@ -24,7 +27,7 @@ Write-Host "removed all files except .git from destination"
 
 # update Circuits.zip
 Set-Location $sourcePath
-Compress-Archive -Path ".\Circuits" ".\Circuits.zip" -Force -CompressionLevel Optimal
+&$7zPath a Circuits.zip Circuits\ > $null 2>&1
 
 # copie files from source to destination folder
 $excludeList = @(".git", "Circuits", "Scripts", ".idea", "GzipSimplePythonHttpServer.py")
