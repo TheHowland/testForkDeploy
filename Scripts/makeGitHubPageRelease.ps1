@@ -56,7 +56,7 @@ if (Test-Path $mainJsPath) {
 }
 
 # update fetch directory listing function in loadPackages.js
-$loadPackagesJsPath = Join-Path $destinationPath "src\scripts\utils\loadPackages.js"
+$loadPackagesJsPath = Join-Path $destinationPath "src\scripts\utils\packageManager.js"
 if (Test-Path $loadPackagesJsPath) {
     (Get-Content $loadPackagesJsPath) -replace 'fetchDirectoryListing\(packageAddress, ".whl"\);', "fetchGitHubDirectoryContents('TheHowland', 'InskaLE', 'Packages', '.whl');"| Set-Content $loadPackagesJsPath
     Write-Host "updated fetch direcotry listing function in loadPackages.js"

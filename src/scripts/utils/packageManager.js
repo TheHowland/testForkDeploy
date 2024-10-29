@@ -31,7 +31,7 @@ class PackageManager {
     async import_packages(pyodide) {
         let packages = ["matplotlib", "numpy", "sympy", "networkx", "IPython", "schemdraw", "ordered_set", "lcapy"];
         let progressBarContainer = document.getElementById("pgr-bar-container");
-        // set the bar to 40% because we already did some stuff
+        // set the bar to 40% because we already did some stuff, just a ruff estimation
         // this will enable us to start the new calculation from a fixed point
         let basePercentage = 40;
         setPgrBarTo(basePercentage);

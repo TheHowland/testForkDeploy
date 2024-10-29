@@ -2,14 +2,7 @@
 // ##################################              GLOBALS            ##################################################
 // #####################################################################################################################
 
-const conf = new Configurations(
-    "http://localhost:8000",
-    "/Circuits.zip",
-    "/solve.py",
-    "/Packages/",
-    "Circuits",
-    "Solutions",
-    "/home/pyodide/solve.py")
+let conf = new Configurations()
 let packageManager = new PackageManager();
 let state = new StateObject();
 let colors = new ColorDefinitions();
@@ -20,12 +13,8 @@ let circuitMapper;
 // #####################################################################################################################
 // ##################################              MAIN            #####################################################
 // #####################################################################################################################
-
-// #####################################################################################################################
 // The navigation for this website is not via different html files, but by showing and not
 // showing different containers that act as pages
-// In the functions below all callbacks to buttons and links are set.
-// The functionality of the simplifier is then called via these functions
 // #####################################################################################################################
 
 async function main() {
@@ -64,18 +53,6 @@ async function main() {
 }
 
 // #####################################################################################################################
-
-function startSolving(pyodide) {
-    setTimeout(()=>{solveCircuit(state.currentCircuit, state.currentCircuitMap, pyodide)},300);
-    //The div element that contains the SVG representation of the circuit diagram.
-    const svgDiv = document.querySelector('.svg-container');
-    //The div element that contains the list of elements that have been clicked or selected in the circuit diagram.
-    const nextElementsContainer = document.querySelector('.next-elements-container');
-    if (svgDiv && nextElementsContainer) {
-        resetNextElements(svgDiv, nextElementsContainer);
-    }
-}
-
 async function solveCircuit(circuit, circuitMap, pyodide) {
     await clearSolutionsDir(pyodide);
 
@@ -89,6 +66,17 @@ async function solveCircuit(circuit, circuitMap, pyodide) {
     let stepDetails = fillStepDetailsObject(circuitMap, componentTypes);
 
     display_step(pyodide, stepDetails);
+}
+
+function startSolving(pyodide) {
+    setTimeout(()=>{solveCircuit(state.currentCircuit, state.currentCircuitMap, pyodide)},300);
+    //The div element that contains the SVG representation of the circuit diagram.
+    const svgDiv = document.querySelector('.svg-container');
+    //The div element that contains the list of elements that have been clicked or selected in the circuit diagram.
+    const nextElementsContainer = document.querySelector('.next-elements-container');
+    if (svgDiv && nextElementsContainer) {
+        resetNextElements(svgDiv, nextElementsContainer);
+    }
 }
 
 function fillStepDetailsObject(circuitMap, componentTypes) {

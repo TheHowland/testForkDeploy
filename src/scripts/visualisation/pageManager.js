@@ -119,7 +119,6 @@ class PageManager {
 
     }
 
-
     setupCheatSheet() {
         languageManager.updateLanguageCheatSheetPage();
 
@@ -143,7 +142,6 @@ class PageManager {
         const pSub = document.getElementById("pSub");
         pSub.innerHTML = "<br><br><br>"
 
-
         // Complex R X table
         const resRes = document.getElementById("resistorResistance");
         resRes.innerHTML = "$$R$$";
@@ -166,6 +164,4 @@ class PageManager {
 
         MathJax.typeset();
     }
-
-
 }

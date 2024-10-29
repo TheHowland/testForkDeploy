@@ -1,13 +1,13 @@
 class Configurations {
-    constructor(serverAddress, sourceCircuitPath, sourceSolvePath, sourcePackageDir,
-                pyodideCircuitPath, pyodideSolutionsPath, pyodideSolvePath) {
-        this.serverAddress = serverAddress
-        this.sourceCircuitPath = this.serverAddress + sourceCircuitPath
-        this.sourceSolvePath = this.serverAddress + sourceSolvePath
-        this.sourcePackageDir = this.serverAddress + sourcePackageDir
+    constructor() {
+        this.serverAddress = "http://localhost:8000"
+        this.sourceCircuitPath = this.serverAddress + "/Circuits.zip"
+        this.sourceSolvePath = this.serverAddress + "/solve.py"
+        this.sourcePackageDir = this.serverAddress + "/Packages/"
 
-        this.pyodideCircuitPath = pyodideCircuitPath
-        this.pyodideSolutionsPath = pyodideSolutionsPath
-        this.pyodideSolvePath = pyodideSolvePath
+        this.pyodideCircuitPath = "Circuits"
+        this.pyodideSolutionsPath = "Solutions"
+        this.pyodideSolvePath = "/home/pyodide/solve.py"
     }
 }
+
