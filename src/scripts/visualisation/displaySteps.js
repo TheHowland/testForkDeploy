@@ -6,7 +6,7 @@ function display_step(pyodide,stepDetails) {
     let showVoltageButton = stepDetails.showVCButton;
 
     let {data,vcData,svgData,sanitizedSvgFilePath} = loadData(pyodide, stepDetails);
-    pictureCounter++;  // increment before usage in the below functions
+    state.pictureCounter++;  // increment before usage in the below functions
 
     // Create the new elements for the current step
     const {circuitContainer, svgContainer} = setupCircuitContainer(svgData);
@@ -37,7 +37,7 @@ function display_step(pyodide,stepDetails) {
 
 function createExplanationBtnContainer(element) {
     const div = document.createElement("div");
-    div.id = `explBtnContainer${pictureCounter}`
+    div.id = `explBtnContainer${state.pictureCounter}`
     div.classList.add("container");
     div.classList.add("justify-content-center");
     div.appendChild(element);
@@ -71,7 +71,7 @@ function setupNextElementsContainer(sanitizedSvgFilePath, filteredPaths, vcData,
     nextElementsContainer.classList.add("text-center");
     nextElementsContainer.classList.add("py-1");
     nextElementsContainer.classList.add("mb-3");
-    nextElementsContainer.style.color = foregroundColor;
+    nextElementsContainer.style.color = colors.currentForeground;
     if (onlyOneElementLeft(filteredPaths)) {
         nextElementsContainer.innerHTML = getFinishMsg(vcData, showVoltageButton);
     } else {
@@ -98,11 +98,11 @@ function setupCircuitContainer(svgData) {
 
 function setupSvgDivContainer(svgData) {
     const svgDiv = document.createElement('div');
-    svgDiv.id = `svgDiv${pictureCounter}`;
+    svgDiv.id = `svgDiv${state.pictureCounter}`;
     svgDiv.classList.add("svg-container");
     svgDiv.classList.add("p-2");
     svgData = setSvgWidthTo(svgData, "100%");
-    svgDiv.style.border = `1px solid ${foregroundColor}`;
+    svgDiv.style.border = `1px solid ${colors.currentForeground}`;
     svgDiv.style.borderRadius = "6px";
     svgDiv.style.width = "350px";
     svgDiv.style.maxWidth = "350px;";
@@ -128,7 +128,7 @@ function setupBboxRect(bbox, bboxId) {
     rect.setAttribute('id', bboxId);
     rect.classList.add('bounding-box');
     rect.style.pointerEvents = "none";  // to make selecting the element behind it possible
-    rect.style.fill = "#FFC107";
+    rect.style.fill = colors.keyYellow;
     rect.style.fillOpacity = "0.3";
     return rect;
 }
@@ -143,7 +143,7 @@ function removeElementFromList(bboxId, pathElement) {
     const listItem = document.querySelector(`li[data-bbox-id="${bboxId}"]`);
     if (listItem) {
         listItem.remove();
-        selectedElements = selectedElements.filter(e => e !== pathElement.getAttribute('id'));
+        state.selectedElements = state.selectedElements.filter(e => e !== pathElement.getAttribute('id'));
     }
 }
 
@@ -158,18 +158,18 @@ function addElementValueToTextBox(pathElement, bboxId, nextElementsList) {
     listItem.innerHTML = `${pathElement.getAttribute('id') || 'no id'} = \\(${value}\\)`;
     listItem.setAttribute('data-bbox-id', bboxId);
     nextElementsList.appendChild(listItem);
-    selectedElements.push(pathElement.getAttribute('id') || 'no id');
+    state.selectedElements.push(pathElement.getAttribute('id') || 'no id');
 }
 
 function setupVoltageCurrentBtn() {
     const vcBtn = document.createElement("button");
-    vcBtn.id = `vcBtn${pictureCounter}`
+    vcBtn.id = `vcBtn${state.pictureCounter}`
     vcBtn.classList.add("btn");
     vcBtn.classList.add("explBtn");
     vcBtn.classList.add("my-3");
     vcBtn.classList.add("mx-2");
-    vcBtn.style.color = foregroundColor;
-    vcBtn.style.borderColor = foregroundColor;
+    vcBtn.style.color = colors.currentForeground;
+    vcBtn.style.borderColor = colors.currentForeground;
     vcBtn.textContent = currentLang.showVoltageBtn;
     vcBtn.disabled = true;
     return vcBtn;
@@ -177,13 +177,13 @@ function setupVoltageCurrentBtn() {
 
 function setupCalculationBtn() {
     const calcBtn = document.createElement("button");
-    calcBtn.id = `calcBtn${pictureCounter}`
+    calcBtn.id = `calcBtn${state.pictureCounter}`
     calcBtn.classList.add("btn");
     calcBtn.classList.add("explBtn");
     calcBtn.classList.add("my-3");
     calcBtn.classList.add("mx-2");
-    calcBtn.style.color = foregroundColor;
-    calcBtn.style.borderColor = foregroundColor;
+    calcBtn.style.color = colors.currentForeground;
+    calcBtn.style.borderColor = colors.currentForeground;
     calcBtn.textContent = currentLang.showCalculationBtn;
     calcBtn.disabled = true;
     return calcBtn;
@@ -237,12 +237,12 @@ function getVoltageCurrentData(pyodide, jsonFilePath_VC) {
 async function checkAndSimplifyNext(pyodide, div, stepDetails){
     const contentCol = document.getElementById("content-col");
     const nextElementsContainer = document.getElementById("nextElementsContainer");
-    const svgDiv = document.getElementById(`svgDiv${pictureCounter}`);
+    const svgDiv = document.getElementById(`svgDiv${state.pictureCounter}`);
 
     setTimeout(() => {resetNextElements(svgDiv, nextElementsContainer)},100);
 
     if (twoElementsChosen()) {
-        const simplifyObject = await stepSolve.simplifyTwoCpts(selectedElements).toJs();
+        const simplifyObject = await stepSolve.simplifyTwoCpts(state.selectedElements).toJs();
         checkAndSimplify(simplifyObject, pyodide, contentCol, div, stepDetails);
     } else {
         showMessage(contentCol, currentLang.alertChooseTwoElements);
@@ -270,9 +270,9 @@ function checkAndSimplify(simplifyObject, pyodide, contentCol, div, stepDetails)
 }
 
 function setupVCBtnFunctionality(vcText, contentCol, stepCalculationText) {
-    const lastStepCalcBtn = document.getElementById(`calcBtn${pictureCounter - 1}`);
-    const lastVCBtn = document.getElementById(`vcBtn${pictureCounter - 1}`);
-    const explContainer = document.getElementById(`explBtnContainer${pictureCounter - 1}`);
+    const lastStepCalcBtn = document.getElementById(`calcBtn${state.pictureCounter - 1}`);
+    const lastVCBtn = document.getElementById(`vcBtn${state.pictureCounter - 1}`);
+    const explContainer = document.getElementById(`explBtnContainer${state.pictureCounter - 1}`);
 
     lastVCBtn.addEventListener("click", () => {
         if (lastVCBtn.textContent === currentLang.showVoltageBtn) {
@@ -292,10 +292,10 @@ function setupVCBtnFunctionality(vcText, contentCol, stepCalculationText) {
 }
 
 function setupCalcBtnFunctionality(showVoltageButton, stepCalculationText, contentCol, vcText) {
-    const lastStepCalcBtn = document.getElementById(`calcBtn${pictureCounter - 1}`);
-    const explContainer = document.getElementById(`explBtnContainer${pictureCounter - 1}`);
+    const lastStepCalcBtn = document.getElementById(`calcBtn${state.pictureCounter - 1}`);
+    const explContainer = document.getElementById(`explBtnContainer${state.pictureCounter - 1}`);
     let lastVCBtn;
-    if (showVoltageButton) lastVCBtn = document.getElementById(`vcBtn${pictureCounter - 1}`);
+    if (showVoltageButton) lastVCBtn = document.getElementById(`vcBtn${state.pictureCounter - 1}`);
 
     lastStepCalcBtn.addEventListener("click", () => {
         if (lastStepCalcBtn.textContent === currentLang.showCalculationBtn) {
@@ -321,7 +321,7 @@ function onlyOneElementLeft(filteredPaths) {
 }
 
 function enableVoltageCurrentBtns() {
-    for (let i = 1; i < pictureCounter; i++) {
+    for (let i = 1; i < state.pictureCounter; i++) {
         const vcBtn = document.getElementById(`vcBtn${i}`);
         vcBtn.disabled = false;
     }
@@ -342,7 +342,7 @@ function prepareNextElementsContainer(contentCol, nextElementsContainer) {
 }
 
 function checkAndAddExplanationButtons(showVoltageButton, stepCalculationText, contentCol, stepVoltageCurrentText) {
-    if (pictureCounter > 1) {
+    if (state.pictureCounter > 1) {
         setupCalcBtnFunctionality(showVoltageButton, stepCalculationText, contentCol, stepVoltageCurrentText);
         if (showVoltageButton) setupVCBtnFunctionality(stepVoltageCurrentText, contentCol, stepCalculationText);
     }
@@ -350,10 +350,10 @@ function checkAndAddExplanationButtons(showVoltageButton, stepCalculationText, c
 
 function generateTexts(data, vcData, componentTypes) {
     let stepCalculationText = generateTextForZ(data, componentTypes);
-    stepCalculationText.style.color = foregroundColor;
+    stepCalculationText.style.color = colors.currentForeground;
 
     let stepVoltageCurrentText = generateTextForVoltageCurrent(vcData);
-    stepVoltageCurrentText.style.color = foregroundColor;
+    stepVoltageCurrentText.style.color = colors.currentForeground;
     return {stepCalculationText, stepVoltageCurrentText};
 }
 

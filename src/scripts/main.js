@@ -1,46 +1,16 @@
-//ToDo this could be an Object better than global variables
-//--------------------------------------------------------------
-let currentLang = english;
-//Tracks the current step in the circuit simplification process.
-let currentStep = 0;
-//Array to store JSON file paths for Z simplification steps.
-let jsonFiles_Z = [];
-// Array to store JSON file paths for VC simplification steps.
-let jsonFiles_VC = [];
-//Array to store SVG file paths for circuit diagrams.
-let svgFiles = [];
-//Array to store the names of the circuit files.
-let circuitFiles = [];
-//Array to store selected elements in the circuit.
-let selectedElements = [];
-//Stores the currently selected circuit file name.
-let currentCircuit = "";
-let currentCircuitMap;
-//The Python module imported from the Pyodide environment for solving circuits.
-let solve;
-//Variable to store the step solving object.
-let stepSolve;
-// Boolean to track if the congratulatory message has been displayed.
-let congratsDisplayed = false;
-//--------------------------------------------------------------
-//Boolean to track if the Pyodide environment is ready.
-let pyodideReady = false;
-//To count how many svgs are on the screen right now
-let pictureCounter = 0;
+
 //Containing the map of all circuits, circuit filenames, directories, etc...
 let circuitMapper;
+const conf = new Configurations(
+    "http://localhost:8000",
+    "/Circuits.zip",
+    "/solve.py",
+    "/Packages/")
+let packageManager = new PackageManager();
+let state = new StateObject();
+let colors = new ColorDefinitions();
 
-//Stores the server address for fetching resources.
-let serverAddress = "http://localhost:8000"
-let circuitPath = serverAddress + "/Circuits.zip";
-let solveFilePath = serverAddress + "/solve.py";
-
-// Dark/Light mode color definitions
-let foregroundColor = "white";
-let backgroundColor = "black";
-let bsColorSchemeLight = "light";
-let bsColorSchemeDark = "dark";
-
+currentLang = english;
 
 // #####################################################################################################################
 // ##################################              MAIN            #####################################################
@@ -108,30 +78,24 @@ function setupDarkModeSwitch() {
 }
 
 function changeToDarkMode() {
-    const bootstrapDark = "#212529";
-    const languagesDarkBg = "#33393f";
-    foregroundColor = "white";
-    backgroundColor = "black";
-    updateAvailableBsClassesTo(bsColorSchemeDark);
-    updateNavigationColorsTo(bootstrapDark, foregroundColor, languagesDarkBg);
-    updateCheatSheetPageColorsTo(bsColorSchemeDark);
-    updateSelectorPageColor("black", "white");
+    colors.setDarkModeColors()
+    updateAvailableBsClassesTo(colors.bsColorSchemeDark);
+    updateNavigationColorsTo(colors.bootstrapDark, colors.languagesDarkBg);
+    updateCheatSheetPageColorsTo(colors.bsColorSchemeDark);
+    updateSelectorPageSvgStrokeColor(colors.lightModeSvgStrokeColor, colors.darkModeSvgStrokeColor);
 }
 
 function changeToLightMode() {
-    const bootstrapWhite = "#f8f9fa";
-    const languagesLightBg = "#efefef";
-    foregroundColor = "black";
-    backgroundColor = "white";
-    updateAvailableBsClassesTo(bsColorSchemeLight);
-    updateNavigationColorsTo(bootstrapWhite, foregroundColor, languagesLightBg);
-    updateCheatSheetPageColorsTo(bsColorSchemeLight);
-    updateSelectorPageColor("white", "black");
+    colors.setLightModeColors()
+    updateAvailableBsClassesTo(colors.bsColorSchemeLight);
+    updateNavigationColorsTo(colors.bootstrapWhite, colors.languagesLightBg);
+    updateCheatSheetPageColorsTo(colors.bsColorSchemeLight);
+    updateSelectorPageSvgStrokeColor(colors.darkModeSvgStrokeColor, colors.lightModeSvgStrokeColor);
 }
 
-function updateNavigationColorsTo(navigationToggleBgColor, navLinkColor, languagesBgColor) {
+function updateNavigationColorsTo(navigationToggleBgColor, languagesBgColor) {
     document.getElementById("navbarSupportedContent").style.backgroundColor = navigationToggleBgColor;
-    updateNavLinkColorTo(navLinkColor);
+    updateNavLinkColorTo(colors.currentForeground);
     updateLanguageSelectorColor(languagesBgColor);
 }
 
@@ -146,9 +110,9 @@ function updateAvailableBsClassesTo(colorScheme) {
 
 
 function updateBsClassesTo(colorScheme, className, element) {
-    if (colorScheme === bsColorSchemeLight) {
+    if (colorScheme === colors.bsColorSchemeLight) {
         switchBsClassToLight(className, element);
-    } else if (colorScheme === bsColorSchemeDark) {
+    } else if (colorScheme === colors.bsColorSchemeDark) {
         switchBsClassToDark(className, element);
     } else {
         throw Error("Only light or dark colorScheme");
@@ -168,11 +132,11 @@ function updateCheatSheetPageColorsTo(bsColorScheme) {
         updateBsClassesTo(bsColorScheme, "table", table);
     }
 }
-function updateSelectorPageColor(fromSvgColor, toSvgColor) {
+function updateSelectorPageSvgStrokeColor(fromSvgColor, toSvgColor) {
     // Change border color of selectors
     const svgSelectors = document.getElementsByClassName("svg-selector");
     for (const svgSelector of svgSelectors) {
-        svgSelector.style.borderColor = foregroundColor;
+        svgSelector.style.borderColor = colors.currentForeground;
     }
     // Change svg color
     for (const circuitSet of circuitMapper.circuitSets) {
@@ -185,11 +149,11 @@ function updateSelectorPageColor(fromSvgColor, toSvgColor) {
 }
 
 function updateLanguageSelectorColor(languagesBackground) {
-    document.getElementById("darkmode-label").style.color = foregroundColor;
-    document.getElementById("Dropdown").style.color = foregroundColor;
-    document.getElementById("languagesDropdown").style.color = foregroundColor;
-    document.getElementById("select-english").style.color = foregroundColor;
-    document.getElementById("select-german").style.color = foregroundColor;
+    document.getElementById("darkmode-label").style.color = colors.currentForeground;
+    document.getElementById("Dropdown").style.color = colors.currentForeground;
+    document.getElementById("languagesDropdown").style.color = colors.currentForeground;
+    document.getElementById("select-english").style.color = colors.currentForeground;
+    document.getElementById("select-german").style.color = colors.currentForeground;
     document.getElementById("languagesDropdown").style.backgroundColor = languagesBackground;
 }
 
@@ -205,7 +169,7 @@ function switchBsClassToDark(field, container) {
 
 function showWaitingNote() {
     const note = document.getElementById("progress-bar-note");
-    note.style.color = foregroundColor;
+    note.style.color = colors.currentForeground;
     note.innerHTML = currentLang.selectorWaitingNote;
     return note;
 }
@@ -234,15 +198,15 @@ async function createSvgsForSelectors(pyodide) {
     for (const circuitSet of circuitMapper.circuitSets) {
         // For all circuits in this set (e.g., Resistor1, Resistor2, ...)
         for (const circuit of circuitSet.set) {
-            stepSolve = solve.SolveInUserOrder(circuit.circuitFile, `Circuits/${circuit.sourceDir}`, "Solutions/");
+            stepSolve = state.solve.SolveInUserOrder(circuit.circuitFile, `Circuits/${circuit.sourceDir}`, "Solutions/");
             await stepSolve.createStep0().toJs();
         }
     }
 }
 
 async function importSolverModule(pyodide) {
-    pyodide.FS.writeFile("/home/pyodide/solve.py", await (await fetch(solveFilePath)).text());
-    solve = await pyodide.pyimport("solve");
+    pyodide.FS.writeFile("/home/pyodide/solve.py", await (await fetch(conf.solveFilePath)).text());
+    state.solve = await pyodide.pyimport("solve");
 }
 
 async function doLoadsAndImports(pyodide) {
@@ -264,7 +228,7 @@ function resetNextElementsTextAndList(nextElementsContainer) {
     } else {
         console.warn('nextElementsContainer ul-list not found');
     }
-    selectedElements = [];
+    state.selectedElements = [];
 }
 
 function resetNextElements(svgDiv, nextElementsContainer) {
@@ -273,12 +237,12 @@ function resetNextElements(svgDiv, nextElementsContainer) {
 }
 
 function showCircuitAsSelected(circuit, btnOverlay) {
-    circuit.style.borderColor = "#FFC107";
+    circuit.style.borderColor = colors.keyYellow;
     circuit.style.opacity = "0.5";
     btnOverlay.style.display = "block"
 }
 function showCircuitAsUnselected(circuit, btnOverlay) {
-    circuit.style.borderColor = foregroundColor;
+    circuit.style.borderColor = colors.currentForeground;
     circuit.style.opacity = "1";
     btnOverlay.style.display = "none"
 }
@@ -291,14 +255,13 @@ function setupSelectionCircuit(circuit, startBtn, startBtnOverlay) {
 function resetSelection(circuitMap) {
     const circuit = document.getElementById(circuitMap.circuitDivID);
     const overlay = document.getElementById(circuitMap.btnOverlay);
-    circuit.style.borderColor = foregroundColor;
+    circuit.style.borderColor = colors.currentForeground;
     circuit.style.opacity = "1";
     overlay.style.display = "none";
 }
 
 function startSolving(pyodide) {
-    //resetCongratsDisplayed();
-    setTimeout(()=>{solveCircuit(currentCircuit, currentCircuitMap, pyodide)},300);
+    setTimeout(()=>{solveCircuit(state.currentCircuit, state.currentCircuitMap, pyodide)},300);
     //The div element that contains the SVG representation of the circuit diagram.
     const svgDiv = document.querySelector('.svg-container');
     //The div element that contains the list of elements that have been clicked or selected in the circuit diagram.
@@ -369,10 +332,10 @@ function hideNextAndPrevButtons(circuitSet) {
 function circuitSelectorStartButtonPressed(circuitName, circuitMap, pageManager, pyodide){
     clearSimplifierPageContent();
     pageManager.showSimplifierPage();
-    currentCircuit = circuitName;
-    currentCircuitMap = circuitMap;
-    pictureCounter = 0;
-    if (pyodideReady) {
+    state.currentCircuit = circuitName;
+    state.currentCircuitMap = circuitMap;
+    state.pictureCounter = 0;
+    if (state.pyodideReady) {
         startSolving(pyodide);
     }
 }
@@ -512,11 +475,11 @@ function setupLandingPage(pageManager) {
 }
 
 function twoElementsChosen() {
-    return selectedElements.length === 2;
+    return state.selectedElements.length === 2;
 }
 
 function resetSolverObject() {
-    stepSolve = solve.SolveInUserOrder(currentCircuit, `Circuits/${currentCircuitMap.sourceDir}`, "Solutions/");
+    stepSolve = state.solve.SolveInUserOrder(state.currentCircuit, `Circuits/${state.currentCircuitMap.sourceDir}`, "Solutions/");
 }
 
 function enableCheckBtn() {
@@ -531,9 +494,9 @@ function clearSimplifierPageContent() {
 function resetSimplifierPage(pyodide) {
     clearSimplifierPageContent();
     resetSolverObject();
-    selectedElements = [];
-    pictureCounter = 0;
-    if (pyodideReady) {
+    state.selectedElements = [];
+    state.pictureCounter = 0;
+    if (state.pyodideReady) {
         startSolving(pyodide);  // Draw the first picture again
     }
 }
@@ -547,7 +510,7 @@ function scrollToBottom() {
 
 function enableLastCalcButton() {
     setTimeout(() => {
-        let lastPicture = pictureCounter - 1;
+        let lastPicture = state.pictureCounter - 1;
         console.log(lastPicture);
         const lastCalcBtn = document.getElementById(`calcBtn${lastPicture}`);
         lastCalcBtn.disabled = false;
@@ -564,11 +527,11 @@ async function loadCircuits(pyodide) {
     console.time(loadCircuits);
 
     //An array buffer containing the zipped circuit files fetched from the server.
-    let cirArrBuff = await (await fetch(circuitPath)).arrayBuffer();
+    let cirArrBuff = await (await fetch(conf.circuitPath)).arrayBuffer();
     await pyodide.unpackArchive(cirArrBuff, ".zip");
 
-    circuitFiles = pyodide.FS.readdir("Circuits");
-    circuitFiles = circuitFiles.filter((file) => file !== "." && file !== "..");
+    state.circuitFiles = pyodide.FS.readdir("Circuits");
+    state.circuitFiles = state.circuitFiles.filter((file) => file !== "." && file !== "..");
     console.timeEnd(loadCircuits);
 }
 
@@ -632,8 +595,8 @@ function setupCheatSheet() {
 }
 
 async function importPyodidePackages(pyodide) {
-    await load_packages(pyodide, ["sqlite3-1.0.0.zip"]);
-    await import_packages(pyodide);
+    await packageManager.load_packages(pyodide, ["sqlite3-1.0.0.zip"]);
+    await packageManager.import_packages(pyodide);
 }
 
 
@@ -654,13 +617,13 @@ async function getCircuitComponentTypes(pyodide) {
 
 async function getJsonAndSvgStepFiles(pyodide) {
     const files = await pyodide.FS.readdir("Solutions");
-    jsonFiles_Z = files.filter(file => !file.endsWith("VC.json") && file.endsWith(".json"));
-    jsonFiles_VC = files.filter(file => file.endsWith("VC.json"));
-    if (jsonFiles_VC === []) {
-        jsonFiles_VC = null;
+    state.jsonFiles_Z = files.filter(file => !file.endsWith("VC.json") && file.endsWith(".json"));
+    state.jsonFiles_VC = files.filter(file => file.endsWith("VC.json"));
+    if (state.jsonFiles_VC === []) {
+        state.jsonFiles_VC = null;
     }
-    svgFiles = files.filter(file => file.endsWith(".svg"));
-    currentStep = 0;
+    state.svgFiles = files.filter(file => file.endsWith(".svg"));
+    state.currentStep = 0;
 }
 
 async function clearSolutionsDir(pyodide) {
@@ -680,9 +643,9 @@ async function clearSolutionsDir(pyodide) {
 function fillStepDetailsObject(circuitMap, componentTypes) {
     let stepDetails = new StepDetails;
     stepDetails.showVCButton = circuitIsNotSubstituteCircuit(circuitMap);
-    stepDetails.jsonZPath = `Solutions/${jsonFiles_Z[currentStep]}`;
-    stepDetails.jsonZVCath = (jsonFiles_VC === null) ? null : `Solutions/${jsonFiles_VC[currentStep]}`;
-    stepDetails.svgPath = `Solutions/${svgFiles[currentStep]}`;
+    stepDetails.jsonZPath = `Solutions/${state.jsonFiles_Z[state.currentStep]}`;
+    stepDetails.jsonZVCath = (state.jsonFiles_VC === null) ? null : `Solutions/${state.jsonFiles_VC[state.currentStep]}`;
+    stepDetails.svgPath = `Solutions/${state.svgFiles[state.currentStep]}`;
     stepDetails.componentTypes = componentTypes;
     return stepDetails;
 }
@@ -690,7 +653,7 @@ function fillStepDetailsObject(circuitMap, componentTypes) {
 async function solveCircuit(circuit, circuitMap, pyodide) {
     await clearSolutionsDir(pyodide);
 
-    stepSolve = solve.SolveInUserOrder(circuit, `Circuits/${circuitMap.sourceDir}`, "Solutions/");
+    stepSolve = state.solve.SolveInUserOrder(circuit, `Circuits/${circuitMap.sourceDir}`, "Solutions/");
     await stepSolve.createStep0().toJs();
 
     // Get information which components are used in this circuit

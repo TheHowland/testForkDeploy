@@ -49,11 +49,11 @@ class SelectorBuilder {
                     ${carouselElements}                    
                 </div>
                 <button id="${identifier}-prev-btn" class="carousel-control-prev" type="button" data-bs-target="#${identifier}-carousel" data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true" style="background-color: black;"></span>
+                    <span class="carousel-control-prev-icon" aria-hidden="true" style="background-color: ${colors.prevNextBtnBackgroundColor};"></span>
                     <span class="visually-hidden">Previous</span>
                 </button>
                 <button id="${identifier}-next-btn" class="carousel-control-next" type="button" data-bs-target="#${identifier}-carousel" data-bs-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true" style="background-color: black;"></span>
+                    <span class="carousel-control-next-icon" aria-hidden="true" style="background-color: ${colors.prevNextBtnBackgroundColor};"></span>
                     <span class="visually-hidden">Next</span>
                 </button>
             </div>

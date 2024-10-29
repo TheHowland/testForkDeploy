@@ -6,10 +6,10 @@ function sanitizeSelector(selector) {
 }
 
 function setSvgColorMode(svgData) {
-    if (foregroundColor === "white") {
-        return svgData.replaceAll("black", "white");
+    if (colors.currentForeground === colors.keyLight) {
+        return svgData.replaceAll(colors.lightModeSvgStrokeColor, colors.darkModeSvgStrokeColor);
     } else {
-        return svgData.replaceAll("white", "black");
+        return svgData.replaceAll(colors.darkModeSvgStrokeColor, colors.lightModeSvgStrokeColor);
     }
 }
 
@@ -32,6 +32,11 @@ function showMessage(container, message, prio = "warning") {
     setTimeout(() => {
         msg.style.display = 'none';
     }, 3000);
+}
+
+function setPgrBarTo(percent) {
+    let progressBar = document.getElementById("pgr-bar");
+    progressBar.style.width = `${percent}%`;
 }
 
 
