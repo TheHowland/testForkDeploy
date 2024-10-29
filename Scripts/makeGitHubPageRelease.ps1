@@ -79,7 +79,7 @@ git pull
 git add .
 git status
 git commit -m $commitMessage
-# git push
+git push
 
 Write-Host "files copied to GitHub Page folder, commited and pushed new site should be online in a few minutes" -ForegroundColor Green
 
