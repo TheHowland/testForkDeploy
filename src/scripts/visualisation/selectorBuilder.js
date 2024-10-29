@@ -86,4 +86,93 @@ class SelectorBuilder {
                     </div>
                 </div>`;
     }
+
+    // ######################### Setup #######################################
+    setupSelector(circuitSet, pageManager) {
+        for (const circuit of circuitSet.set) {
+            this.setupSpecificCircuitSelector(circuit, pageManager, pageManager.pyodide);
+        }
+        if (moreThanOneCircuitInSet(circuitSet)) {
+            this.setupNextAndPrevButtons(circuitSet);
+        } else {
+            this.hideNextAndPrevButtons(circuitSet);
+        }
+    }
+
+    setupSpecificCircuitSelector(circuitMap, pageManager, pyodide) {
+        const circuitDiv = document.getElementById(circuitMap.circuitDivID);
+        const startBtn = document.getElementById(circuitMap.btn);
+        const btnOverlay = document.getElementById(circuitMap.btnOverlay);
+
+        // Fill div with svg
+        let svgData = pyodide.FS.readFile(circuitMap.svgFile, {encoding: "utf8"});
+        svgData = setSvgWidthTo(svgData, "100%");
+        svgData = setSvgColorMode(svgData);
+        circuitDiv.innerHTML = svgData;
+
+        this.setupSelectionCircuit(circuitDiv, startBtn, btnOverlay);
+        startBtn.addEventListener("click", () =>
+            this.circuitSelectorStartButtonPressed(circuitMap.circuitFile, circuitMap, pageManager))
+    }
+
+    resetSelectorSelections(circuitSet) {
+        for (const circuit of circuitSet) {
+            this.resetSelection(circuit);
+        }
+    }
+
+    setupNextAndPrevButtons(circuitSet) {
+        const next = document.getElementById(`${circuitSet.identifier}-next-btn`);
+        const prev = document.getElementById(`${circuitSet.identifier}-prev-btn`);
+
+        next.addEventListener("click", () => {
+            this.resetSelectorSelections(circuitSet.set);
+        })
+        prev.addEventListener("click", () => {
+            this.resetSelectorSelections(circuitSet.set);
+        })
+    }
+
+    hideNextAndPrevButtons(circuitSet) {
+        const next = document.getElementById(`${circuitSet.identifier}-next-btn`);
+        const prev = document.getElementById(`${circuitSet.identifier}-prev-btn`);
+        next.hidden = true;
+        prev.hidden = true;
+    }
+
+    circuitSelectorStartButtonPressed(circuitName, circuitMap, pageManager){
+        clearSimplifierPageContent();
+        pageManager.showSimplifierPage();
+        state.currentCircuit = circuitName;
+        state.currentCircuitMap = circuitMap;
+        state.pictureCounter = 0;
+        if (state.pyodideReady) {
+            startSolving(pageManager.pyodide);
+        }
+    }
+
+    showCircuitAsSelected(circuit, btnOverlay) {
+        circuit.style.borderColor = colors.keyYellow;
+        circuit.style.opacity = "0.5";
+        btnOverlay.style.display = "block"
+    }
+    showCircuitAsUnselected(circuit, btnOverlay) {
+        circuit.style.borderColor = colors.currentForeground;
+        circuit.style.opacity = "1";
+        btnOverlay.style.display = "none"
+    }
+
+    setupSelectionCircuit(circuit, startBtn, startBtnOverlay) {
+        circuit.addEventListener("click", () => {this.showCircuitAsSelected(circuit, startBtnOverlay)})
+        startBtnOverlay.addEventListener("click", () => {this.showCircuitAsUnselected(circuit, startBtnOverlay)})
+    }
+
+    resetSelection(circuitMap) {
+        const circuit = document.getElementById(circuitMap.circuitDivID);
+        const overlay = document.getElementById(circuitMap.btnOverlay);
+        circuit.style.borderColor = colors.currentForeground;
+        circuit.style.opacity = "1";
+        overlay.style.display = "none";
+    }
+
 }

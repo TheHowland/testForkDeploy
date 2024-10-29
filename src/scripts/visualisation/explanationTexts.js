@@ -32,7 +32,7 @@ function generateTextForVoltageCurrent(data) {
     } else if (relation === "parallel") {
         text.innerHTML = getParallelVCDescription(data);
     } else {
-        text.innerHTML = state.currentLang.relationTextNoRelation;
+        text.innerHTML = languageManager.currentLang.relationTextNoRelation;
     }
     MathJax.typeset();
     return text;
@@ -42,11 +42,11 @@ function getRelationText(data) {
     let relationText = "";
     if (!data.isNull()) {
         if (data.noFormat().relation === "parallel") {
-            relationText = state.currentLang.relationTextParallel;
+            relationText = languageManager.currentLang.relationTextParallel;
         } else if (data.noFormat().relation === "series") {
-            relationText = state.currentLang.relationTextSeries;
+            relationText = languageManager.currentLang.relationTextSeries;
         } else if (data.noFormat().relation === null) {
-            relationText = state.currentLang.relationTextNoRelation;
+            relationText = languageManager.currentLang.relationTextNoRelation;
         } else {
             throw Error("Unknown relation type");
         }
@@ -57,8 +57,8 @@ function getRelationText(data) {
 function getElementsAndRelationDescription(data) {
     let relationText = getRelationText(data);
     return `
-            ${state.currentLang.calcBeforeFirstElement} ${data.inline().name1} ${state.currentLang.calcBetweenElements} ${data.inline().name2}<br>
-            ${state.currentLang.calcAfterSecondElement} ${data.inline().newName} ${state.currentLang.calcAfterSimplifiedElement}<br>
+            ${languageManager.currentLang.calcBeforeFirstElement} ${data.inline().name1} ${languageManager.currentLang.calcBetweenElements} ${data.inline().name2}<br>
+            ${languageManager.currentLang.calcAfterSecondElement} ${data.inline().newName} ${languageManager.currentLang.calcAfterSimplifiedElement}<br>
             <br>
             ${data.inline().name1}&nbsp= ${data.inline().value1}<br>
             ${data.inline().name2}&nbsp= ${data.inline().value2}<br>
@@ -86,18 +86,18 @@ function getAdditionCalculation(data) {
 }
 
 function getSeriesVCDescription(data) {
-    return `${state.currentLang.currentCalcHeading} ${data.inline().oldNames[0]}<br>
+    return `${languageManager.currentLang.currentCalcHeading} ${data.inline().oldNames[0]}<br>
             <br>
             $$${data.noFormat().oldNames[2]} = \\frac{${data.noFormat().oldNames[1]}}{${data.noFormat().oldNames[0]}}$$
             $$= \\frac{${data.noFormat().oldValues[1]}}{${data.noFormat().oldValues[0]}}$$
             $$= ${data.noFormat().oldValues[2]}$$
             <br>
-            ${state.currentLang.relationTextSeries}.<br>
-            ${state.currentLang.currentStaysTheSame}.<br>
+            ${languageManager.currentLang.relationTextSeries}.<br>
+            ${languageManager.currentLang.currentStaysTheSame}.<br>
             $$${data.noFormat().oldNames[2]} = ${data.noFormat().names1[2]} = ${data.noFormat().names2[2]}$$
             $$= ${data.noFormat().oldValues[2]}$$
             <br>
-            ${state.currentLang.voltageSplits}.<br>
+            ${languageManager.currentLang.voltageSplits}.<br>
             $$${data.noFormat().names1[1]} = ?$$
             $$${data.noFormat().names2[1]} = ?$$
             <br>
@@ -114,18 +114,18 @@ function getSeriesVCDescription(data) {
 
 function getParallelVCDescription(data) {
     return `
-            ${state.currentLang.currentCalcHeading} ${data.inline().oldNames[0]}<br>
+            ${languageManager.currentLang.currentCalcHeading} ${data.inline().oldNames[0]}<br>
             <br>
             $$${data.noFormat().oldNames[2]} = \\frac{${data.noFormat().oldNames[1]}}{${data.noFormat().oldNames[0]}}$$
             $$= \\frac{${data.noFormat().oldValues[1]}}{${data.noFormat().oldValues[0]}}$$
             $$= ${data.noFormat().oldValues[2]}$$
             <br>
-            ${state.currentLang.relationTextParallel}.<br>
-            ${state.currentLang.voltageStaysTheSame}.<br>
+            ${languageManager.currentLang.relationTextParallel}.<br>
+            ${languageManager.currentLang.voltageStaysTheSame}.<br>
             $$${data.noFormat().oldNames[1]} = ${data.noFormat().names1[1]} = ${data.noFormat().names2[1]}$$
             $$= ${data.noFormat().oldValues[1]}$$
             <br>
-            ${state.currentLang.currentSplits}.<br>
+            ${languageManager.currentLang.currentSplits}.<br>
             $$${data.noFormat().names1[2]} = ?$$
             $$${data.noFormat().names2[2]} = ?$$
             <br>
