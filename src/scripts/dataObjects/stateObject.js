@@ -3,6 +3,7 @@
 
 class StateObject {
 
+    currentLang = english;
 
     //Tracks the current step in the circuit simplification process.
     currentStep = 0;
@@ -22,7 +23,7 @@ class StateObject {
     //Array to store selected elements in the circuit.
     selectedElements = [];
 
-    //Stores the currently selected circuit file name.currentCircuit = "";
+    //Stores the currently selected circuit map
     currentCircuitMap;
 
     //The Python module imported from the Pyodide environment for solving circuits.

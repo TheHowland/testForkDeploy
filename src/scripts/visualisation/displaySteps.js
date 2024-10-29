@@ -49,8 +49,8 @@ function getFinishMsg(vcData, showVoltageButton) {
     if (showVoltageButton) {
         // Give a note what voltage is used and that voltage/current is available
         msg = `
-        <p>${currentLang.msgVoltAndCurrentAvailable}.<br></p>
-        <p>${currentLang.msgShowVoltage}<br>V1 = ${vcData.inline().oldValues[1]}</p>
+        <p>${state.currentLang.msgVoltAndCurrentAvailable}.<br></p>
+        <p>${state.currentLang.msgShowVoltage}<br>V1 = ${vcData.inline().oldValues[1]}</p>
         <button class="btn btn-primary mx-1" id="reset-btn">reset</button>
         <button class="btn btn-primary mx-1" id="check-btn">check</button>
     `;
@@ -76,7 +76,7 @@ function setupNextElementsContainer(sanitizedSvgFilePath, filteredPaths, vcData,
         nextElementsContainer.innerHTML = getFinishMsg(vcData, showVoltageButton);
     } else {
         nextElementsContainer.innerHTML = `
-        <h3>${currentLang.nextElementsHeading}</h3>
+        <h3>${state.currentLang.nextElementsHeading}</h3>
         <ul class="px-0" id="next-elements-list-${sanitizedSvgFilePath}"></ul>
         <button class="btn btn-primary mx-1" id="reset-btn">reset</button>
         <button class="btn btn-primary mx-1" id="check-btn">check</button>
@@ -170,7 +170,7 @@ function setupVoltageCurrentBtn() {
     vcBtn.classList.add("mx-2");
     vcBtn.style.color = colors.currentForeground;
     vcBtn.style.borderColor = colors.currentForeground;
-    vcBtn.textContent = currentLang.showVoltageBtn;
+    vcBtn.textContent = state.currentLang.showVoltageBtn;
     vcBtn.disabled = true;
     return vcBtn;
 }
@@ -184,7 +184,7 @@ function setupCalculationBtn() {
     calcBtn.classList.add("mx-2");
     calcBtn.style.color = colors.currentForeground;
     calcBtn.style.borderColor = colors.currentForeground;
-    calcBtn.textContent = currentLang.showCalculationBtn;
+    calcBtn.textContent = state.currentLang.showCalculationBtn;
     calcBtn.disabled = true;
     return calcBtn;
 }
@@ -245,7 +245,7 @@ async function checkAndSimplifyNext(pyodide, div, stepDetails){
         const simplifyObject = await stepSolve.simplifyTwoCpts(state.selectedElements).toJs();
         checkAndSimplify(simplifyObject, pyodide, contentCol, div, stepDetails);
     } else {
-        showMessage(contentCol, currentLang.alertChooseTwoElements);
+        showMessage(contentCol, state.currentLang.alertChooseTwoElements);
     }
     MathJax.typeset();
 }
@@ -265,7 +265,7 @@ function checkAndSimplify(simplifyObject, pyodide, contentCol, div, stepDetails)
         }
         display_step(pyodide, stepDetails);
     } else {
-        showMessage(contentCol, currentLang.alertCanNotSimplify);
+        showMessage(contentCol, state.currentLang.alertCanNotSimplify);
     }
 }
 
@@ -275,17 +275,17 @@ function setupVCBtnFunctionality(vcText, contentCol, stepCalculationText) {
     const explContainer = document.getElementById(`explBtnContainer${state.pictureCounter - 1}`);
 
     lastVCBtn.addEventListener("click", () => {
-        if (lastVCBtn.textContent === currentLang.showVoltageBtn) {
-            lastVCBtn.textContent = currentLang.hideVoltageBtn;
+        if (lastVCBtn.textContent === state.currentLang.showVoltageBtn) {
+            lastVCBtn.textContent = state.currentLang.hideVoltageBtn;
             // Add text after container
             explContainer.insertAdjacentElement("afterend", vcText);
-            if (lastStepCalcBtn.textContent === currentLang.hideCalculationBtn) {
-                lastStepCalcBtn.textContent = currentLang.showCalculationBtn;
+            if (lastStepCalcBtn.textContent === state.currentLang.hideCalculationBtn) {
+                lastStepCalcBtn.textContent = state.currentLang.showCalculationBtn;
                 contentCol.removeChild(stepCalculationText);
             }
             MathJax.typeset();
         } else {
-            lastVCBtn.textContent = currentLang.showVoltageBtn;
+            lastVCBtn.textContent = state.currentLang.showVoltageBtn;
             contentCol.removeChild(vcText);
         }
     })
@@ -298,11 +298,11 @@ function setupCalcBtnFunctionality(showVoltageButton, stepCalculationText, conte
     if (showVoltageButton) lastVCBtn = document.getElementById(`vcBtn${state.pictureCounter - 1}`);
 
     lastStepCalcBtn.addEventListener("click", () => {
-        if (lastStepCalcBtn.textContent === currentLang.showCalculationBtn) {
-            lastStepCalcBtn.textContent = currentLang.hideCalculationBtn;
+        if (lastStepCalcBtn.textContent === state.currentLang.showCalculationBtn) {
+            lastStepCalcBtn.textContent = state.currentLang.hideCalculationBtn;
             if (showVoltageButton) {
-                if (lastVCBtn.textContent === currentLang.hideVoltageBtn) {
-                    lastVCBtn.textContent = currentLang.showVoltageBtn;
+                if (lastVCBtn.textContent === state.currentLang.hideVoltageBtn) {
+                    lastVCBtn.textContent = state.currentLang.showVoltageBtn;
                     contentCol.removeChild(vcText);
                 }
             }
@@ -310,7 +310,7 @@ function setupCalcBtnFunctionality(showVoltageButton, stepCalculationText, conte
             explContainer.insertAdjacentElement("afterend", stepCalculationText);
             MathJax.typeset();
         } else {
-            lastStepCalcBtn.textContent = currentLang.showCalculationBtn;
+            lastStepCalcBtn.textContent = state.currentLang.showCalculationBtn;
             contentCol.removeChild(stepCalculationText);
         }
     })
@@ -359,7 +359,7 @@ function generateTexts(data, vcData, componentTypes) {
 
 function finishCircuit(contentCol, showVoltageButton) {
     document.getElementById("check-btn").disabled = true;
-    showMessage(contentCol, currentLang.msgCongratsFinishedCircuit, "success");
+    showMessage(contentCol, state.currentLang.msgCongratsFinishedCircuit, "success");
     if (showVoltageButton) enableVoltageCurrentBtns();
 }
 

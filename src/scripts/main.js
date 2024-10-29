@@ -1,6 +1,7 @@
+// #####################################################################################################################
+// ##################################              GLOBALS            ##################################################
+// #####################################################################################################################
 
-//Containing the map of all circuits, circuit filenames, directories, etc...
-let circuitMapper;
 const conf = new Configurations(
     "http://localhost:8000",
     "/Circuits.zip",
@@ -9,8 +10,7 @@ const conf = new Configurations(
 let packageManager = new PackageManager();
 let state = new StateObject();
 let colors = new ColorDefinitions();
-
-currentLang = english;
+let circuitMapper;
 
 // #####################################################################################################################
 // ##################################              MAIN            #####################################################
@@ -170,7 +170,7 @@ function switchBsClassToDark(field, container) {
 function showWaitingNote() {
     const note = document.getElementById("progress-bar-note");
     note.style.color = colors.currentForeground;
-    note.innerHTML = currentLang.selectorWaitingNote;
+    note.innerHTML = state.currentLang.selectorWaitingNote;
     return note;
 }
 
@@ -352,61 +352,61 @@ function checkIfSimplifierPageNeedsReset(pyodide) {
 
 function updateLanguageLandingPage() {
     const greeting = document.getElementById("landing-page-greeting");
-    greeting.innerHTML = currentLang.landingPageGreeting;
+    greeting.innerHTML = state.currentLang.landingPageGreeting;
     const keyFeature1heading = document.getElementById("key-feature1heading");
-    keyFeature1heading.innerHTML = currentLang.keyFeature1heading;
+    keyFeature1heading.innerHTML = state.currentLang.keyFeature1heading;
     const keyFeature1 = document.getElementById("key-feature1");
-    keyFeature1.innerHTML = currentLang.keyFeature1;
+    keyFeature1.innerHTML = state.currentLang.keyFeature1;
     const keyFeature2 = document.getElementById("key-feature2");
-    keyFeature2.innerHTML = currentLang.keyFeature2;
+    keyFeature2.innerHTML = state.currentLang.keyFeature2;
     const keyFeature2heading = document.getElementById("key-feature2heading");
-    keyFeature2heading.innerHTML = currentLang.keyFeature2heading;
+    keyFeature2heading.innerHTML = state.currentLang.keyFeature2heading;
     const keyFeature3 = document.getElementById("key-feature3");
-    keyFeature3.innerHTML = currentLang.keyFeature3;
+    keyFeature3.innerHTML = state.currentLang.keyFeature3;
     const keyFeature3heading = document.getElementById("key-feature3heading");
-    keyFeature3heading.innerHTML = currentLang.keyFeature3heading;
+    keyFeature3heading.innerHTML = state.currentLang.keyFeature3heading;
     const expl1 = document.getElementById("landing-page-explanation1");
-    expl1.innerHTML = currentLang.landingPageExplanation1;
+    expl1.innerHTML = state.currentLang.landingPageExplanation1;
     const expl2 = document.getElementById("landing-page-explanation2");
-    expl2.innerHTML = currentLang.landingPageExplanation2;
+    expl2.innerHTML = state.currentLang.landingPageExplanation2;
     const expl3 = document.getElementById("landing-page-explanation3");
-    expl3.innerHTML = currentLang.landingPageExplanation3;
+    expl3.innerHTML = state.currentLang.landingPageExplanation3;
 }
 
 function updateLanguageSelectorPage() {
     for (const circuitSet of circuitMapper.circuitSets) {
         const heading = document.getElementById(`${circuitSet.identifier}-heading`);
-        heading.innerHTML = currentLang.carouselHeadings[circuitSet.identifier];
+        heading.innerHTML = state.currentLang.carouselHeadings[circuitSet.identifier];
     }
 }
 
 function updateLanguageCheatSheetPage() {
 
     const subHeading = document.getElementById("substitutionTableHeading");
-    subHeading.innerHTML = currentLang.subTableHeading;
+    subHeading.innerHTML = state.currentLang.subTableHeading;
     const series = document.getElementById("seriesHeading");
-    series.innerHTML = currentLang.subTableSeriesHeading;
+    series.innerHTML = state.currentLang.subTableSeriesHeading;
     const parallel = document.getElementById("parallelHeading");
-    parallel.innerHTML = currentLang.subTableParallelHeading;
+    parallel.innerHTML = state.currentLang.subTableParallelHeading;
     const subResCol = document.getElementById("subTableResHeading");
-    subResCol.innerHTML = currentLang.resistorRowHeading;
+    subResCol.innerHTML = state.currentLang.resistorRowHeading;
     const subCapCol = document.getElementById("subTableCapHeading");
-    subCapCol.innerHTML = currentLang.capacitorRowHeading;
+    subCapCol.innerHTML = state.currentLang.capacitorRowHeading;
     const subIndCol = document.getElementById("subTableIndHeading");
-    subIndCol.innerHTML = currentLang.inductorRowHeading;
+    subIndCol.innerHTML = state.currentLang.inductorRowHeading;
 
     const resReaHeading = document.getElementById("resistanceReactanceTableHeading");
-    resReaHeading.innerHTML = currentLang.resReaTableHeading;
+    resReaHeading.innerHTML = state.currentLang.resReaTableHeading;
     const resCol = document.getElementById("resistance");
-    resCol.innerHTML = currentLang.resistanceColHeading;
+    resCol.innerHTML = state.currentLang.resistanceColHeading;
     const reaCol = document.getElementById("reactance");
-    reaCol.innerHTML = currentLang.reactanceColHeading;
+    reaCol.innerHTML = state.currentLang.reactanceColHeading;
     const res = document.getElementById("resistor");
-    res.innerHTML = currentLang.resistorRowHeading;
+    res.innerHTML = state.currentLang.resistorRowHeading;
     const cap = document.getElementById("capacitor");
-    cap.innerHTML = currentLang.capacitorRowHeading;
+    cap.innerHTML = state.currentLang.capacitorRowHeading;
     const ind = document.getElementById("inductor");
-    ind.innerHTML = currentLang.inductorRowHeading;
+    ind.innerHTML = state.currentLang.inductorRowHeading;
 
 }
 
@@ -446,7 +446,7 @@ function setupNavigation(pageManager, pyodide) {
         pageManager.showLandingPage();
     })
     selectEnglish.addEventListener("click", () => {
-        currentLang = english;
+        state.currentLang = english;
         const activeFlagIcon = document.getElementById("activeLanguageFlag");
         activeFlagIcon.setAttribute("src", "src/resources/navigation/uk.png");
         closeNavbar();
@@ -455,7 +455,7 @@ function setupNavigation(pageManager, pyodide) {
         updateLanguageCheatSheetPage();
     })
     selectGerman.addEventListener("click", () => {
-        currentLang = german;
+        state.currentLang = german;
         const activeFlagIcon = document.getElementById("activeLanguageFlag");
         activeFlagIcon.setAttribute("src", "src/resources/navigation/germany.png");
         closeNavbar();
@@ -537,7 +537,7 @@ async function loadCircuits(pyodide) {
 
 function updateSelectorHeadings(circuitSetId) {
     const heading = document.getElementById(`${circuitSetId}-heading`);
-    heading.innerHTML = currentLang.carouselHeadings[circuitSetId];
+    heading.innerHTML = state.currentLang.carouselHeadings[circuitSetId];
 }
 
 function setupSelectPage(pageManager, pyodide) {
