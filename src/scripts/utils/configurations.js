@@ -1,8 +1,13 @@
 class Configurations {
-    constructor(srvAdr, circPath, solveFilePath, pckDir) {
-        this.serverAddress = srvAdr
-        this.circuitPath = this.serverAddress + circPath
-        this.solveFilePath = this.serverAddress + solveFilePath
-        this.packageDir = this.serverAddress + pckDir
+    constructor(serverAddress, sourceCircuitPath, sourceSolvePath, sourcePackageDir,
+                pyodideCircuitPath, pyodideSolutionsPath, pyodideSolvePath) {
+        this.serverAddress = serverAddress
+        this.sourceCircuitPath = this.serverAddress + sourceCircuitPath
+        this.sourceSolvePath = this.serverAddress + sourceSolvePath
+        this.sourcePackageDir = this.serverAddress + sourcePackageDir
+
+        this.pyodideCircuitPath = pyodideCircuitPath
+        this.pyodideSolutionsPath = pyodideSolutionsPath
+        this.pyodideSolvePath = pyodideSolvePath
     }
 }

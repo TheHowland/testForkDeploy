@@ -72,7 +72,7 @@ class PackageManager {
     async load_packages(pyodide, optAddNames) {
         setPgrBarTo(0);
 
-        let packageAddress = conf.packageDir;
+        let packageAddress = conf.sourcePackageDir;
         let packages = await this.fetchDirectoryListing(packageAddress, ".whl");
 
         if(Array.isArray(optAddNames)){
@@ -89,7 +89,7 @@ class PackageManager {
         };
 
         let packagePromises = packages.map(async function (packageName) {
-            let pkgArrBuff = await (await fetch(conf.packageDir + packageName)).arrayBuffer();
+            let pkgArrBuff = await (await fetch(conf.sourcePackageDir + packageName)).arrayBuffer();
             let packageExtension = packageName.slice(packageName.lastIndexOf("."), packageName.length);
             await pyodide.unpackArchive(pkgArrBuff, packageExtension);
 
