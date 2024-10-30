@@ -1,8 +1,8 @@
 #!/bin/sh
 
 # Define variables
-localURL="http://local.url"               # Set your local URL
-releaseURL="http://release.url"           # Set your release URL
+localURL="http://localhost:8000"
+releaseURL="https://thehowland.github.io/InskaLE"
 
 # Update URL in index.html
 indexPath="./index.html"
@@ -16,15 +16,15 @@ else
     exit 1
 fi
 
-# Update URL in main.js
-mainJsPath="./src/scripts/main.js"
-if [ -f $mainJsPath ]; then
-    toReplace='let serverAddress = "'$localURL'"'
-    replaceString='let serverAddress = "'$releaseURL'"'
-    sed -i "s|$toReplace|$replaceString|g" "$mainJsPath"
-    echo "Updated URL in main.js"
+# Update URL in configurations.js
+configJsPath="./src/scripts/utils/configurations.js"
+if [ -f $configJsPath ]; then
+    toReplace='this.serverAddress = "'$localURL'"'
+    replaceString='this.serverAddress = "'$releaseURL'"'
+    sed -i "s|$toReplace|$replaceString|g" "$configJsPath"
+    echo "Updated URL in configurations.js"
 else
-    echo "main.js not found" >&2
+    echo "configurations.js not found" >&2
     exit 1
 fi
 
