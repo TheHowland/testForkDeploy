@@ -38,6 +38,17 @@ function generateTextForVoltageCurrent(data) {
     return text;
 }
 
+function generateTextForTotalCurrent(data) {
+    return `${languageManager.currentLang.currentCalcHeading} ${data.inline().oldNames[0]}<br>
+                        <br>
+                        $$${data.noFormat().oldNames[2]} = \\frac{${data.noFormat().oldNames[1]}}{${data.noFormat().oldNames[0]}}$$
+                        $$= \\frac{${data.noFormat().oldValues[1]}}{${data.noFormat().oldValues[0]}}$$
+                        $$= ${data.noFormat().oldValues[2]}$$
+                        <br>`;
+}
+
+
+
 function getRelationText(data) {
     let relationText = "";
     if (!data.isNull()) {

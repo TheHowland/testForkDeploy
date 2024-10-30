@@ -57,9 +57,17 @@ class CircuitMapper {
     addSubAcdcCircuitMaps(dir) {
         for (let circuitFileName of this.files[dir]) {
             let subCircuit = this.createCircuitMap(circuitFileName, dir, this.selectorIds.subId)
-            let acdcCircuit = this.createCircuitMap(circuitFileName, dir, this.selectorIds.acdcId)
             this._substitute.set.push(subCircuit);
-            this._acdc.set.push(acdcCircuit);
+
+            // RELEASE V1.0 EXCEPTION
+            // For the current release, we don't want to show complex current and voltage
+            // calculation, therefore we remove all C and L Circuits from the acdc selector
+
+            if (circuitFileName.includes("capacitor") || circuitFileName.includes("inductor")) {
+            } else {
+                let acdcCircuit = this.createCircuitMap(circuitFileName, dir, this.selectorIds.acdcId)
+                this._acdc.set.push(acdcCircuit);
+            }
         }
     }
 
@@ -77,9 +85,13 @@ class CircuitMapper {
     }
 
     updateCircuitSets() {
-        this.circuitSets.push(this._substitute);
-        this.circuitSets.push(this._acdc);
-        this.circuitSets.push(this._mixed);
+        if (this._acdc.set.length !== 0) {
+            this.circuitSets.push(this._substitute);
+            this.circuitSets.push(this._acdc);
+        }
+        if (this._mixed.set.length !== 0) {
+            this.circuitSets.push(this._mixed);
+        }
     }
 
     async fillFilesObject() {
