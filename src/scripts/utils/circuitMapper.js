@@ -77,9 +77,13 @@ class CircuitMapper {
     }
 
     updateCircuitSets() {
-        this.circuitSets.push(this._substitute);
-        this.circuitSets.push(this._acdc);
-        this.circuitSets.push(this._mixed);
+        if (this._acdc.set.length !== 0) {
+            this.circuitSets.push(this._substitute);
+            this.circuitSets.push(this._acdc);
+        }
+        if (this._mixed.set.length !== 0) {
+            this.circuitSets.push(this._mixed);
+        }
     }
 
     async fillFilesObject() {
