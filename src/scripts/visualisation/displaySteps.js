@@ -27,7 +27,7 @@ function display_step(pyodide,stepDetails) {
     if (showVoltageButton) div.appendChild(newVCBtn);
 
     setupStepButtonsFunctionality(pyodide, div, stepDetails);
-    congratsAndVCDisplayIfFinished(filteredPaths, contentCol, showVoltageButton);
+    congratsAndVCDisplayIfFinished(filteredPaths, contentCol, showVoltageButton, vcData);
     MathJax.typeset();
 }
 
@@ -252,7 +252,7 @@ async function checkAndSimplifyNext(pyodide, div, stepDetails){
 
 function checkAndSimplify(simplifyObject, pyodide, contentCol, div, stepDetails) {
     let elementsCanBeSimplified = simplifyObject[0];
-    // Update paths, showVC and componentType is still the same
+    // Update paths, showVC and componentType are still the same
     stepDetails.jsonZPath = simplifyObject[1][0];
     stepDetails.jsonVCPath = simplifyObject[1][1];
     stepDetails.svgPath = simplifyObject[2];
@@ -401,10 +401,61 @@ function checkIfStillNotFinishedAndMakeClickable(filteredPaths, nextElementsCont
     }
 }
 
-function congratsAndVCDisplayIfFinished(filteredPaths, contentCol, showVoltageButton) {
+function congratsAndVCDisplayIfFinished(filteredPaths, contentCol, showVoltageButton, vcData) {
     if (onlyOneElementLeft(filteredPaths)) {
         finishCircuit(contentCol, showVoltageButton);
+        addFirstVCExplanation(contentCol, showVoltageButton, vcData);
     }
+}
+
+function addFirstVCExplanation(contentCol, showVoltageButton, vcData) {
+    if (showVoltageButton) {
+        const totalCurrentContainer = createTotalCurrentContainer();
+        const totalCurrentBtn = createTotalCurrentBtn();
+        addBtnToContainer(totalCurrentContainer, totalCurrentBtn);
+        let text = generateTextElement(vcData);
+
+        totalCurrentBtn.addEventListener("click", () => {
+            if (totalCurrentBtn.textContent === languageManager.currentLang.firstVCStepBtn) {
+                totalCurrentBtn.textContent = languageManager.currentLang.hideVoltageBtn;
+                totalCurrentContainer.appendChild(text);
+                MathJax.typeset();
+            } else {
+                totalCurrentBtn.textContent = languageManager.currentLang.firstVCStepBtn;
+                totalCurrentContainer.removeChild(text);
+            }
+        })
+    }
+}
+
+function addBtnToContainer(totalCurrentContainer, totalCurrentBtn) {
+    document.getElementById("reset-btn").insertAdjacentElement("beforebegin", totalCurrentContainer);
+    totalCurrentContainer.appendChild(totalCurrentBtn);
+}
+
+function generateTextElement(vcData) {
+    let text = document.createElement("p");
+    text.innerHTML = generateTextForTotalCurrent(vcData);
+    return text;
+}
+
+function createTotalCurrentContainer() {
+    const firstStepContainer = document.createElement("div");
+    firstStepContainer.id = "firstVCStepContainer";
+    firstStepContainer.classList.add("container");
+    firstStepContainer.classList.add("justify-content-center");
+    return firstStepContainer;
+}
+
+function createTotalCurrentBtn() {
+    const totalCurrentBtn = setupVoltageCurrentBtn();
+    totalCurrentBtn.textContent = languageManager.currentLang.firstVCStepBtn;
+    totalCurrentBtn.disabled = false;
+    // Adjust margins from normal VC Btn because reset button is right below, give more space
+    totalCurrentBtn.classList.remove("my-3");
+    totalCurrentBtn.classList.add("mt-3");
+    totalCurrentBtn.classList.add("mb-5");
+    return totalCurrentBtn;
 }
 
 function setStyleAndEvent(pathElement, nextElementsList) {

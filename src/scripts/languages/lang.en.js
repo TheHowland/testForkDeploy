@@ -4,7 +4,7 @@ const english = {
         "a free browser tool for learning<br>" +
         "how to simplify electrical circuits",
     selectorWaitingNote:
-        "This will take a few seconds",
+        "This may take a minute",
 
     keyFeature1heading:
         "Understanding",
@@ -28,7 +28,8 @@ const english = {
         "impedance values, but you can also see how to calculate each of the voltages " +
         "and currents for the elements.",
     landingPageExplanation3:
-        "",
+        "On the homepage, the cheat sheet and the selector page, you can set your preferred language and set either " +
+        "light or dark mode. While simplifying circuits, these settings cannot be changed.",
 
     // Selector page text
     carouselHeadings:
@@ -49,6 +50,8 @@ const english = {
         "Voltage/Current",
     hideVoltageBtn:
         "Hide",
+    firstVCStepBtn:
+        "Total current",
     msgVoltAndCurrentAvailable:
         "You can now go back and check how to calculate the voltages and currents",
     msgShowVoltage:

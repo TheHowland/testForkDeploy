@@ -4,7 +4,7 @@ const german = {
         "Ein kostenloses Browsertool um<br>" +
         "zu lernen wie Schaltungsnetze vereinfacht werden",
     selectorWaitingNote:
-        "Das kann ein paar Sekunden brauchen",
+        "Das kann eine Minute dauern",
 
     keyFeature1heading:
         "Verstehen",
@@ -26,9 +26,12 @@ const german = {
         "Es kann f&uumlr jeden Schritt die Rechnung angezeigt werden, " +
         "sowohl f&uumlr den Gesamtwiderstand, als auch f&uumlr Spannungen und Str&oumlme.",
     landingPageExplanation2:
-        "",
+        "Beim Durchklicken durch die Schritte kannst du sehen wie die Werte zusammengefasst werden. Nachdem die " +
+        "Schaltung vereinfacht ist kannst du außerdem sehen wie die Spannungen und Str&oumlme berechnet werden.",
     landingPageExplanation3:
-        "",
+        "Auf der Homepage, dem Cheat Sheet und der Auswahlseite kannst du außerdem deine bevorzugte Sprache einstellen, " +
+        "sowie den passenden Ansichtsmodus w&aumlhlen. W&aumlhrend du Schaltungen vereinfachst sind diese Einstellungen " +
+        "nicht ver&aumlnderbar.",
 
     // Selector page text
     carouselHeadings:
@@ -50,6 +53,8 @@ const german = {
         "Spannung/Strom",
     hideVoltageBtn:
         "Ausblenden",
+    firstVCStepBtn:
+        "Gesamtstrom",
     msgVoltAndCurrentAvailable:
         "Du kannst nun zur&uumlckscrollen und schauen wie die Spannungen und Str&oumlme berechnet werden k&oumlnnen",
     msgShowVoltage:
