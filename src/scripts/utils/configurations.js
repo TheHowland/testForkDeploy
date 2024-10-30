@@ -10,4 +10,3 @@ class Configurations {
         this.pyodideSolvePath = "/home/pyodide/solve.py"
     }
 }
-
