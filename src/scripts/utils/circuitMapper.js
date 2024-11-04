@@ -3,6 +3,7 @@ class CircuitMapper {
     constructor(pyodide) {
         this.pyodide = pyodide
         this.files = {}
+        this.conf = new Configurations();
     }
 
     // #################################################################################################################
@@ -95,7 +96,7 @@ class CircuitMapper {
     }
 
     async fillFilesObject() {
-        let cirArrBuff = await (await fetch(conf.sourceCircuitPath)).arrayBuffer();
+        let cirArrBuff = await (await fetch(this.conf.sourceCircuitPath)).arrayBuffer();
         await this.pyodide.unpackArchive(cirArrBuff, ".zip");
 
         this.circuitDirs = this.pyodide.FS.readdir(this._circuitsPath);

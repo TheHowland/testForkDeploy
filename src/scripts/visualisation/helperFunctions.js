@@ -92,6 +92,7 @@ function clearSimplifierPageContent() {
 }
 
 function resetSolverObject() {
+    let conf = new Configurations();
     stepSolve = state.solve.SolveInUserOrder(state.currentCircuit, `${conf.pyodideCircuitPath}/${state.currentCircuitMap.sourceDir}`, `${conf.pyodideSolutionsPath}/`);
 }
 
@@ -133,6 +134,7 @@ async function getCircuitComponentTypes(pyodide) {
 }
 
 async function getJsonAndSvgStepFiles(pyodide) {
+    let conf = new Configurations();
     const files = await pyodide.FS.readdir(`${conf.pyodideSolutionsPath}`);
     state.jsonFiles_Z = files.filter(file => !file.endsWith("VC.json") && file.endsWith(".json"));
     state.jsonFiles_VC = files.filter(file => file.endsWith("VC.json"));
@@ -145,6 +147,7 @@ async function getJsonAndSvgStepFiles(pyodide) {
 
 async function clearSolutionsDir(pyodide) {
     try {
+        let conf = new Configurations();
         //An array of file names representing the solution files in the Solutions directory.
         let solutionFiles = await pyodide.FS.readdir(`${conf.pyodideSolutionsPath}`);
         solutionFiles.forEach(file => {
@@ -175,6 +178,7 @@ function resetHighlightedBoundingBoxes(svgDiv) {
 }
 
 async function createSvgsForSelectors(pyodide) {
+    let conf = new Configurations();
     await clearSolutionsDir(pyodide);
     // For all circuit sets (e.g. Resistors, Capacitors, ..)
     for (const circuitSet of circuitMapper.circuitSets) {

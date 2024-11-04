@@ -1,0 +1,11 @@
+{
+  "sourceCircuitPath" : "/Circuits.zip",
+  "sourceSolvePath" : "/solve.py",
+  "sourcePackageDir" : "/Packages/",
+  "gitHubUser" : "prof-sky",
+  "gitHubProject" : "inskale",
+
+  "pyodideCircuitPath" : "Circuits",
+  "pyodideSolutionsPath" : "Solutions",
+  "pyodideSolvePath" : "/home/pyodide/solve.py"
+}

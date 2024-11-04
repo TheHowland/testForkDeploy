@@ -10,10 +10,12 @@
     <script src="src/scripts/languages/lang.en.js"></script>
     <script src="src/scripts/languages/lang.de.js"></script>
     <script src="src/scripts/languages/languageManager.js"></script>
+    
 
     <script src="src/scripts/utils/circuitMapper.js"></script>
     <script src="src/scripts/utils/configurations.js"></script>
     <script src="src/scripts/utils/packageManager.js"></script>
+
 
     <script src="src/scripts/dataObjects/stateObject.js"></script>
     <script src="src/scripts/dataObjects/stepDetails.js"></script>
@@ -30,9 +32,9 @@
 
     <script src="src/scripts/main.js"></script>
 
-    <!-- Pyodide and MathJax Import -->
-    <script src="http://localhost:8000/pyodide.js"></script>
+    <!--Pyodide and MathJax Import -->
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="pyodide.js"></script>
 
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="src/styles/allStyles.css">
@@ -226,7 +228,16 @@
     </div>
 
     <script>
-        main();
+        // #####################################################################################################################
+        // ##################################              GLOBALS            ##################################################
+        // #####################################################################################################################
+
+        (async () => {
+            await Configurations.initialize();
+            await PackageManager.initialize();
+        })()
+        main()
+
     </script>
 
     <!-- Bootstrap Import -->
