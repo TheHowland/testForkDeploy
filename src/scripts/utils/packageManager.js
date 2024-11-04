@@ -1,4 +1,28 @@
 class PackageManager {
+    constructor() {
+        if (PackageManager.instance) {
+            console.log("Successfull access to PackageManager")
+            return PackageManager.instance;
+        }
+        else {
+            console.log("Access to PackageManager before Init")
+            return null;
+        }
+    }
+
+    static async initialize(){
+        let conf = new Configurations()
+        if ((conf.gitHubProject === null) && (conf.gitHubUser === null)){
+            this.isLocal = true;
+        }
+        else {
+            this.isLocal = false;
+        }
+
+        PackageManager.instance = this;
+        PackageManager.instance.conf = new Configurations();
+    }
+
     async doLoadsAndImports(pyodide) {
         await this.loadCircuits(pyodide);
         await this.importPyodidePackages(pyodide);
@@ -10,10 +34,10 @@ class PackageManager {
         console.time(loadCircuits);
 
         //An array buffer containing the zipped circuit files fetched from the server.
-        let cirArrBuff = await (await fetch(conf.sourceCircuitPath)).arrayBuffer();
+        let cirArrBuff = await (await fetch(PackageManager.instance.conf.sourceCircuitPath)).arrayBuffer();
         await pyodide.unpackArchive(cirArrBuff, ".zip");
 
-        state.circuitFiles = pyodide.FS.readdir(`${conf.pyodideCircuitPath}`);
+        state.circuitFiles = pyodide.FS.readdir(`${PackageManager.instance.conf.pyodideCircuitPath}`);
         state.circuitFiles = state.circuitFiles.filter((file) => file !== "." && file !== "..");
         console.timeEnd(loadCircuits);
     }
@@ -24,7 +48,7 @@ class PackageManager {
     }
 
     async importSolverModule(pyodide) {
-        pyodide.FS.writeFile(conf.pyodideSolvePath, await (await fetch(conf.sourceSolvePath)).text());
+        pyodide.FS.writeFile(PackageManager.instance.conf.pyodideSolvePath, await (await fetch(PackageManager.instance.conf.sourceSolvePath)).text());
         state.solve = await pyodide.pyimport("solve");
     }
 
@@ -55,7 +79,7 @@ class PackageManager {
     async load_packages(pyodide, optAddNames) {
         setPgrBarTo(0);
 
-        let packageAddress = conf.sourcePackageDir;
+        let packageAddress = PackageManager.instance.conf.sourcePackageDir;
         let packages = await this.fetchDirectoryListing(packageAddress, ".whl");
 
         if(Array.isArray(optAddNames)){
@@ -72,7 +96,7 @@ class PackageManager {
         };
 
         let packagePromises = packages.map(async function (packageName) {
-            let pkgArrBuff = await (await fetch(conf.sourcePackageDir + packageName)).arrayBuffer();
+            let pkgArrBuff = await (await fetch(PackageManager.instance.conf.sourcePackageDir + packageName)).arrayBuffer();
             let packageExtension = packageName.slice(packageName.lastIndexOf("."), packageName.length);
             await pyodide.unpackArchive(pkgArrBuff, packageExtension);
 
@@ -83,9 +107,9 @@ class PackageManager {
         console.log("Installed:" + packages);
     }
 
-    async fetchDirectoryListing(url, extension = "") {
+    async #fetchDirectoryListingLocal(path, extension = "") {
         try {
-            const response = await fetch(url);
+            const response = await fetch(path);
             if (!response.ok) {
                 console.log(response)
                 throw new Error('Network response was not ok');
@@ -110,8 +134,9 @@ class PackageManager {
         }
     }
 
-    async fetchGitHubDirectoryContents(owner, repo, path, extension) {
-        const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+    async #fetchGitHubDirectoryContents(path, extension) {
+
+        const url = `https://api.github.com/repos/${PackageManager.instance.conf.gitHubUser}/${PackageManager.instance.conf.gitHubProject}/contents/${path}`;
         try {
             const response = await fetch(url, {
                 headers: {
@@ -126,6 +151,15 @@ class PackageManager {
         } catch (error) {
             console.error('Error fetching GitHub directory contents:', error);
             return [];
+        }
+    }
+
+    async fetchDirectoryListing(path, extension = ""){
+        if (PackageManager.instance.isLocal){
+            return this.#fetchDirectoryListingLocal(path, extension)
+        }
+        else {
+            return this.#fetchGitHubDirectoryContents(path, extension)
         }
     }
 }

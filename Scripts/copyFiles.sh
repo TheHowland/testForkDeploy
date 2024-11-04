@@ -5,7 +5,7 @@
     ls -a
     cd ..
     echo "copy files"
-    echo -e ".git/\n.idea/\nCircuits.zip\nScripts/\nGzipSimplePythonHttpServer.py" > exclude-list.txt
+    echo -e ".git/\n.idea/\nCircuits.zip\nScripts/\nConfigurations\nGzipSimplePythonHttpServer.py" > exclude-list.txt
     rsync -av --exclude-from='exclude-list.txt' Pyodide/ temp/
     rm exclude-list.txt
     cd temp
