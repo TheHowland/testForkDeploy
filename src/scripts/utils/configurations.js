@@ -1,16 +1,19 @@
 class Configurations {
     constructor() {
-        if (Configurations.instance){
-            console.log("Successfull access to Configurations")
+        if (Configurations.instance) {
             return Configurations.instance;
         }
         else {
-            console.log("Access to Configurations before Init")
-            return null;
+            Configurations.instance = this;
+            return Configurations.instance
         }
     }
 
-    static async initialize(){
+    static async getInstance(){
+        return new Configurations();
+    }
+
+    async initialize(){
         let conf = await Configurations.loadConf()
 
         this.sourceCircuitPath = conf.sourceCircuitPath;
@@ -22,8 +25,6 @@ class Configurations {
         this.pyodideCircuitPath = conf.pyodideCircuitPath;
         this.pyodideSolutionsPath = conf.pyodideSolutionsPath;
         this.pyodideSolvePath = conf.pyodideSolvePath;
-
-        Configurations.instance = this;
     }
 
     static async loadConf() {
