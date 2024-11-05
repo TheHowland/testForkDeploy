@@ -28,6 +28,8 @@ class Configurations {
     }
 
     static async loadConf() {
+        let loc = window.location.pathname;
+        let dir = loc.substring(0, loc.lastIndexOf('/'));
         let test = await fetch("/src/conf/conf.json");
         let conf = await test.json()
         console.log(conf);
