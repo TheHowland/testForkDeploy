@@ -6,6 +6,8 @@ let state = new StateObject();
 let colors = new ColorDefinitions();
 let selectorBuilder = new SelectorBuilder();
 let languageManager = new LanguageManager();
+let conf = null;
+let packageManager = null;
 let circuitMapper;
 
 
@@ -18,8 +20,13 @@ let circuitMapper;
 
 async function main() {
 
+    conf = new Configurations();
+    await conf.initialize();
+    packageManager = new PackageManager();
+    await packageManager.initialize();
+
+
     disableMathjaxMenu();
-    let packageManager = new PackageManager();
 
     // Setup landing page first to make sure nothing else is shown at start
     let pageManager = new PageManager(document);
@@ -55,7 +62,6 @@ async function main() {
 // #####################################################################################################################
 async function solveCircuit(circuit, circuitMap, pyodide) {
     await clearSolutionsDir(pyodide);
-    let conf = new Configurations();
 
     stepSolve = state.solve.SolveInUserOrder(circuit, `${conf.pyodideCircuitPath}/${circuitMap.sourceDir}`, `${conf.pyodideSolutionsPath}/`);
     await stepSolve.createStep0().toJs();
@@ -81,7 +87,6 @@ function startSolving(pyodide) {
 }
 
 function fillStepDetailsObject(circuitMap, componentTypes) {
-    let conf = new Configurations();
     let stepDetails = new StepDetails;
     stepDetails.showVCButton = circuitIsNotSubstituteCircuit(circuitMap);
     stepDetails.jsonZPath = `${conf.pyodideSolutionsPath}/${state.jsonFiles_Z[state.currentStep]}`;
