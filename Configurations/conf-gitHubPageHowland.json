@@ -3,7 +3,6 @@
   "sourceSolvePath" : "/solve.py",
   "sourcePackageDir" : "/Packages/",
   "gitHubUser" : "TheHowland",
-  "gitHubProject" : "InskaLE",
 
   "pyodideCircuitPath" : "Circuits",
   "pyodideSolutionsPath" : "Solutions",

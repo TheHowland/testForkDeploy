@@ -19,8 +19,8 @@ class Configurations {
         this.sourceCircuitPath = conf.sourceCircuitPath;
         this.sourceSolvePath = conf.sourceSolvePath;
         this.sourcePackageDir = conf.sourcePackageDir;
-        this.gitHubUser = conf.gitHubUser;
-        this.gitHubProject = conf.gitHubProject;
+        this.gitHubUser = window.location.host.split(".")[0];
+        this.gitHubProject = window.location.pathname;
 
         this.pyodideCircuitPath = conf.pyodideCircuitPath;
         this.pyodideSolutionsPath = conf.pyodideSolutionsPath;
@@ -28,9 +28,8 @@ class Configurations {
     }
 
     static async loadConf() {
-        let loc = window.location.pathname;
-        let dir = loc.substring(0, loc.lastIndexOf('/'));
-        let test = await fetch("/src/conf/conf.json");
+        let projectPath = window.location.pathname;
+        let test = await fetch(projectPath + "src/conf/conf.json");
         let conf = await test.json()
         console.log(conf);
         return conf;
