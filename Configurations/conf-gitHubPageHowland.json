@@ -1,8 +1,0 @@
-{
-  "sourceCircuitPath": "Circuits.zip",
-  "sourceSolvePath": "solve.py",
-  "sourcePackageDir": "Packages/",
-  "pyodideCircuitPath": "Circuits",
-  "pyodideSolutionsPath": "Solutions",
-  "pyodideSolvePath": "home/pyodide/solve.py"
-}
