@@ -2,8 +2,8 @@
   "sourceCircuitPath" : "/Circuits.zip",
   "sourceSolvePath" : "/solve.py",
   "sourcePackageDir" : "/Packages/",
-  "gitHubUser" : null,
-  "gitHubProject" : null,
+  "gitHubUser" : "TheHowland",
+  "gitHubProject" : "InskaLE",
 
   "pyodideCircuitPath" : "Circuits",
   "pyodideSolutionsPath" : "Solutions",
