@@ -21,7 +21,7 @@ class Configurations {
 
         this.sourceCircuitPath = this.gitHubProject + conf.sourceCircuitPath;
         this.sourceSolvePath = this.gitHubProject + conf.sourceSolvePath;
-        this.sourcePackageDir = this.gitHubProject + conf.sourcePackageDir;
+        this.sourcePackageDir = conf.sourcePackageDir;
 
         this.pyodideCircuitPath = conf.pyodideCircuitPath;
         this.pyodideSolutionsPath = conf.pyodideSolutionsPath;
