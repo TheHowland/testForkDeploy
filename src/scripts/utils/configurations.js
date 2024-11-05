@@ -16,11 +16,12 @@ class Configurations {
     async initialize(){
         let conf = await Configurations.loadConf()
 
-        this.sourceCircuitPath = conf.sourceCircuitPath;
-        this.sourceSolvePath = conf.sourceSolvePath;
-        this.sourcePackageDir = conf.sourcePackageDir;
         this.gitHubUser = window.location.host.split(".")[0];
         this.gitHubProject = window.location.pathname;
+
+        this.sourceCircuitPath = this.gitHubProject + conf.sourceCircuitPath;
+        this.sourceSolvePath = this.gitHubProject + conf.sourceSolvePath;
+        this.sourcePackageDir = this.gitHubProject + conf.sourcePackageDir;
 
         this.pyodideCircuitPath = conf.pyodideCircuitPath;
         this.pyodideSolutionsPath = conf.pyodideSolutionsPath;
