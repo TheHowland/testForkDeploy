@@ -25,7 +25,7 @@ class Configurations {
 
         this.pyodideCircuitPath = conf.pyodideCircuitPath;
         this.pyodideSolutionsPath = conf.pyodideSolutionsPath;
-        this.pyodideSolvePath = conf.pyodideSolvePath;
+        this.pyodideSolvePath = "/" + conf.pyodideSolvePath;
     }
 
     static async loadConf() {
