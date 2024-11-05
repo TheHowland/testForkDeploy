@@ -1,10 +1,12 @@
 class Configurations {
     constructor() {
         if (Configurations.instance){
+            console.log("Successfull access to Configurations")
             return Configurations.instance;
         }
         else {
             console.log("Access to Configurations before Init")
+            return null;
         }
     }
 
@@ -25,7 +27,7 @@ class Configurations {
     }
 
     static async loadConf() {
-        let test = await fetch("/src/resources/conf/conf.json");
+        let test = await fetch("/src/conf/conf.json");
         let conf = await test.json()
         console.log(conf);
         return conf;
