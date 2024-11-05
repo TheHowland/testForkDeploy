@@ -2,12 +2,12 @@
 // ##################################              GLOBALS            ##################################################
 // #####################################################################################################################
 
-let conf = new Configurations()
-let packageManager = new PackageManager();
 let state = new StateObject();
 let colors = new ColorDefinitions();
 let selectorBuilder = new SelectorBuilder();
 let languageManager = new LanguageManager();
+let conf = null;
+let packageManager = null;
 let circuitMapper;
 
 
@@ -19,6 +19,12 @@ let circuitMapper;
 // #####################################################################################################################
 
 async function main() {
+
+    conf = new Configurations();
+    await conf.initialize();
+    packageManager = new PackageManager();
+    await packageManager.initialize();
+
 
     disableMathjaxMenu();
 
