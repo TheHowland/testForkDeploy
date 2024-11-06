@@ -69,19 +69,10 @@ class CircuitMapper {
                 this._acdc.set.push(acdcCircuit);
             }
         }
-        console.log(`Original set: `, this._substitute.set)
-        //this._substitute.set.sort(this._compareByCircuitDivIds);
+        this._substitute.set.sort(this._compareByCircuitDivIds);
+        console.log(`Ordered circuits: `, this._substitute.set)
     }
 
-    _reverseByCircuitDivIds(a,b) {
-        if (a.circuitDivID > b.circuitDivID) {
-            return -1;
-        }
-        if (a.circuitDivID < b.circuitDivID) {
-            return 1;
-        }
-        return 0;
-    }
     _compareByCircuitDivIds(a,b) {
         if (a.circuitDivID < b.circuitDivID) {
             return -1;
