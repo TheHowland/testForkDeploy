@@ -5,10 +5,6 @@ function sanitizeSelector(selector) {
     return selector.replace(/[^\w-]/g, '_');
 }
 
-function disableMathjaxMenu() {
-    window.MathJax = {options: {enableMenu: false}}
-}
-
 function showWaitingNote() {
     const note = document.getElementById("progress-bar-note");
     note.style.color = colors.currentForeground;
@@ -112,7 +108,6 @@ function resetSimplifierPage(pyodide) {
 function enableLastCalcButton() {
     setTimeout(() => {
         let lastPicture = state.pictureCounter - 1;
-        console.log(lastPicture);
         const lastCalcBtn = document.getElementById(`calcBtn${lastPicture}`);
         lastCalcBtn.disabled = false;
     }, 100);

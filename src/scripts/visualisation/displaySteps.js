@@ -28,7 +28,7 @@ function display_step(pyodide,stepDetails) {
 
     setupStepButtonsFunctionality(pyodide, div, stepDetails);
     congratsAndVCDisplayIfFinished(filteredPaths, contentCol, showVoltageButton, vcData);
-    window.MathJax.typeset();
+    MathJax.typeset();
 }
 
 // ####################################################################################################################
@@ -207,12 +207,11 @@ function chooseElement(pathElement, nextElementsList) {
         createNewHighlightedBoundingBox(pathElement, bboxId);
         addElementValueToTextBox(pathElement, bboxId, nextElementsList);
     }
-    window.MathJax.typeset();
+    MathJax.typeset();
 }
 
 function getImpedanceData(pyodide, jsonFilePath_Z) {
     let jsonDataString = pyodide.FS.readFile(jsonFilePath_Z, {encoding: "utf8"});
-    console.log(jsonDataString);
     const jsonData = JSON.parse(jsonDataString);
 
     let data = new SolutionObject(
@@ -253,7 +252,7 @@ async function checkAndSimplifyNext(pyodide, div, stepDetails){
     } else {
         showMessage(contentCol, languageManager.currentLang.alertChooseTwoElements);
     }
-    window.MathJax.typeset();
+    MathJax.typeset();
 }
 
 function checkAndSimplify(simplifyObject, pyodide, contentCol, div, stepDetails) {
@@ -289,7 +288,7 @@ function setupVCBtnFunctionality(vcText, contentCol, stepCalculationText) {
                 lastStepCalcBtn.textContent = languageManager.currentLang.showCalculationBtn;
                 contentCol.removeChild(stepCalculationText);
             }
-            window.MathJax.typeset();
+            MathJax.typeset();
         } else {
             lastVCBtn.textContent = languageManager.currentLang.showVoltageBtn;
             contentCol.removeChild(vcText);
@@ -314,7 +313,7 @@ function setupCalcBtnFunctionality(showVoltageButton, stepCalculationText, conte
             }
             // Add explanation text after container
             explContainer.insertAdjacentElement("afterend", stepCalculationText);
-            window.MathJax.typeset();
+            MathJax.typeset();
         } else {
             lastStepCalcBtn.textContent = languageManager.currentLang.showCalculationBtn;
             contentCol.removeChild(stepCalculationText);
@@ -428,7 +427,7 @@ function addFirstVCExplanation(contentCol, showVoltageButton, vcData) {
             if (totalCurrentBtn.textContent === languageManager.currentLang.firstVCStepBtn) {
                 totalCurrentBtn.textContent = languageManager.currentLang.hideVoltageBtn;
                 totalCurrentContainer.appendChild(text);
-                window.MathJax.typeset();
+                MathJax.typeset();
             } else {
                 totalCurrentBtn.textContent = languageManager.currentLang.firstVCStepBtn;
                 totalCurrentContainer.removeChild(text);

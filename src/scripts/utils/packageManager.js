@@ -23,6 +23,18 @@ class PackageManager {
         await this.loadCircuits(pyodide);
         await this.importPyodidePackages(pyodide);
         await this.importSolverModule(pyodide);
+        this.loadMathJax();
+    }
+
+    loadMathJax() {
+        console.log('Info: Loading MathJax 3');
+        window.MathJax = {options: {enableMenu: false}};  // Disable MathJax menu on right click
+        (function () {
+            var script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+            script.async = true;
+            document.head.appendChild(script);
+        })();
     }
 
     async loadCircuits(pyodide) {

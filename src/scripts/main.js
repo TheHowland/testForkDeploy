@@ -10,7 +10,6 @@ let conf = null;
 let packageManager = null;
 let circuitMapper;
 
-
 // #####################################################################################################################
 // ##################################              MAIN            #####################################################
 // #####################################################################################################################
@@ -19,14 +18,10 @@ let circuitMapper;
 // #####################################################################################################################
 
 async function main() {
-
     conf = new Configurations();
     await conf.initialize();
     packageManager = new PackageManager();
     await packageManager.initialize();
-
-
-    //disableMathjaxMenu();
 
     // Setup landing page first to make sure nothing else is shown at start
     let pageManager = new PageManager(document);
