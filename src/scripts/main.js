@@ -26,7 +26,7 @@ async function main() {
     await packageManager.initialize();
 
 
-    disableMathjaxMenu();
+    //disableMathjaxMenu();
 
     // Setup landing page first to make sure nothing else is shown at start
     let pageManager = new PageManager(document);
@@ -63,7 +63,11 @@ async function main() {
 async function solveCircuit(circuit, circuitMap, pyodide) {
     await clearSolutionsDir(pyodide);
 
-    stepSolve = state.solve.SolveInUserOrder(circuit, `${conf.pyodideCircuitPath}/${circuitMap.sourceDir}`, `${conf.pyodideSolutionsPath}/`);
+    stepSolve = state.solve.SolveInUserOrder(
+        circuit,
+        `${conf.pyodideCircuitPath}/${circuitMap.sourceDir}`,
+        `${conf.pyodideSolutionsPath}/`,
+        languageManager.currentLang.svgVoltArrowText);
     await stepSolve.createStep0().toJs();
 
     // Get information which components are used in this circuit

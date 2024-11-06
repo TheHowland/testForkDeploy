@@ -109,10 +109,16 @@ class SelectorBuilder {
         svgData = setSvgWidthTo(svgData, "100%");
         svgData = setSvgColorMode(svgData);
         circuitDiv.innerHTML = svgData;
+        this.hideSvgArrows(circuitDiv);
 
         this.setupSelectionCircuit(circuitDiv, startBtn, btnOverlay);
         startBtn.addEventListener("click", () =>
             this.circuitSelectorStartButtonPressed(circuitMap.circuitFile, circuitMap, pageManager))
+    }
+
+    hideSvgArrows(circuitDiv) {
+        let arrows = circuitDiv.getElementsByClassName("arrow");
+        for (let arrow of arrows) arrow.style.display = "none";
     }
 
     resetSelectorSelections(circuitSet) {

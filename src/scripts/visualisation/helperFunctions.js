@@ -213,6 +213,12 @@ function resetNextElements(svgDiv, nextElementsContainer) {
 }
 
 
+function showArrows(contentCol) {
+    let arrows = contentCol.getElementsByClassName("arrow");
+    for (let arrow of arrows) arrow.style.display = "block";
+}
+
+
 
 
 

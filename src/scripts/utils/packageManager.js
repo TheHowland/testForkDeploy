@@ -16,12 +16,7 @@ class PackageManager {
     }
 
     async initialize(){
-        if ((conf.gitHubProject === null) && (conf.gitHubUser === null)){
-            this.isLocal = true;
-        }
-        else {
-            this.isLocal = false;
-        }
+        this.isLocal = conf.gitHubUser.includes("localhost");
     }
 
     async doLoadsAndImports(pyodide) {
