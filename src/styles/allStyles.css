@@ -78,8 +78,6 @@ th, td {
     transform: translateX(0);
 }
 
-
-
 /* Landing page shadows*/
 #bootstrap-overrides #yellow-image-container {
     box-shadow: 0 6px 6px 0 lightgray;
@@ -104,20 +102,35 @@ th, td {
     height: 220px;
 }
 
-#bootstrap-overrides #feature-container1 {
+#bootstrap-overrides #feature-container2 {
     background-color: #222222;
     color: white;
+    transform: translateX(-80%);
+    transition: transform 0.5s ease-out;
 }
-#bootstrap-overrides #key-feature1heading {
+#bootstrap-overrides #feature-container2.visible {
+    transform: translateX(0);
+}
+
+
+#bootstrap-overrides #key-feature2heading {
     color: white;
 }
-#bootstrap-overrides #feature-container2 {
+#bootstrap-overrides #feature-container1 {
     background-color: white;
     color: black;
 }
 #bootstrap-overrides #feature-container3 {
     background-color: #FFC107;
     color: black;
+    transform: translateX(80%);
+    transition: transform 0.5s ease-out;
+}
+#bootstrap-overrides #feature-container3.visible {
+    transform: translateX(0);
+}
+#bootstrap-overrides #trigger {
+    height: 1px;
 }
 
 

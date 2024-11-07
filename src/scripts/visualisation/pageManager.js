@@ -16,6 +16,9 @@ class PageManager {
         this.simplifierPage.style.display = "none";
         this.cheatSheet.style.display = "none";
         this.enableSettings();
+        for (let feature of document.querySelectorAll(".feature-container")) {
+            feature.classList.remove("visible");
+        }
     }
 
     showSelectPage() {
@@ -65,6 +68,18 @@ class PageManager {
             this.showSelectPage();
         })
         languageManager.updateLanguageLandingPage();
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    for (let feature of document.querySelectorAll(".feature-container")) {
+                        feature.classList.add("visible");
+                    }
+                }
+            });
+        }, { threshold: 1});
+
+        const trigger = document.getElementById("trigger");
+        observer.observe(trigger);
     }
 
     setupSelectPage() {
