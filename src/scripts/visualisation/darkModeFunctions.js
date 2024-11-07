@@ -29,7 +29,13 @@ function changeToLightMode() {
 function updateNavigationColorsTo(navigationToggleBgColor, languagesBgColor) {
     document.getElementById("navbarSupportedContent").style.backgroundColor = navigationToggleBgColor;
     updateNavLinkColorTo(colors.currentForeground);
+    updateNavSelectColorTo(colors.keyYellow);
     updateLanguageSelectorColor(languagesBgColor);
+}
+
+function updateNavSelectColorTo(color) {
+    let navSelect = document.getElementById("nav-select");
+    navSelect.style.color = color;
 }
 
 function updateAvailableBsClassesTo(colorScheme) {
