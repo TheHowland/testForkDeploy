@@ -76,7 +76,7 @@ async function solveCircuit(circuit, circuitMap, pyodide) {
 }
 
 function startSolving(pyodide) {
-    setTimeout(()=>{solveCircuit(state.currentCircuit, state.currentCircuitMap, pyodide)},300);
+    solveCircuit(state.currentCircuit, state.currentCircuitMap, pyodide);
     //The div element that contains the SVG representation of the circuit diagram.
     const svgDiv = document.querySelector('.svg-container');
     //The div element that contains the list of elements that have been clicked or selected in the circuit diagram.

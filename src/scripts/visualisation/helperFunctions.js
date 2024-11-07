@@ -85,6 +85,12 @@ function setPgrBarTo(percent) {
 function clearSimplifierPageContent() {
     const contentCol = document.getElementById("content-col");
     contentCol.innerHTML = '';
+
+    const simplifierPage = document.getElementById("simplifier-page-container");
+    const selectorPage = document.getElementById("select-page-container");
+    simplifierPage.classList.remove("slide-in-right");
+    selectorPage.classList.remove("slide-out-left");
+    selectorPage.style.opacity = "1";
 }
 
 function resetSolverObject() {
@@ -103,6 +109,7 @@ function resetSimplifierPage(pyodide) {
     if (state.pyodideReady) {
         startSolving(pyodide);  // Draw the first picture again
     }
+    scrollBodyToTop();
 }
 
 function enableLastCalcButton() {
@@ -118,6 +125,10 @@ function scrollToBottom() {
         const nextElementsText = document.getElementById("nextElementsContainer");
         if (nextElementsText != null) {nextElementsText.scrollIntoView()}
     }, 100);
+}
+
+function scrollBodyToTop() {
+    window.scrollTo(0,0);
 }
 
 async function getCircuitComponentTypes(pyodide) {

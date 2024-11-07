@@ -15,9 +15,7 @@ class PageManager {
         this.selectPage.style.display = "none";
         this.simplifierPage.style.display = "none";
         this.cheatSheet.style.display = "none";
-        this.languageSelect.disabled = false;
-        this.darkModeSwitch.disabled = false;
-        this.activeLangFlag.style.filter = "brightness(1)";
+        this.enableSettings();
     }
 
     showSelectPage() {
@@ -25,9 +23,7 @@ class PageManager {
         this.selectPage.style.display = "block";
         this.simplifierPage.style.display = "none";
         this.cheatSheet.style.display = "none";
-        this.languageSelect.disabled = false;
-        this.darkModeSwitch.disabled = false;
-        this.activeLangFlag.style.filter = "brightness(1)";
+        this.enableSettings();
     }
 
     showSimplifierPage() {
@@ -35,9 +31,7 @@ class PageManager {
         this.selectPage.style.display = "none";
         this.simplifierPage.style.display = "block";
         this.cheatSheet.style.display = "none";
-        this.languageSelect.disabled = true;
-        this.darkModeSwitch.disabled = true;
-        this.activeLangFlag.style.filter = "brightness(0.5)";
+        this.disableSettings();
     }
 
     showCheatSheet() {
@@ -45,6 +39,16 @@ class PageManager {
         this.selectPage.style.display = "none";
         this.simplifierPage.style.display = "none";
         this.cheatSheet.style.display = "block";
+        this.enableSettings();
+    }
+
+    disableSettings() {
+        this.languageSelect.disabled = true;
+        this.darkModeSwitch.disabled = true;
+        this.activeLangFlag.style.filter = "brightness(0.5)";
+    }
+
+    enableSettings() {
         this.languageSelect.disabled = false;
         this.darkModeSwitch.disabled = false;
         this.activeLangFlag.style.filter = "brightness(1)";

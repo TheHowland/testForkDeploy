@@ -5,6 +5,8 @@ key-yellow: #FFC107
 body, html {
     font-family: 'Roboto', sans-serif;
     overflow-x: hidden;
+    width: 100%;
+    position: relative;
 }
 
 p {
@@ -47,20 +49,36 @@ th, td {
     transition: opacity 0.3s ease-in-out;
 }
 
-#bootstrap-overrides #select-page-container {
-    opacity: 1;
-    transition: opacity 0.3s ease-in-out;
-}
-
-#bootstrap-overrides #simplifier-page-container {
-    opacity: 1;
-    transition: opacity 0.3s ease-in-out;
-}
-
 #bootstrap-overrides #cheat-sheet-container {
     opacity: 1;
     transition: opacity 0.3s ease-in-out;
 }
+
+#bootstrap-overrides #select-page-container {
+    opacity: 1;
+    transition: opacity 0.3s ease-in-out, transform 0.5s ease-in-out;
+    width: 100%;
+    left: 0;
+    top: 0;
+}
+
+#bootstrap-overrides #simplifier-page-container {
+    opacity: 1;
+    transition: opacity 0.3s ease-in-out, transform 1s ease-in-out;
+    width: 100%;
+    left: 0;
+    top: 0;
+}
+
+.slide-out-left {
+    transform: translateX(-100%);
+}
+
+.slide-in-right {
+    transform: translateX(0);
+}
+
+
 
 /* Landing page shadows*/
 #bootstrap-overrides #yellow-image-container {

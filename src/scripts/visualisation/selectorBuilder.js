@@ -148,13 +148,29 @@ class SelectorBuilder {
 
     circuitSelectorStartButtonPressed(circuitName, circuitMap, pageManager){
         clearSimplifierPageContent();
-        pageManager.showSimplifierPage();
         state.currentCircuit = circuitName;
         state.currentCircuitMap = circuitMap;
         state.pictureCounter = 0;
         if (state.pyodideReady) {
             startSolving(pageManager.pyodide);
         }
+
+        // old: pageManager.showSimplifierPage();
+        pageManager.disableSettings();
+        const selectorPage = document.getElementById("select-page-container");
+        const simplifierPage = document.getElementById("simplifier-page-container");
+        setTimeout(() => {
+            simplifierPage.style.display = "block";
+            simplifierPage.classList.add("slide-in-right");
+            selectorPage.classList.add("slide-out-left");
+            selectorPage.style.opacity = "0.1";
+        }, 300);
+
+        setTimeout(() => {
+            selectorPage.style.display = "none";
+            scrollBodyToTop();
+        }, 800);
+
     }
 
     showCircuitAsSelected(circuit, btnOverlay) {
