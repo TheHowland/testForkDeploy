@@ -9,6 +9,7 @@ let languageManager = new LanguageManager();
 let conf = null;
 let packageManager = null;
 let circuitMapper;
+let pageManager;
 
 // #####################################################################################################################
 // ##################################              MAIN            #####################################################
@@ -24,7 +25,7 @@ async function main() {
     await packageManager.initialize();
 
     // Setup landing page first to make sure nothing else is shown at start
-    let pageManager = new PageManager(document);
+    pageManager = new PageManager(document);
     pageManager.setupLandingPage(pageManager);
     pageManager.showLandingPage();
 

@@ -7,6 +7,7 @@ class PageManager {
         this.languageSelect = document.getElementById("Dropdown");
         this.darkModeSwitch = document.getElementById("darkmode-switch");
         this.activeLangFlag = document.getElementById("activeLanguageFlag");
+        this.pages = [this.landingPage, this.selectPage, this.simplifierPage, this.cheatSheet]
     }
 
     showLandingPage() {
@@ -117,6 +118,21 @@ class PageManager {
             languageManager.updatesLanguageFields();
         })
 
+        const toggler = document.getElementById("nav-toggler");
+        toggler.addEventListener("click", () => {
+            this.updatePagesOpacity();
+        })
+    }
+
+    updatePagesOpacity() {
+        const toggler = document.getElementById("nav-toggler");
+        for (let page of this.pages) {
+            if (toggler.classList.contains("collapsed")) {
+                page.style.opacity = "1";
+            } else {
+                page.style.opacity = "0.3";
+            }
+        }
     }
 
     setupCheatSheet() {

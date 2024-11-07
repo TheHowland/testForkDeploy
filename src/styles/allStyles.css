@@ -40,11 +40,29 @@ th, td {
     margin-left: 0;
 }
 
-/* Landing page shadows*/
+/* Container opacities */
 #bootstrap-overrides #landing-page-container {
     background-color: white;
+    opacity: 1;
+    transition: opacity 0.3s ease-in-out;
 }
 
+#bootstrap-overrides #select-page-container {
+    opacity: 1;
+    transition: opacity 0.3s ease-in-out;
+}
+
+#bootstrap-overrides #simplifier-page-container {
+    opacity: 1;
+    transition: opacity 0.3s ease-in-out;
+}
+
+#bootstrap-overrides #cheat-sheet-container {
+    opacity: 1;
+    transition: opacity 0.3s ease-in-out;
+}
+
+/* Landing page shadows*/
 #bootstrap-overrides #yellow-image-container {
     box-shadow: 0 6px 6px 0 lightgray;
     z-index: 2;

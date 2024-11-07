@@ -197,9 +197,11 @@ function checkIfSimplifierPageNeedsReset(pyodide) {
 
 function closeNavbar() {
     const navbarToggler = document.getElementById("nav-toggler");
-    navbarToggler.classList.remove("collapsed");
+    navbarToggler.classList.add("collapsed");
     const navDropdown = document.getElementById("navbarSupportedContent");
     navDropdown.classList.remove("show");
+
+    pageManager.updatePagesOpacity();
 }
 
 function resetNextElements(svgDiv, nextElementsContainer) {
