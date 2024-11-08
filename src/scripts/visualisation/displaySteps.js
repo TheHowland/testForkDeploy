@@ -365,6 +365,13 @@ function generateTexts(data, vcData, componentTypes) {
 function finishCircuit(contentCol, showVoltageButton) {
     document.getElementById("check-btn").disabled = true;
     showMessage(contentCol, languageManager.currentLang.msgCongratsFinishedCircuit, "success");
+    confetti({
+        particleCount: 150,
+        angle: 90,
+        spread: 60,
+        scalar: 0.8,
+        origin: { x: 0.5, y: 1}
+    });
     if (showVoltageButton) {
         enableVoltageCurrentBtns();
         showArrows(contentCol);
