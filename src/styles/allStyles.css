@@ -102,21 +102,20 @@ th, td {
     height: 220px;
 }
 
-#bootstrap-overrides #feature-container2 {
+#bootstrap-overrides #feature-container1 {
     background-color: #222222;
     color: white;
     transform: translateX(-80%);
     transition: transform 0.5s ease-out;
 }
-#bootstrap-overrides #feature-container2.visible {
+#bootstrap-overrides #feature-container1.visible {
     transform: translateX(0);
 }
 
-
-#bootstrap-overrides #key-feature2heading {
+#bootstrap-overrides #key-feature1heading {
     color: white;
 }
-#bootstrap-overrides #feature-container1 {
+#bootstrap-overrides #feature-container2 {
     background-color: white;
     color: black;
 }
@@ -158,6 +157,21 @@ th, td {
     background-color: white;
     border-color: #222222;
     border-radius: 20px;
+    box-shadow: 0 0 0 0 rgba(255, 193, 7, 0);
+}
+
+/* Start button pulse animation*/
+@keyframes pulse {
+    0% {
+    }
+
+    70% {
+        box-shadow: 0 0 0 20px rgba(255, 193, 7, 0.3);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 193, 7, 0);;
+    }
 }
 
 #bootstrap-overrides #darkmode-label {

@@ -81,7 +81,6 @@ class PackageManager {
 
         progressBarContainer.style.display = "none";
         state.pyodideReady = true;
-        //enableStartButtonsOnCircuitSelectors();
     }
 
     async load_packages(pyodide, optAddNames) {

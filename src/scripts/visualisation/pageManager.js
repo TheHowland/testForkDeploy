@@ -66,6 +66,7 @@ class PageManager {
         const landingStartButton = document.getElementById("start-button");
         landingStartButton.addEventListener("click", () => {
             this.showSelectPage();
+            landingStartButton.style.animation = ""; // remove pulsing after clicked
         })
         languageManager.updateLanguageLandingPage();
         const observer = new IntersectionObserver((entries) => {
