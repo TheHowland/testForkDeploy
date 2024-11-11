@@ -11,8 +11,8 @@ function display_step(pyodide,stepDetails) {
     // Create the new elements for the current step
     const {circuitContainer, svgContainer} = setupCircuitContainer(svgData);
     const {newCalcBtn, newVCBtn} = setupExplanationButtons(showVoltageButton);
-    const {pathElements, filteredPaths} = getElementsFromSvgContainer(svgContainer);
-    const nextElementsContainer = setupNextElementsContainer(sanitizedSvgFilePath, filteredPaths, vcData, showVoltageButton);
+    const {pathElements, electricalElements} = getElementsFromSvgContainer(svgContainer);
+    const nextElementsContainer = setupNextElementsContainer(sanitizedSvgFilePath, electricalElements, vcData, showVoltageButton);
     const contentCol = document.getElementById("content-col");
     contentCol.append(circuitContainer);
 
@@ -21,13 +21,13 @@ function display_step(pyodide,stepDetails) {
     checkAndAddExplanationButtons(showVoltageButton, stepCalculationText, contentCol, stepVoltageCurrentText);
 
     // The order of function-calls is important
-    checkIfStillNotFinishedAndMakeClickable(filteredPaths, nextElementsContainer, sanitizedSvgFilePath, pathElements);
+    checkIfStillNotFinishedAndMakeClickable(electricalElements, nextElementsContainer, sanitizedSvgFilePath, pathElements);
     prepareNextElementsContainer(contentCol, nextElementsContainer);
     const div = createExplanationBtnContainer(newCalcBtn);
     if (showVoltageButton) div.appendChild(newVCBtn);
 
     setupStepButtonsFunctionality(pyodide, div, stepDetails);
-    congratsAndVCDisplayIfFinished(filteredPaths, contentCol, showVoltageButton, vcData);
+    congratsAndVCDisplayIfFinished(electricalElements, contentCol, showVoltageButton, vcData);
     MathJax.typeset();
 }
 
@@ -121,8 +121,9 @@ function setupSvgDivContainerAndData(svgData) {
 
 function getElementsFromSvgContainer(svgContainer) {
     const pathElements = svgContainer.querySelectorAll('path');
-    const filteredPaths = Array.from(pathElements).filter(path => path.getAttribute('class') !== 'na');
-    return {pathElements, filteredPaths};
+    const electricalElements = Array.from(pathElements).filter(path => (path.getAttribute('class') !== 'na')
+        && (!path.getAttribute('class').includes("arrow")));
+    return {pathElements, electricalElements: electricalElements};
 }
 
 function setupBboxRect(bbox, bboxId) {
