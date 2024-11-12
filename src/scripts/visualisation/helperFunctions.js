@@ -230,7 +230,10 @@ function resetNextElements(svgDiv, nextElementsContainer) {
 
 function showArrows(contentCol) {
     let arrows = contentCol.getElementsByClassName("arrow");
-    for (let arrow of arrows) arrow.style.display = "block";
+    for (let arrow of arrows) {
+        arrow.style.display = "block";
+        arrow.style.opacity = "0.5";
+    }
 }
 
 
