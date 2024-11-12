@@ -52,6 +52,7 @@ class CircuitMapper {
             let mixedCircuit = this.createCircuitMap(circuitFileName, dir, this.selectorIds.mixedId)
             this._mixed.set.push(mixedCircuit);
         }
+        this._mixed.set.sort(this._compareByCircuitDivIds);
     }
 
     addSubAcdcCircuitMaps(dir) {
@@ -69,6 +70,20 @@ class CircuitMapper {
                 this._acdc.set.push(acdcCircuit);
             }
         }
+        this._substitute.set.sort(this._compareByCircuitDivIds);
+        this._acdc.set.sort(this._compareByCircuitDivIds);
+    }
+
+    _compareByCircuitDivIds(a,b) {
+        // circuitDivId = {circuitFileName without Extension}-{id}-div
+        // Deciding comparison is done with the filename (00_res... < 01_res... < 02_res... < 10_cap...)
+        if (a.circuitDivID < b.circuitDivID) {
+            return -1;
+        }
+        if (a.circuitDivID > b.circuitDivID) {
+            return 1;
+        }
+        return 0;
     }
 
     createCircuitMap(circuitFileName, dir, id) {

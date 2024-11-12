@@ -5,10 +5,6 @@ function sanitizeSelector(selector) {
     return selector.replace(/[^\w-]/g, '_');
 }
 
-function disableMathjaxMenu() {
-    window.MathJax = {options: {enableMenu: false}}
-}
-
 function showWaitingNote() {
     const note = document.getElementById("progress-bar-note");
     note.style.color = colors.currentForeground;
@@ -84,11 +80,24 @@ function showMessage(container, message, prio = "warning") {
 function setPgrBarTo(percent) {
     let progressBar = document.getElementById("pgr-bar");
     progressBar.style.width = `${percent}%`;
+    // Add the progress to the start button on landing page
+    let startBtn = document.getElementById("start-button");
+    startBtn.style.backgroundImage = `linear-gradient(to right, ${colors.keyYellow} ${percent}%, white ${percent + 0}%)`;
+    if (percent === 100) {
+        // add pulse
+        startBtn.style.animation = "pulse 2s infinite";
+    }
 }
 
 function clearSimplifierPageContent() {
     const contentCol = document.getElementById("content-col");
     contentCol.innerHTML = '';
+
+    const simplifierPage = document.getElementById("simplifier-page-container");
+    const selectorPage = document.getElementById("select-page-container");
+    simplifierPage.classList.remove("slide-in-right");
+    selectorPage.classList.remove("slide-out-left");
+    selectorPage.style.opacity = "1";
 }
 
 function resetSolverObject() {
@@ -107,12 +116,12 @@ function resetSimplifierPage(pyodide) {
     if (state.pyodideReady) {
         startSolving(pyodide);  // Draw the first picture again
     }
+    scrollBodyToTop();
 }
 
 function enableLastCalcButton() {
     setTimeout(() => {
         let lastPicture = state.pictureCounter - 1;
-        console.log(lastPicture);
         const lastCalcBtn = document.getElementById(`calcBtn${lastPicture}`);
         lastCalcBtn.disabled = false;
     }, 100);
@@ -123,6 +132,10 @@ function scrollToBottom() {
         const nextElementsText = document.getElementById("nextElementsContainer");
         if (nextElementsText != null) {nextElementsText.scrollIntoView()}
     }, 100);
+}
+
+function scrollBodyToTop() {
+    window.scrollTo(0,0);
 }
 
 async function getCircuitComponentTypes(pyodide) {
@@ -202,14 +215,25 @@ function checkIfSimplifierPageNeedsReset(pyodide) {
 
 function closeNavbar() {
     const navbarToggler = document.getElementById("nav-toggler");
-    navbarToggler.classList.remove("collapsed");
+    navbarToggler.classList.add("collapsed");
     const navDropdown = document.getElementById("navbarSupportedContent");
     navDropdown.classList.remove("show");
+
+    pageManager.updatePagesOpacity();
 }
 
 function resetNextElements(svgDiv, nextElementsContainer) {
     resetHighlightedBoundingBoxes(svgDiv);
     resetNextElementsTextAndList(nextElementsContainer);
+}
+
+
+function showArrows(contentCol) {
+    let arrows = contentCol.getElementsByClassName("arrow");
+    for (let arrow of arrows) {
+        arrow.style.display = "block";
+        arrow.style.opacity = "0.5";
+    }
 }
 
 

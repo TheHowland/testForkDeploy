@@ -5,6 +5,8 @@ key-yellow: #FFC107
 body, html {
     font-family: 'Roboto', sans-serif;
     overflow-x: hidden;
+    width: 100%;
+    position: relative;
 }
 
 p {
@@ -40,11 +42,43 @@ th, td {
     margin-left: 0;
 }
 
-/* Landing page shadows*/
+/* Container opacities */
 #bootstrap-overrides #landing-page-container {
     background-color: white;
+    opacity: 1;
+    transition: opacity 0.3s ease-in-out;
 }
 
+#bootstrap-overrides #cheat-sheet-container {
+    opacity: 1;
+    transition: opacity 0.3s ease-in-out;
+}
+
+#bootstrap-overrides #select-page-container {
+    opacity: 1;
+    transition: opacity 0.3s ease-in-out, transform 0.5s ease-in-out;
+    width: 100%;
+    left: 0;
+    top: 0;
+}
+
+#bootstrap-overrides #simplifier-page-container {
+    opacity: 1;
+    transition: opacity 0.3s ease-in-out, transform 1s ease-in-out;
+    width: 100%;
+    left: 0;
+    top: 0;
+}
+
+.slide-out-left {
+    transform: translateX(-100%);
+}
+
+.slide-in-right {
+    transform: translateX(0);
+}
+
+/* Landing page shadows*/
 #bootstrap-overrides #yellow-image-container {
     box-shadow: 0 6px 6px 0 lightgray;
     z-index: 2;
@@ -69,19 +103,33 @@ th, td {
 }
 
 #bootstrap-overrides #feature-container1 {
-    background-color: #222222;
-    color: white;
-}
-#bootstrap-overrides #key-feature1heading {
-    color: white;
-}
-#bootstrap-overrides #feature-container2 {
     background-color: white;
     color: black;
+    transform: translateX(-90%);
+    transition: transform 0.5s ease-out;
+}
+#bootstrap-overrides #feature-container1.visible {
+    transform: translateX(0);
+}
+
+#bootstrap-overrides #key-feature1heading {
+    color: black;
+}
+#bootstrap-overrides #feature-container2 {
+    background-color: #222;
+    color: white;
 }
 #bootstrap-overrides #feature-container3 {
     background-color: #FFC107;
     color: black;
+    transform: translateX(90%);
+    transition: transform 0.5s ease-out;
+}
+#bootstrap-overrides #feature-container3.visible {
+    transform: translateX(0);
+}
+#bootstrap-overrides #trigger {
+    height: 0px;
 }
 
 
@@ -109,6 +157,21 @@ th, td {
     background-color: white;
     border-color: #222222;
     border-radius: 20px;
+    box-shadow: 0 0 0 0 rgba(255, 193, 7, 0);
+}
+
+/* Start button pulse animation*/
+@keyframes pulse {
+    0% {
+    }
+
+    70% {
+        box-shadow: 0 0 0 20px rgba(255, 193, 7, 0.3);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 193, 7, 0);;
+    }
 }
 
 #bootstrap-overrides #darkmode-label {

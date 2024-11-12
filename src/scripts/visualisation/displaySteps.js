@@ -11,8 +11,8 @@ function display_step(pyodide,stepDetails) {
     // Create the new elements for the current step
     const {circuitContainer, svgContainer} = setupCircuitContainer(svgData);
     const {newCalcBtn, newVCBtn} = setupExplanationButtons(showVoltageButton);
-    const {pathElements, filteredPaths} = getElementsFromSvgContainer(svgContainer);
-    const nextElementsContainer = setupNextElementsContainer(sanitizedSvgFilePath, filteredPaths, vcData, showVoltageButton);
+    const {pathElements, electricalElements} = getElementsFromSvgContainer(svgContainer);
+    const nextElementsContainer = setupNextElementsContainer(sanitizedSvgFilePath, electricalElements, vcData, showVoltageButton);
     const contentCol = document.getElementById("content-col");
     contentCol.append(circuitContainer);
 
@@ -21,13 +21,13 @@ function display_step(pyodide,stepDetails) {
     checkAndAddExplanationButtons(showVoltageButton, stepCalculationText, contentCol, stepVoltageCurrentText);
 
     // The order of function-calls is important
-    checkIfStillNotFinishedAndMakeClickable(filteredPaths, nextElementsContainer, sanitizedSvgFilePath, pathElements);
+    checkIfStillNotFinishedAndMakeClickable(electricalElements, nextElementsContainer, sanitizedSvgFilePath, pathElements);
     prepareNextElementsContainer(contentCol, nextElementsContainer);
     const div = createExplanationBtnContainer(newCalcBtn);
     if (showVoltageButton) div.appendChild(newVCBtn);
 
     setupStepButtonsFunctionality(pyodide, div, stepDetails);
-    congratsAndVCDisplayIfFinished(filteredPaths, contentCol, showVoltageButton, vcData);
+    congratsAndVCDisplayIfFinished(electricalElements, contentCol, showVoltageButton, vcData);
     MathJax.typeset();
 }
 
@@ -75,6 +75,7 @@ function setupNextElementsContainer(sanitizedSvgFilePath, filteredPaths, vcData,
     if (onlyOneElementLeft(filteredPaths)) {
         nextElementsContainer.innerHTML = getFinishMsg(vcData, showVoltageButton);
     } else {
+        // SanitizedSvgFilePath could be unnecessary here
         nextElementsContainer.innerHTML = `
         <h3>${languageManager.currentLang.nextElementsHeading}</h3>
         <ul class="px-0" id="next-elements-list-${sanitizedSvgFilePath}"></ul>
@@ -91,12 +92,17 @@ function setupCircuitContainer(svgData) {
     circuitContainer.classList.add("row"); // use flexbox property for scaling display sizes
     circuitContainer.classList.add("justify-content-center"); // centers the content
     circuitContainer.classList.add("my-2"); // centers the content
-    const svgContainer = setupSvgDivContainer(svgData);
+    const svgContainer = setupSvgDivContainerAndData(svgData);
     circuitContainer.appendChild(svgContainer)
     return {circuitContainer, svgContainer};
 }
 
-function setupSvgDivContainer(svgData) {
+function hideSvgArrows(svgDiv) {
+    let arrows = svgDiv.getElementsByClassName("arrow");
+    for (let arrow of arrows) arrow.style.display = "none";
+}
+
+function setupSvgDivContainerAndData(svgData) {
     const svgDiv = document.createElement('div');
     svgDiv.id = `svgDiv${state.pictureCounter}`;
     svgDiv.classList.add("svg-container");
@@ -108,15 +114,16 @@ function setupSvgDivContainer(svgData) {
     svgDiv.style.maxWidth = "350px;";
     // Svg manipulation - set width and color for dark mode
     svgData = setSvgColorMode(svgData);
-
     svgDiv.innerHTML = svgData;
+    hideSvgArrows(svgDiv);
     return svgDiv;
 }
 
 function getElementsFromSvgContainer(svgContainer) {
     const pathElements = svgContainer.querySelectorAll('path');
-    const filteredPaths = Array.from(pathElements).filter(path => path.getAttribute('class') !== 'na');
-    return {pathElements, filteredPaths};
+    const electricalElements = Array.from(pathElements).filter(path => (path.getAttribute('class') !== 'na')
+        && (!path.getAttribute('class').includes("arrow")));
+    return {pathElements, electricalElements: electricalElements};
 }
 
 function setupBboxRect(bbox, bboxId) {
@@ -206,7 +213,6 @@ function chooseElement(pathElement, nextElementsList) {
 
 function getImpedanceData(pyodide, jsonFilePath_Z) {
     let jsonDataString = pyodide.FS.readFile(jsonFilePath_Z, {encoding: "utf8"});
-    console.log(jsonDataString);
     const jsonData = JSON.parse(jsonDataString);
 
     let data = new SolutionObject(
@@ -360,7 +366,17 @@ function generateTexts(data, vcData, componentTypes) {
 function finishCircuit(contentCol, showVoltageButton) {
     document.getElementById("check-btn").disabled = true;
     showMessage(contentCol, languageManager.currentLang.msgCongratsFinishedCircuit, "success");
-    if (showVoltageButton) enableVoltageCurrentBtns();
+    confetti({
+        particleCount: 150,
+        angle: 90,
+        spread: 60,
+        scalar: 0.8,
+        origin: { x: 0.5, y: 1}
+    });
+    if (showVoltageButton) {
+        enableVoltageCurrentBtns();
+        showArrows(contentCol);
+    }
 }
 
 function setupStepButtonsFunctionality(pyodide, div, stepDetails) {
@@ -390,7 +406,7 @@ function setupExplanationButtons(showVoltageButton) {
 function loadData(pyodide, stepDetails) {
     let data = getImpedanceData(pyodide, stepDetails.jsonZPath);
     let vcData = getVoltageCurrentData(pyodide, stepDetails.jsonVCPath);
-    const svgData = pyodide.FS.readFile(stepDetails.svgPath, {encoding: "utf8"});
+    let svgData = pyodide.FS.readFile(stepDetails.svgPath, {encoding: "utf8"});
     const sanitizedSvgFilePath = sanitizeSelector(stepDetails.svgPath);
     return {data, vcData, svgData, sanitizedSvgFilePath};
 }

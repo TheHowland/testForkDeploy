@@ -9,7 +9,7 @@ let languageManager = new LanguageManager();
 let conf = null;
 let packageManager = null;
 let circuitMapper;
-
+let pageManager;
 
 // #####################################################################################################################
 // ##################################              MAIN            #####################################################
@@ -19,17 +19,13 @@ let circuitMapper;
 // #####################################################################################################################
 
 async function main() {
-
     conf = new Configurations();
     await conf.initialize();
     packageManager = new PackageManager();
     await packageManager.initialize();
 
-
-    disableMathjaxMenu();
-
     // Setup landing page first to make sure nothing else is shown at start
-    let pageManager = new PageManager(document);
+    pageManager = new PageManager(document);
     pageManager.setupLandingPage(pageManager);
     pageManager.showLandingPage();
 
@@ -63,7 +59,11 @@ async function main() {
 async function solveCircuit(circuit, circuitMap, pyodide) {
     await clearSolutionsDir(pyodide);
 
-    stepSolve = state.solve.SolveInUserOrder(circuit, `${conf.pyodideCircuitPath}/${circuitMap.sourceDir}`, `${conf.pyodideSolutionsPath}/`);
+    stepSolve = state.solve.SolveInUserOrder(
+        circuit,
+        `${conf.pyodideCircuitPath}/${circuitMap.sourceDir}`,
+        `${conf.pyodideSolutionsPath}/`,
+        languageManager.currentLang.svgVoltArrowText);
     await stepSolve.createStep0().toJs();
 
     // Get information which components are used in this circuit
@@ -76,7 +76,7 @@ async function solveCircuit(circuit, circuitMap, pyodide) {
 }
 
 function startSolving(pyodide) {
-    setTimeout(()=>{solveCircuit(state.currentCircuit, state.currentCircuitMap, pyodide)},300);
+    solveCircuit(state.currentCircuit, state.currentCircuitMap, pyodide);
     //The div element that contains the SVG representation of the circuit diagram.
     const svgDiv = document.querySelector('.svg-container');
     //The div element that contains the list of elements that have been clicked or selected in the circuit diagram.
