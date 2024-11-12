@@ -103,9 +103,9 @@ th, td {
 }
 
 #bootstrap-overrides #feature-container1 {
-    background-color: #222222;
-    color: white;
-    transform: translateX(-80%);
+    background-color: white;
+    color: black;
+    transform: translateX(-90%);
     transition: transform 0.5s ease-out;
 }
 #bootstrap-overrides #feature-container1.visible {
@@ -113,23 +113,23 @@ th, td {
 }
 
 #bootstrap-overrides #key-feature1heading {
-    color: white;
+    color: black;
 }
 #bootstrap-overrides #feature-container2 {
-    background-color: white;
-    color: black;
+    background-color: #222;
+    color: white;
 }
 #bootstrap-overrides #feature-container3 {
     background-color: #FFC107;
     color: black;
-    transform: translateX(80%);
+    transform: translateX(90%);
     transition: transform 0.5s ease-out;
 }
 #bootstrap-overrides #feature-container3.visible {
     transform: translateX(0);
 }
 #bootstrap-overrides #trigger {
-    height: 1px;
+    height: 0px;
 }
 
 
