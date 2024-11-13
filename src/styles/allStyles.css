@@ -26,6 +26,12 @@ mjx-container {
     padding-bottom: 5px;
 }
 
+@supports (-webkit-marquee-repetition:infinite) and (object-fit:fill) {
+    mjx-container mjx-c::before {
+        will-change: opacity;
+    }
+}
+
 th, td {
     vertical-align: middle;
     text-align: center
