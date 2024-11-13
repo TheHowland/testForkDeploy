@@ -22,6 +22,7 @@ img {
 mjx-container mjx-c::before {
     will-change: opacity;
     padding-top: 20px !important;
+    padding-bottom: 5px !important;
 }
 
 mjx-container {

@@ -63,7 +63,7 @@ async function solveCircuit(circuit, circuitMap, pyodide) {
         circuit,
         `${conf.pyodideCircuitPath}/${circuitMap.sourceDir}`,
         `${conf.pyodideSolutionsPath}/`,
-        languageManager.currentLang.svgVoltArrowText);
+        languageManager.currentLang.voltageSymbol);
     await stepSolve.createStep0().toJs();
 
     // Get information which components are used in this circuit

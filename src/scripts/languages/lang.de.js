@@ -75,7 +75,7 @@ const german = {
         "Keine Beziehung zwischen den Elementen",
 
     // Impedance text
-    svgVoltArrowText:
+    voltageSymbol:
         "U",
     totalSuffix:
         "ges",

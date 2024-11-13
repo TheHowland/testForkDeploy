@@ -101,7 +101,7 @@ function clearSimplifierPageContent() {
 }
 
 function resetSolverObject() {
-    stepSolve = state.solve.SolveInUserOrder(state.currentCircuit, `${conf.pyodideCircuitPath}/${state.currentCircuitMap.sourceDir}`, `${conf.pyodideSolutionsPath}/`, languageManager.currentLang.svgVoltArrowText);
+    stepSolve = state.solve.SolveInUserOrder(state.currentCircuit, `${conf.pyodideCircuitPath}/${state.currentCircuitMap.sourceDir}`, `${conf.pyodideSolutionsPath}/`, languageManager.currentLang.voltageSymbol);
 }
 
 function enableCheckBtn() {
@@ -193,7 +193,7 @@ async function createSvgsForSelectors(pyodide) {
     for (const circuitSet of circuitMapper.circuitSets) {
         // For all circuits in this set (e.g., Resistor1, Resistor2, ...)
         for (const circuit of circuitSet.set) {
-            stepSolve = state.solve.SolveInUserOrder(circuit.circuitFile, `${conf.pyodideCircuitPath}/${circuit.sourceDir}`, `${conf.pyodideSolutionsPath}/`, languageManager.currentLang.svgVoltArrowText);
+            stepSolve = state.solve.SolveInUserOrder(circuit.circuitFile, `${conf.pyodideCircuitPath}/${circuit.sourceDir}`, `${conf.pyodideSolutionsPath}/`, languageManager.currentLang.voltageSymbol);
             await stepSolve.createStep0().toJs();
         }
     }
