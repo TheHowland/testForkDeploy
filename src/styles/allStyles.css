@@ -28,7 +28,7 @@ mjx-container {
 
 @supports (-webkit-marquee-repetition:infinite) and (object-fit:fill) {
     mjx-container mjx-c::before {
-        will-change: opacity;
+        will-change: unset;
     }
 }
 
