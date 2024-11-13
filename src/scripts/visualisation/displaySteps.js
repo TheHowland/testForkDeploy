@@ -251,7 +251,7 @@ async function checkAndSimplifyNext(pyodide, div, stepDetails){
         const simplifyObject = await stepSolve.simplifyTwoCpts(state.selectedElements).toJs();
         checkAndSimplify(simplifyObject, pyodide, contentCol, div, stepDetails);
     } else {
-        showMessage(contentCol, languageManager.currentLang.alertChooseTwoElements);
+        showMessage(contentCol, languageManager.currentLang.alertChooseTwoElements, "only2");
     }
     MathJax.typeset();
 }
@@ -271,7 +271,7 @@ function checkAndSimplify(simplifyObject, pyodide, contentCol, div, stepDetails)
         }
         display_step(pyodide, stepDetails);
     } else {
-        showMessage(contentCol, languageManager.currentLang.alertCanNotSimplify);
+        showMessage(contentCol, languageManager.currentLang.alertCanNotSimplify, "warning");
     }
 }
 

@@ -81,6 +81,15 @@ class PageManager {
 
         const trigger = document.getElementById("trigger");
         observer.observe(trigger);
+
+        const activeFlagIcon = document.getElementById("activeLanguageFlag");
+        if (languageManager.currentLang === german) {
+            activeFlagIcon.setAttribute("src", "src/resources/navigation/germany.png");
+        }
+        else if (languageManager.currentLang === english) {
+            activeFlagIcon.setAttribute("src", "src/resources/navigation/uk.png");
+        }
+
     }
 
     setupSelectPage() {

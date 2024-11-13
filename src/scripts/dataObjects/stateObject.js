@@ -2,9 +2,6 @@
 // compact in one object (what otherwise would be global variables)
 
 class StateObject {
-
-    currentLang = english;
-
     //Tracks the current step in the circuit simplification process.
     currentStep = 0;
 

@@ -1,5 +1,5 @@
 class LanguageManager {
-    currentLang = german
+    currentLang = german;
 
     updatesLanguageFields() {
         this.updateLanguageLandingPage();
