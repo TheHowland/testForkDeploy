@@ -2,7 +2,7 @@ const english = {
     // Landing page text
     landingPageGreeting:
         "a free browser tool for learning<br>" +
-        "how to simplify electrical circuits A",
+        "how to simplify electrical circuits B",
     selectorWaitingNote:
         "This may take a minute",
 

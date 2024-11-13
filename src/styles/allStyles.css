@@ -24,12 +24,7 @@ mjx-container {
     overflow-y: hidden;
     padding-top: 5px;
     padding-bottom: 5px;
-}
-
-@supports (-webkit-marquee-repetition:infinite) and (object-fit:fill) {
-    mjx-container mjx-c::before {
-        will-change: unset;
-    }
+    will-change: unset;
 }
 
 th, td {
