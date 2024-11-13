@@ -77,6 +77,8 @@ const german = {
     // Impedance text
     svgVoltArrowText:
         "U",
+    totalSuffix:
+        "ges",
     calcBeforeFirstElement:
         "Die Elemente",
     calcBetweenElements:

@@ -50,7 +50,7 @@ function getFinishMsg(vcData, showVoltageButton) {
         // Give a note what voltage is used and that voltage/current is available
         msg = `
         <p>${languageManager.currentLang.msgVoltAndCurrentAvailable}.<br></p>
-        <p>${languageManager.currentLang.msgShowVoltage}<br>V1 = ${vcData.inline().oldValues[1]}</p>
+        <p>${languageManager.currentLang.msgShowVoltage}<br>$$ ${languageManager.currentLang.svgVoltArrowText}_{${languageManager.currentLang.totalSuffix}}=${vcData.noFormat().oldValues[1]}$$</p>
         <button class="btn btn-primary mx-1" id="reset-btn">reset</button>
         <button class="btn btn-primary mx-1" id="check-btn">check</button>
     `;
@@ -162,7 +162,7 @@ function removeExistingBoxAndText(existingBox, bboxId, pathElement) {
 function addElementValueToTextBox(pathElement, bboxId, nextElementsList) {
     const value = pathElement.getAttribute('class') || 'na';
     const listItem = document.createElement('li');
-    listItem.innerHTML = `${pathElement.getAttribute('id') || 'no id'} = \\(${value}\\)`;
+    listItem.innerHTML = `\\(${pathElement.getAttribute('id') || 'no id'} = ${value}\\)`;
     listItem.setAttribute('data-bbox-id', bboxId);
     nextElementsList.appendChild(listItem);
     state.selectedElements.push(pathElement.getAttribute('id') || 'no id');

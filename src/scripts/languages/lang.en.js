@@ -74,6 +74,8 @@ const english = {
     // Impedance
     svgVoltArrowText:
         "V",
+    totalSuffix:
+        "total",
     calcBeforeFirstElement:
         "The elements",
     calcBetweenElements:
