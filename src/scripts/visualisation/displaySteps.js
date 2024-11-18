@@ -11,7 +11,7 @@ function display_step(pyodide,stepDetails) {
     // Create the new elements for the current step
     const {circuitContainer, svgContainer} = setupCircuitContainer(svgData);
     const {newCalcBtn, newVCBtn} = setupExplanationButtons(showVoltageButton);
-    const {pathElements, electricalElements} = getElementsFromSvgContainer(svgContainer);
+    const electricalElements = getElementsFromSvgContainer(svgContainer);
     const nextElementsContainer = setupNextElementsContainer(sanitizedSvgFilePath, electricalElements, vcData, showVoltageButton);
     const contentCol = document.getElementById("content-col");
     contentCol.append(circuitContainer);
@@ -121,9 +121,8 @@ function setupSvgDivContainerAndData(svgData) {
 
 function getElementsFromSvgContainer(svgContainer) {
     const pathElements = svgContainer.querySelectorAll('path');
-    const electricalElements = Array.from(pathElements).filter(path => (path.getAttribute('class') !== 'na')
-        && (!path.getAttribute('class').includes("arrow")));
-    return {pathElements, electricalElements: electricalElements};
+    return Array.from(pathElements).filter(path => (path.getAttribute('class') !== 'na')
+        && (!path.getAttribute('class').includes("arrow")))
 }
 
 function setupBboxRect(bbox, bboxId) {
