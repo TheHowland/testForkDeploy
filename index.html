@@ -4,6 +4,25 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" type="image/svg" href="src/resources/navigation/icon.svg"/>
+    <!-- Set default cookies to deny everything-->
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+        if (localStorage.getItem('consentMode') === null) {
+            console.log("Set consent to default");
+            gtag('consent', 'default', {  // Default, everything is denied
+                'ad_storage': 'denied', // Related to google ads
+                'analytics_storage': 'denied', // Visit duration, pages visited, etc.
+                'personalization_storage': 'denied', // Personalized ads
+                'functionality_storage': 'denied', // Remember user settings, language, etc.
+                'security_storage': 'denied', // Security, Authentication, etc.
+            });
+        } else {
+            gtag('consent', 'default', JSON.parse(localStorage.getItem('consentMode')));
+        }
+    </script>
     <!-- Google Tag Manager -->
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
             new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -17,12 +36,11 @@
     <script src="src/scripts/languages/lang.en.js"></script>
     <script src="src/scripts/languages/lang.de.js"></script>
     <script src="src/scripts/languages/languageManager.js"></script>
-    
 
+    <script src="src/scripts/utils/cookieBanner.js"></script>
     <script src="src/scripts/utils/circuitMapper.js"></script>
     <script src="src/scripts/utils/configurations.js"></script>
     <script src="src/scripts/utils/packageManager.js"></script>
-
 
     <script src="src/scripts/dataObjects/stateObject.js"></script>
     <script src="src/scripts/dataObjects/stepDetails.js"></script>
@@ -137,6 +155,23 @@
         </div>
         <div class="container-fluid pt-5 pb-4">
             <p class="feature-body px-5 pb-5" id="landing-page-explanation3" ></p>
+        </div>
+
+        <div class="container-fluid bg-dark text-center fixed-bottom" id="cookie-banner">
+            <p class="mt-1" id="cookie-banner-title">Cookie Settings</p>
+            <p class="mb-2 px-4" id="cookie-banner-text">We value your privacy. We use cookies to provide you with the best possible experience.</p>
+            <button class="btn btn-primary my-2" id="btn-cookies-none">REJECT ALL</button>
+            <button class="btn btn-primary my-2" id="btn-cookies-some">CUSTOMIZE</button>
+            <button class="btn btn-primary my-2" id="btn-cookies-all">ACCEPT ALL</button>
+            <div class="container-fluid mb-2" style="display: none" id="cookie-options">
+                <div class="cookie-consent-options">
+                    <label class="cookie-selection"><input class="cookie-checkbox" id="consent-necessary" type="checkbox" value="Necessary" checked disabled>Necessary</label>
+                    <label class="cookie-selection"><input class="cookie-checkbox" id="consent-analytics" type="checkbox" value="Analytics" checked>Analytics</label>
+                    <br>
+                    <label class="cookie-selection"><input class="cookie-checkbox" id="consent-preferences" type="checkbox" value="Preferences" checked>Preferences</label>
+                    <label class="cookie-selection"><input class="cookie-checkbox" id="consent-marketing" type="checkbox" value="Marketing">Marketing</label>
+                </div>
+            </div>
         </div>
     </div>
 

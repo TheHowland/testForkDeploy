@@ -63,6 +63,8 @@ class PageManager {
 
     // ########################## Setups ########################################
     setupLandingPage() {
+        addCookieBtnFunctionality();
+
         const landingStartButton = document.getElementById("start-button");
         landingStartButton.addEventListener("click", () => {
             this.showSelectPage();
