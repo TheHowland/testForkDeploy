@@ -13,8 +13,12 @@ function addCookieBtnFunctionality() {
         hideBanner();
     });
     document.getElementById('btn-cookies-some').addEventListener('click', function () {
-        if (document.getElementById("cookie-options").style.display === "none") {
-            document.getElementById("cookie-options").style.display = "block";
+        let options = document.getElementById("cookie-options");
+        let optionsBtn = document.getElementById("btn-cookies-some");
+        if (options.style.display === "none") {
+            options.style.display = "block";
+            optionsBtn.textContent = languageManager.currentLang.cookies.applySome;
+            languageManager.updateConsentOptions();
         } else {
             setConsent({
                 necessary: true,

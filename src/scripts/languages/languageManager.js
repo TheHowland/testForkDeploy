@@ -8,26 +8,33 @@ class LanguageManager {
     }
 
     updateLanguageLandingPage() {
-        const greeting = document.getElementById("landing-page-greeting");
-        greeting.innerHTML = this.currentLang.landingPageGreeting;
-        const keyFeature1heading = document.getElementById("key-feature1heading");
-        keyFeature1heading.innerHTML = this.currentLang.keyFeature1heading;
-        const keyFeature1 = document.getElementById("key-feature1");
-        keyFeature1.innerHTML = this.currentLang.keyFeature1;
-        const keyFeature2 = document.getElementById("key-feature2");
-        keyFeature2.innerHTML = this.currentLang.keyFeature2;
-        const keyFeature2heading = document.getElementById("key-feature2heading");
-        keyFeature2heading.innerHTML = this.currentLang.keyFeature2heading;
-        const keyFeature3 = document.getElementById("key-feature3");
-        keyFeature3.innerHTML = this.currentLang.keyFeature3;
-        const keyFeature3heading = document.getElementById("key-feature3heading");
-        keyFeature3heading.innerHTML = this.currentLang.keyFeature3heading;
-        const expl1 = document.getElementById("landing-page-explanation1");
-        expl1.innerHTML = this.currentLang.landingPageExplanation1;
-        const expl2 = document.getElementById("landing-page-explanation2");
-        expl2.innerHTML = this.currentLang.landingPageExplanation2;
-        const expl3 = document.getElementById("landing-page-explanation3");
-        expl3.innerHTML = this.currentLang.landingPageExplanation3;
+        document.getElementById("cookie-banner-title").innerHTML = this.currentLang.cookies.title;
+        document.getElementById("cookie-banner-text").innerHTML = this.currentLang.cookies.text;
+        document.getElementById("btn-cookies-all").innerHTML = this.currentLang.cookies.acceptAll;
+        document.getElementById("btn-cookies-none").innerHTML = this.currentLang.cookies.rejectAll;
+        if (document.getElementById("cookie-options").style.display === "block") {
+            this.updateConsentOptions();
+            document.getElementById("btn-cookies-some").innerHTML = this.currentLang.cookies.applySome;
+        } else {
+            document.getElementById("btn-cookies-some").innerHTML = this.currentLang.cookies.customize;
+        }
+        document.getElementById("landing-page-greeting").innerHTML = this.currentLang.landingPageGreeting;
+        document.getElementById("key-feature1heading").innerHTML = this.currentLang.keyFeature1heading;
+        document.getElementById("key-feature1").innerHTML = this.currentLang.keyFeature1;
+        document.getElementById("key-feature2").innerHTML = this.currentLang.keyFeature2;
+        document.getElementById("key-feature2heading").innerHTML = this.currentLang.keyFeature2heading;
+        document.getElementById("key-feature3").innerHTML = this.currentLang.keyFeature3;
+        document.getElementById("key-feature3heading").innerHTML = this.currentLang.keyFeature3heading;
+        document.getElementById("landing-page-explanation1").innerHTML = this.currentLang.landingPageExplanation1;
+        document.getElementById("landing-page-explanation2").innerHTML = this.currentLang.landingPageExplanation2;
+        document.getElementById("landing-page-explanation3").innerHTML = this.currentLang.landingPageExplanation3;
+    }
+
+    updateConsentOptions() {
+        document.getElementById("label-necessary").innerHTML = this.currentLang.cookies.necessary;
+        document.getElementById("label-analytics").innerHTML = this.currentLang.cookies.analytics;
+        document.getElementById("label-pref").innerHTML = this.currentLang.cookies.preferences;
+        document.getElementById("label-marketing").innerHTML = this.currentLang.cookies.marketing;
     }
 
     updateLanguageSelectorPage() {

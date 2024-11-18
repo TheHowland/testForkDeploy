@@ -157,19 +157,23 @@
             <p class="feature-body px-5 pb-5" id="landing-page-explanation3" ></p>
         </div>
 
-        <div class="container-fluid bg-dark text-center fixed-bottom" id="cookie-banner">
-            <p class="mt-1" id="cookie-banner-title">Cookie Settings</p>
-            <p class="mb-2 px-4" id="cookie-banner-text">We value your privacy. We use cookies to provide you with the best possible experience.</p>
-            <button class="btn btn-primary my-2" id="btn-cookies-none">REJECT ALL</button>
-            <button class="btn btn-primary my-2" id="btn-cookies-some">CUSTOMIZE</button>
-            <button class="btn btn-primary my-2" id="btn-cookies-all">ACCEPT ALL</button>
+        <div class="container-fluid bg-dark text-center fixed-bottom" id="cookie-banner" style="display: none">
+            <p class="mt-1" id="cookie-banner-title"></p>
+            <p class="mb-2 px-4" id="cookie-banner-text"></p>
+            <button class="btn btn-primary my-2" id="btn-cookies-none"></button>
+            <button class="btn btn-primary my-2" id="btn-cookies-some"></button>
+            <button class="btn btn-primary my-2" id="btn-cookies-all"></button>
             <div class="container-fluid mb-2" style="display: none" id="cookie-options">
                 <div class="cookie-consent-options">
-                    <label class="cookie-selection"><input class="cookie-checkbox" id="consent-necessary" type="checkbox" value="Necessary" checked disabled>Necessary</label>
-                    <label class="cookie-selection"><input class="cookie-checkbox" id="consent-analytics" type="checkbox" value="Analytics" checked>Analytics</label>
+                    <input class="cookie-checkbox" id="consent-necessary" type="checkbox" value="Necessary" checked disabled>
+                    <label id="label-necessary" for="consent-necessary" class="cookie-selection"></label>
+                    <input class="cookie-checkbox" id="consent-analytics" type="checkbox" value="Analytics" checked>
+                    <label id="label-analytics" for="consent-analytics" class="cookie-selection"></label>
                     <br>
-                    <label class="cookie-selection"><input class="cookie-checkbox" id="consent-preferences" type="checkbox" value="Preferences" checked>Preferences</label>
-                    <label class="cookie-selection"><input class="cookie-checkbox" id="consent-marketing" type="checkbox" value="Marketing">Marketing</label>
+                    <input class="cookie-checkbox" id="consent-preferences" type="checkbox" value="Preferences" checked>
+                    <label id="label-pref" for="consent-preferences" class="cookie-selection"></label>
+                    <input class="cookie-checkbox" id="consent-marketing" type="checkbox" value="Marketing">
+                    <label id="label-marketing" for="consent-marketing" class="cookie-selection"></label>
                 </div>
             </div>
         </div>

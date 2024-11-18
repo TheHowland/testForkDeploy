@@ -63,14 +63,19 @@ class PageManager {
 
     // ########################## Setups ########################################
     setupLandingPage() {
-        addCookieBtnFunctionality();
+        if (localStorage.getItem('consentMode') !== null) {
+            document.getElementById("cookie-banner").style.display = "none";
+        } else {
+            document.getElementById("cookie-banner").style.display = "block";
+            addCookieBtnFunctionality();
+        }
+        languageManager.updateLanguageLandingPage();
 
         const landingStartButton = document.getElementById("start-button");
         landingStartButton.addEventListener("click", () => {
             this.showSelectPage();
             landingStartButton.style.animation = ""; // remove pulsing after clicked
         })
-        languageManager.updateLanguageLandingPage();
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {

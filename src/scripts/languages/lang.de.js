@@ -1,4 +1,17 @@
 const german = {
+    cookies: {
+        customize: "AUSWAHL",
+        applySome: "ANWENDEN",
+        rejectAll: "ABLEHNEN",
+        acceptAll: "AKZEPTIEREN",
+        title: "Cookie-Einstellungen",
+        text: "Wir verwenden Cookies, um dir die bestm&oumlgliche Erfahrung auf unserer Website zu bieten.",
+        necessary: "Notwendige",
+        analytics: "Analytische",
+        preferences: "Pr&aumlferenzen",
+        marketing: "Marketing"
+    },
+
     // Landing page text
     landingPageGreeting:
         "Ein kostenloses Browsertool um<br>" +
