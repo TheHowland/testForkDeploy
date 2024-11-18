@@ -21,7 +21,7 @@ function display_step(pyodide,stepDetails) {
     checkAndAddExplanationButtons(showVoltageButton, stepCalculationText, contentCol, stepVoltageCurrentText);
 
     // The order of function-calls is important
-    checkIfStillNotFinishedAndMakeClickable(electricalElements, nextElementsContainer, sanitizedSvgFilePath, pathElements);
+    checkIfStillNotFinishedAndMakeClickable(electricalElements, nextElementsContainer, sanitizedSvgFilePath);
     prepareNextElementsContainer(contentCol, nextElementsContainer);
     const div = createExplanationBtnContainer(newCalcBtn);
     if (showVoltageButton) div.appendChild(newVCBtn);
@@ -411,9 +411,9 @@ function loadData(pyodide, stepDetails) {
     return {data, vcData, svgData, sanitizedSvgFilePath};
 }
 
-function checkIfStillNotFinishedAndMakeClickable(filteredPaths, nextElementsContainer, sanitizedSvgFilePath, pathElements) {
-    if (elementsLeftToBeSimplified(filteredPaths)) {
-        getAllElementsAndMakeClickable(nextElementsContainer, sanitizedSvgFilePath, pathElements);
+function checkIfStillNotFinishedAndMakeClickable(electricalElements, nextElementsContainer, sanitizedSvgFilePath) {
+    if (elementsLeftToBeSimplified(electricalElements)) {
+        getAllElementsAndMakeClickable(nextElementsContainer, sanitizedSvgFilePath, electricalElements);
     }
 }
 
