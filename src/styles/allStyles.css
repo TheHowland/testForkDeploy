@@ -5,6 +5,7 @@ key-yellow: #FFC107
 body, html {
     font-family: 'Roboto', sans-serif;
     overflow-x: hidden;
+    overscroll-behavior-y: contain;  /* prevent reloading the page when scrolling up */
     width: 100%;
     position: relative;
 }
