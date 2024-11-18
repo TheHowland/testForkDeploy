@@ -19,6 +19,12 @@ img {
     max-height: 375px;
 }
 
+mjx-container mjx-c::before {
+    will-change: opacity;
+    padding-top: 20px !important;
+    padding-bottom: 5px !important;
+}
+
 mjx-container {
     overflow-x: auto;
     overflow-y: hidden;

@@ -38,9 +38,11 @@ function generateTextForVoltageCurrent(data) {
 }
 
 function generateTextForTotalCurrent(data) {
+    // Todo, maybe this R needs to be changed to Z sometime
     return `${languageManager.currentLang.currentCalcHeading} ${data.inline().oldNames[0]}<br>
-                        <br>
-                        $$${data.noFormat().oldNames[2]} = \\frac{${data.noFormat().oldNames[1]}}{${data.noFormat().oldNames[0]}}$$
+                        <br>  
+                        $$I_{${languageManager.currentLang.totalSuffix}} = \\frac{${languageManager.currentLang.voltageSymbol}_{${languageManager.currentLang.totalSuffix}}}{R_{${languageManager.currentLang.totalSuffix}}}$$
+                        $$I_{${languageManager.currentLang.totalSuffix}} = ${data.noFormat().oldNames[2]} = \\frac{${data.noFormat().oldNames[1]}}{${data.noFormat().oldNames[0]}}$$
                         $$= \\frac{${data.noFormat().oldValues[1]}}{${data.noFormat().oldValues[0]}}$$
                         $$= ${data.noFormat().oldValues[2]}$$
                         <br>`;

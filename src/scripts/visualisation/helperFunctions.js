@@ -65,15 +65,38 @@ function setSvgWidthTo(svgData, width) {
 
 // Displays a temporary message to the user in a message box.
 function showMessage(container, message, prio = "warning") {
+    let bootstrapAlert;
+    let emoji;
+    if (prio === "only2") {
+        emoji = onlyChoose2Emojis[Math.floor(Math.random() * onlyChoose2Emojis.length)];
+        bootstrapAlert = "warning";
+    } else if (prio === "warning") {
+        emoji = badEmojis[Math.floor(Math.random() * badEmojis.length)];
+        bootstrapAlert = "warning";
+    } else if (prio === "success") {
+        emoji = goodEmojis[Math.floor(Math.random() * goodEmojis.length)];
+        bootstrapAlert = "success";
+    }
     const msg = document.createElement('div');
     msg.classList.add("alert");
-    msg.classList.add(`alert-${prio}`);
+    msg.classList.add(`alert-${bootstrapAlert}`);
     msg.classList.add("fixed-bottom");
     msg.classList.add("m-5");
-    msg.innerHTML = message;
+
+    let emojiSpan = document.createElement('span');
+    emojiSpan.style.fontSize = '1.66em';
+    emojiSpan.innerHTML = emoji;
+
+    let msgSpan = document.createElement('span');
+    msgSpan.innerHTML = message;
+
+    msg.appendChild(emojiSpan);
+    msg.appendChild(document.createElement('br'));
+    msg.appendChild(msgSpan);
+
     container.appendChild(msg);
     setTimeout(() => {
-        msg.style.display = 'none';
+        container.removeChild(msg);
     }, 3000);
 }
 
@@ -101,7 +124,7 @@ function clearSimplifierPageContent() {
 }
 
 function resetSolverObject() {
-    stepSolve = state.solve.SolveInUserOrder(state.currentCircuit, `${conf.pyodideCircuitPath}/${state.currentCircuitMap.sourceDir}`, `${conf.pyodideSolutionsPath}/`);
+    stepSolve = state.solve.SolveInUserOrder(state.currentCircuit, `${conf.pyodideCircuitPath}/${state.currentCircuitMap.sourceDir}`, `${conf.pyodideSolutionsPath}/`, languageManager.currentLang.voltageSymbol);
 }
 
 function enableCheckBtn() {
@@ -193,7 +216,7 @@ async function createSvgsForSelectors(pyodide) {
     for (const circuitSet of circuitMapper.circuitSets) {
         // For all circuits in this set (e.g., Resistor1, Resistor2, ...)
         for (const circuit of circuitSet.set) {
-            stepSolve = state.solve.SolveInUserOrder(circuit.circuitFile, `${conf.pyodideCircuitPath}/${circuit.sourceDir}`, `${conf.pyodideSolutionsPath}/`);
+            stepSolve = state.solve.SolveInUserOrder(circuit.circuitFile, `${conf.pyodideCircuitPath}/${circuit.sourceDir}`, `${conf.pyodideSolutionsPath}/`, languageManager.currentLang.voltageSymbol);
             await stepSolve.createStep0().toJs();
         }
     }

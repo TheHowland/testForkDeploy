@@ -1,4 +1,4 @@
-# for lcapy version: 1.24+inskale.0.20
+# for lcapy version: 1.24+inskale.0.21
 from lcapy import Circuit, FileToImpedance, DrawWithSchemdraw
 from lcapy.solution import Solution
 from lcapy.componentRelation import ComponentRelation
@@ -79,7 +79,7 @@ class SolveInUserOrder:
         :return tuple with bool if simplification is possible, str with json filename, str with svg filename
         """
 
-        sol = Solution(self.steps)
+        sol = Solution(self.steps, voltSym=self.voltSym)
         nameStep0Json = sol.exportStepAsJson("step0", path=self.savePath, filename=self.filename)
         nameStep0Svg = sol.drawStep('step0', filename=self.filename, path=self.savePath)
 

@@ -72,8 +72,10 @@ const english = {
         "No relation between those elements",
 
     // Impedance
-    svgVoltArrowText:
+    voltageSymbol:
         "V",
+    totalSuffix:
+        "total",
     calcBeforeFirstElement:
         "The elements",
     calcBetweenElements:
