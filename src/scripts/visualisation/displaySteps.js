@@ -27,7 +27,7 @@ function display_step(pyodide,stepDetails) {
     if (showVoltageButton) div.appendChild(newVCBtn);
 
     setupStepButtonsFunctionality(pyodide, div, stepDetails);
-    congratsAndVCDisplayIfFinished(electricalElements, contentCol, showVoltageButton, vcData);
+    congratsAndVCDisplayIfFinished(electricalElements, contentCol, showVoltageButton, vcData, pyodide);
     MathJax.typeset();
 }
 
@@ -417,11 +417,25 @@ function checkIfStillNotFinishedAndMakeClickable(filteredPaths, nextElementsCont
     }
 }
 
-function congratsAndVCDisplayIfFinished(filteredPaths, contentCol, showVoltageButton, vcData) {
+function congratsAndVCDisplayIfFinished(filteredPaths, contentCol, showVoltageButton, vcData, pyodide) {
     if (onlyOneElementLeft(filteredPaths)) {
         finishCircuit(contentCol, showVoltageButton);
         addFirstVCExplanation(contentCol, showVoltageButton, vcData);
+        addBackButton(pyodide, contentCol);
     }
+}
+
+function addBackButton(pyodide, contentCol) {
+    let backButton = document.createElement("button");
+    backButton.classList.add("btn");
+    backButton.classList.add("btn-primary");
+    backButton.id = "back-btn";
+    backButton.innerHTML = languageManager.currentLang.backBtn;
+    contentCol.appendChild(backButton);
+    backButton.addEventListener("click", () => {
+        resetSimplifierPage(pyodide);
+        pageManager.showSelectPage();
+    });
 }
 
 function addFirstVCExplanation(contentCol, showVoltageButton, vcData) {

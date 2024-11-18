@@ -111,6 +111,8 @@ const english = {
         "The voltage stays the same",
     currentSplits:
         "The current splits up",
+    backBtn:
+        "back to selection",
 
     // Cheat sheet
     resistanceColHeading:

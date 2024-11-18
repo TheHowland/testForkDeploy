@@ -81,6 +81,7 @@ function showMessage(container, message, prio = "warning") {
     msg.classList.add("alert");
     msg.classList.add(`alert-${bootstrapAlert}`);
     msg.classList.add("fixed-bottom");
+    msg.style.bottom = "170px";
     msg.classList.add("m-5");
 
     let emojiSpan = document.createElement('span');

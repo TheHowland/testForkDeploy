@@ -334,3 +334,9 @@ th, td {
     color: white;
 }
 
+#bootstrap-overrides #back-btn {
+    background-color: #FFC107;
+    border: none;
+    color: #222222;
+}
+

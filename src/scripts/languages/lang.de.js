@@ -114,6 +114,8 @@ const german = {
         "Die Spannung bleibt gleich",
     currentSplits:
         "Der Strom teilt sich auf",
+    backBtn:
+        "zur&uumlck zur Auswahl",
 
     // Cheat sheet
     resistanceColHeading:
