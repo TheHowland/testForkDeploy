@@ -147,6 +147,7 @@ class SelectorBuilder {
     }
 
     circuitSelectorStartButtonPressed(circuitName, circuitMap, pageManager){
+        dataLayer.push({'event': 'page_view', 'page_id': 'simplifier_page'});
         clearSimplifierPageContent();
         state.currentCircuit = circuitName;
         state.currentCircuitMap = circuitMap;
@@ -155,7 +156,6 @@ class SelectorBuilder {
             startSolving(pageManager.pyodide);
         }
 
-        // old: pageManager.showSimplifierPage();
         pageManager.disableSettings();
         const selectorPage = document.getElementById("select-page-container");
         const simplifierPage = document.getElementById("simplifier-page-container");
