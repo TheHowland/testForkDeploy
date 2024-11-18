@@ -19,7 +19,7 @@ class PageManager {
         for (let feature of document.querySelectorAll(".feature-container")) {
             feature.classList.remove("visible");
         }
-        dataLayer.push({'event': 'page_view', 'page_id': 'landing_page'});
+        document.title = "simpliPFy";
     }
 
     showSelectPage() {
@@ -28,7 +28,7 @@ class PageManager {
         this.simplifierPage.style.display = "none";
         this.cheatSheet.style.display = "none";
         this.enableSettings();
-        dataLayer.push({'event': 'page_view', 'page_id': 'select_page'});
+        document.title = "Selection";
     }
 
     showSimplifierPage() {
@@ -37,7 +37,7 @@ class PageManager {
         this.simplifierPage.style.display = "block";
         this.cheatSheet.style.display = "none";
         this.disableSettings();
-        dataLayer.push({'event': 'page_view', 'page_id': 'simplifier_page'});
+        document.title = "Simplifier";
     }
 
     showCheatSheet() {
@@ -46,7 +46,7 @@ class PageManager {
         this.simplifierPage.style.display = "none";
         this.cheatSheet.style.display = "block";
         this.enableSettings();
-        dataLayer.push({'event': 'page_view', 'page_id': 'cheat_sheet'});
+        document.title = "Cheat Sheet";
     }
 
     disableSettings() {

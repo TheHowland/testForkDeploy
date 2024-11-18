@@ -147,7 +147,7 @@ class SelectorBuilder {
     }
 
     circuitSelectorStartButtonPressed(circuitName, circuitMap, pageManager){
-        dataLayer.push({'event': 'page_view', 'page_id': 'simplifier_page'});
+        document.title = "Simplifier";
         clearSimplifierPageContent();
         state.currentCircuit = circuitName;
         state.currentCircuitMap = circuitMap;
