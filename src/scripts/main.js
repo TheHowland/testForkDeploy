@@ -32,28 +32,21 @@ async function main() {
     // Get the pyodide instance and setup pages with functionality
     let pyodide = await loadPyodide();
     pageManager.setPyodide(pyodide);
+    packageManager.loadMathJax();
 
     // Map all circuits into map and build the selectors
     circuitMapper = new CircuitMapper(pyodide);
     await circuitMapper.mapCircuits();
+
     selectorBuilder.buildSelectorsForAllCircuitSets();
 
     pageManager.setupNavigation();
     pageManager.setupCheatSheet();
 
     setupDarkModeSwitch();
-    hideAllSelectors();
-    const note = showWaitingNote();
-
-    // Import packages/scripts, create selector svgs
-    await packageManager.doLoadsAndImports(pyodide);
-    await createSvgsForSelectors(pyodide);
-
-    showAllSelectors();
-    note.remove();
-
-    pageManager.setupSelectPage();
 }
+
+
 
 // #####################################################################################################################
 async function solveCircuit(circuit, circuitMap, pyodide) {

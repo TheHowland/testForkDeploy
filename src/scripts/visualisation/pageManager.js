@@ -76,9 +76,8 @@ class PageManager {
         languageManager.updateLanguageLandingPage();
 
         const landingStartButton = document.getElementById("start-button");
-        landingStartButton.addEventListener("click", () => {
-            this.showSelectPage();
-            landingStartButton.style.animation = ""; // remove pulsing after clicked
+        landingStartButton.addEventListener("click", async () => {
+            await this.setupLandingPageStartBtn(this.pyodide)
         })
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
@@ -101,6 +100,21 @@ class PageManager {
             activeFlagIcon.setAttribute("src", "src/resources/navigation/uk.png");
         }
 
+    }
+
+    async setupLandingPageStartBtn(pyodide) {
+        this.showSelectPage();
+        hideAllSelectors();
+        const note = showWaitingNote();
+
+        // Import packages/scripts, create selector svgs
+        await packageManager.doLoadsAndImports(pyodide);
+        await createSvgsForSelectors(pyodide);
+
+        showAllSelectors();
+        note.remove();
+
+        pageManager.setupSelectPage();
     }
 
     setupSelectPage() {
@@ -218,6 +232,6 @@ class PageManager {
         pRX.innerHTML = "$$\\underline{Z} = R + j \\cdot X$$"
         pRX.style.color = "white";
 
-        //MathJax.typeset();
+        MathJax.typeset();
     }
 }

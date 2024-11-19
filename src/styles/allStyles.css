@@ -204,6 +204,7 @@ th, td {
     font-size: x-large;
     font-weight: normal;
     color: white;
+    cursor: pointer;
 }
 #bootstrap-overrides #nav-link-circuit {
     color: #FFC107;
@@ -212,10 +213,16 @@ th, td {
 /* Hero section */
 #bootstrap-overrides #start-button {
     font-weight: bolder;
-    background-color: white;
+    background-color: #FFC107;
     border-color: #222222;
+    color: white;
     border-radius: 20px;
     box-shadow: 0 0 0 0 rgba(255, 193, 7, 0);
+    animation: pulse 2s infinite;
+}
+
+#bootstrap-overrides #start-button:hover {
+    background-color: #dca806;
 }
 
 /* Start button pulse animation*/
@@ -236,13 +243,7 @@ th, td {
     font-family: 'Roboto Condensed', sans-serif;
     font-size: small;
     color: white;
-}
-
-#bootstrap-overrides #start-button:hover {
-    font-weight: bolder;
-    background-color: #eeeeee;
-    border-color: black;
-    border-radius: 20px;
+    cursor: pointer;
 }
 
 #bootstrap-overrides #heading-logo {

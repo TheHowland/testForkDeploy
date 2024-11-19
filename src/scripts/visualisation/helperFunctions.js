@@ -104,13 +104,6 @@ function showMessage(container, message, prio = "warning") {
 function setPgrBarTo(percent) {
     let progressBar = document.getElementById("pgr-bar");
     progressBar.style.width = `${percent}%`;
-    // Add the progress to the start button on landing page
-    let startBtn = document.getElementById("start-button");
-    startBtn.style.backgroundImage = `linear-gradient(to right, ${colors.keyYellow} ${percent}%, white ${percent + 0}%)`;
-    if (percent === 100) {
-        // add pulse
-        startBtn.style.animation = "pulse 2s infinite";
-    }
 }
 
 function clearSimplifierPageContent() {

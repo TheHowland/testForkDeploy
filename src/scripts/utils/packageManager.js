@@ -23,7 +23,6 @@ class PackageManager {
         await this.loadCircuits(pyodide);
         await this.importPyodidePackages(pyodide);
         await this.importSolverModule(pyodide);
-        this.loadMathJax();
     }
 
     loadMathJax() {
