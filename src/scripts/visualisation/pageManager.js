@@ -67,12 +67,6 @@ class PageManager {
 
     // ########################## Setups ########################################
     setupLandingPage() {
-        if (localStorage.getItem('consentMode') !== null) {
-            document.getElementById("cookie-banner").style.display = "none";
-        } else {
-            document.getElementById("cookie-banner").style.display = "block";
-            addCookieBtnFunctionality();
-        }
         languageManager.updateLanguageLandingPage();
 
         const landingStartButton = document.getElementById("start-button");

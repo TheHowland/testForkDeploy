@@ -4,32 +4,6 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" type="image/svg" href="src/resources/navigation/icon.svg"/>
-    <!-- Set default cookies to deny everything-->
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() {
-            dataLayer.push(arguments);
-        }
-        if (localStorage.getItem('consentMode') === null) {
-            console.log("Set consent to default");
-            gtag('consent', 'default', {  // Default, everything is denied
-                'ad_storage': 'denied', // Related to google ads
-                'analytics_storage': 'denied', // Visit duration, pages visited, etc.
-                'personalization_storage': 'denied', // Personalized ads
-                'functionality_storage': 'denied', // Remember user settings, language, etc.
-                'security_storage': 'denied', // Security, Authentication, etc.
-            });
-        } else {
-            gtag('consent', 'default', JSON.parse(localStorage.getItem('consentMode')));
-        }
-    </script>
-    <!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-KPBMGTJT');</script>
-    <!-- End Google Tag Manager -->
     <title>simpliPFy</title>
 
     <!-- JS Scripts Import -->
@@ -37,7 +11,6 @@
     <script src="src/scripts/languages/lang.de.js"></script>
     <script src="src/scripts/languages/languageManager.js"></script>
 
-    <script src="src/scripts/utils/cookieBanner.js"></script>
     <script src="src/scripts/utils/circuitMapper.js"></script>
     <script src="src/scripts/utils/configurations.js"></script>
     <script src="src/scripts/utils/packageManager.js"></script>
@@ -155,27 +128,6 @@
         </div>
         <div class="container-fluid pt-5 pb-4">
             <p class="feature-body px-5 pb-5" id="landing-page-explanation3" ></p>
-        </div>
-
-        <div class="container-fluid bg-dark text-center fixed-bottom" id="cookie-banner" style="display: none">
-            <p class="mt-1" id="cookie-banner-title"></p>
-            <p class="mb-2 px-4" id="cookie-banner-text"></p>
-            <button class="btn btn-primary my-2" id="btn-cookies-none"></button>
-            <button class="btn btn-primary my-2" id="btn-cookies-some"></button>
-            <button class="btn btn-primary my-2" id="btn-cookies-all"></button>
-            <div class="container-fluid mb-2" style="display: none" id="cookie-options">
-                <div class="cookie-consent-options">
-                    <input class="cookie-checkbox" id="consent-necessary" type="checkbox" value="Necessary" checked disabled>
-                    <label id="label-necessary" for="consent-necessary" class="cookie-selection"></label>
-                    <input class="cookie-checkbox" id="consent-analytics" type="checkbox" value="Analytics" checked>
-                    <label id="label-analytics" for="consent-analytics" class="cookie-selection"></label>
-                    <br>
-                    <input class="cookie-checkbox" id="consent-preferences" type="checkbox" value="Preferences" checked>
-                    <label id="label-pref" for="consent-preferences" class="cookie-selection"></label>
-                    <input class="cookie-checkbox" id="consent-marketing" type="checkbox" value="Marketing">
-                    <label id="label-marketing" for="consent-marketing" class="cookie-selection"></label>
-                </div>
-            </div>
         </div>
     </div>
 

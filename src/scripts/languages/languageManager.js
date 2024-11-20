@@ -8,16 +8,6 @@ class LanguageManager {
     }
 
     updateLanguageLandingPage() {
-        document.getElementById("cookie-banner-title").innerHTML = this.currentLang.cookies.title;
-        document.getElementById("cookie-banner-text").innerHTML = this.currentLang.cookies.text;
-        document.getElementById("btn-cookies-all").innerHTML = this.currentLang.cookies.acceptAll;
-        document.getElementById("btn-cookies-none").innerHTML = this.currentLang.cookies.rejectAll;
-        if (document.getElementById("cookie-options").style.display === "block") {
-            this.updateConsentOptions();
-            document.getElementById("btn-cookies-some").innerHTML = this.currentLang.cookies.applySome;
-        } else {
-            document.getElementById("btn-cookies-some").innerHTML = this.currentLang.cookies.customize;
-        }
         document.getElementById("landing-page-greeting").innerHTML = this.currentLang.landingPageGreeting;
         document.getElementById("key-feature1heading").innerHTML = this.currentLang.keyFeature1heading;
         document.getElementById("key-feature1").innerHTML = this.currentLang.keyFeature1;
@@ -28,13 +18,6 @@ class LanguageManager {
         document.getElementById("landing-page-explanation1").innerHTML = this.currentLang.landingPageExplanation1;
         document.getElementById("landing-page-explanation2").innerHTML = this.currentLang.landingPageExplanation2;
         document.getElementById("landing-page-explanation3").innerHTML = this.currentLang.landingPageExplanation3;
-    }
-
-    updateConsentOptions() {
-        document.getElementById("label-necessary").innerHTML = this.currentLang.cookies.necessary;
-        document.getElementById("label-analytics").innerHTML = this.currentLang.cookies.analytics;
-        document.getElementById("label-pref").innerHTML = this.currentLang.cookies.preferences;
-        document.getElementById("label-marketing").innerHTML = this.currentLang.cookies.marketing;
     }
 
     updateLanguageSelectorPage() {
