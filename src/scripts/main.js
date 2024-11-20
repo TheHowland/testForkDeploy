@@ -40,10 +40,10 @@ async function main() {
 
     selectorBuilder.buildSelectorsForAllCircuitSets();
 
+    setupDarkModeSwitch();
+
     pageManager.setupNavigation();
     pageManager.setupCheatSheet();
-
-    setupDarkModeSwitch();
 }
 
 

@@ -71,7 +71,7 @@ class PageManager {
 
         const landingStartButton = document.getElementById("start-button");
         landingStartButton.addEventListener("click", async () => {
-            await this.setupLandingPageStartBtn(this.pyodide)
+            await this.landingPageStartBtnClicked(this.pyodide)
         })
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
@@ -96,7 +96,7 @@ class PageManager {
 
     }
 
-    async setupLandingPageStartBtn(pyodide) {
+    async landingPageStartBtnClicked(pyodide) {
         this.showSelectPage();
         hideAllSelectors();
         const note = showWaitingNote();
@@ -136,10 +136,15 @@ class PageManager {
             closeNavbar();
             this.showLandingPage();
         })
-        navSimplifierLink.addEventListener("click", () => {
+        navSimplifierLink.addEventListener("click", async () => {
             checkIfSimplifierPageNeedsReset(this.pyodide);  // must be in front of page change
             closeNavbar();
-            this.showSelectPage();
+            if (state.pyodideReady) {
+                this.showSelectPage();
+            }
+            else {
+                await this.landingPageStartBtnClicked(this.pyodide);
+            }
         })
         navCheatLink.addEventListener("click", () => {
             checkIfSimplifierPageNeedsReset();
