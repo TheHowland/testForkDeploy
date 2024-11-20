@@ -17,6 +17,7 @@ class PackageManager {
 
     async initialize(){
         this.isGitHubPage = conf.isGitHubPage
+        this.fetchDirectoryListing = this.isGitHubPage ? this.#fetchGitHubDirectoryContents : this.#fetchDirectoryListing
     }
 
     async doLoadsAndImports(pyodide) {
@@ -147,16 +148,6 @@ class PackageManager {
         } catch (error) {
             console.error('Error fetching GitHub directory contents:', error);
             return [];
-        }
-    }
-
-    async fetchDirectoryListing(path, extension = ""){
-        if (packageManager.isGitHubPage){
-            return this.#fetchGitHubDirectoryContents(path, extension)
-        }
-        else {
-            return this.#fetchDirectoryListing(path, extension)
-
         }
     }
 }
