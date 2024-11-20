@@ -16,8 +16,9 @@ class Configurations {
     async initialize(){
         let conf = await Configurations.loadConf()
 
-        this.gitHubUser = window.location.host.split(".")[0];
-        this.gitHubProject = window.location.pathname;
+        this.subdomain = window.location.hostname.split('.').slice(0, -2).join('.');
+        this.secondLevelDomain = window.location.hostname.replace("\.(io|org)","").split(".")[1] || "";
+        this.pathName = window.location.pathname;
 
         this.sourceCircuitPath = this.gitHubProject + conf.sourceCircuitPath;
         this.sourceSolvePath = this.gitHubProject + conf.sourceSolvePath;
@@ -34,5 +35,17 @@ class Configurations {
         let conf = await test.json()
         console.log(conf);
         return conf;
+    }
+
+    get isGitHubPage(){
+        return this.secondLevelDomain === "github";
+    }
+
+    get gitHubUser() {
+        return this.subdomain;
+    }
+
+    get gitHubProject() {
+        return this.pathName;
     }
 }
