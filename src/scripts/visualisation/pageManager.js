@@ -19,7 +19,7 @@ class PageManager {
         for (let feature of document.querySelectorAll(".feature-container")) {
             feature.classList.remove("visible");
         }
-        document.title = "simpliPFy";
+        document.title = "simpliPFy - Home";
     }
 
     showSelectPage() {
@@ -28,7 +28,7 @@ class PageManager {
         this.simplifierPage.style.display = "none";
         this.cheatSheet.style.display = "none";
         this.enableSettings();
-        document.title = "Selection";
+        document.title = "Circuit Selection";
     }
 
     showSimplifierPage() {

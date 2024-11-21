@@ -147,7 +147,7 @@ class SelectorBuilder {
     }
 
     circuitSelectorStartButtonPressed(circuitName, circuitMap, pageManager){
-        document.title = "Simplifier";
+        document.title = "Simplifier " + circuitName;
         clearSimplifierPageContent();
         state.currentCircuit = circuitName;
         state.currentCircuitMap = circuitMap;
