@@ -28,7 +28,7 @@ class PageManager {
         this.simplifierPage.style.display = "none";
         this.cheatSheet.style.display = "none";
         this.enableSettings();
-        document.title = "Circuit Selection";
+        document.title = "Circuit Selection - Loading";
     }
 
     showSimplifierPage() {
