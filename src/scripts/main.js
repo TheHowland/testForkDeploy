@@ -32,7 +32,6 @@ async function main() {
     // Get the pyodide instance and setup pages with functionality
     let pyodide = await loadPyodide();
     pageManager.setPyodide(pyodide);
-    packageManager.loadMathJax();
 
     // Map all circuits into map and build the selectors
     circuitMapper = new CircuitMapper(pyodide);
