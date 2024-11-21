@@ -36,24 +36,16 @@ async function main() {
     // Map all circuits into map and build the selectors
     circuitMapper = new CircuitMapper(pyodide);
     await circuitMapper.mapCircuits();
+
     selectorBuilder.buildSelectorsForAllCircuitSets();
 
     pageManager.setupNavigation();
     pageManager.setupCheatSheet();
 
     setupDarkModeSwitch();
-    hideAllSelectors();
-    const note = showWaitingNote();
-
-    // Import packages/scripts, create selector svgs
-    await packageManager.doLoadsAndImports(pyodide);
-    await createSvgsForSelectors(pyodide);
-
-    showAllSelectors();
-    note.remove();
-
-    pageManager.setupSelectPage();
 }
+
+
 
 // #####################################################################################################################
 async function solveCircuit(circuit, circuitMap, pyodide) {

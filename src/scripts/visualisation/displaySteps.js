@@ -11,7 +11,7 @@ function display_step(pyodide,stepDetails) {
     // Create the new elements for the current step
     const {circuitContainer, svgContainer} = setupCircuitContainer(svgData);
     const {newCalcBtn, newVCBtn} = setupExplanationButtons(showVoltageButton);
-    const {pathElements, electricalElements} = getElementsFromSvgContainer(svgContainer);
+    const electricalElements = getElementsFromSvgContainer(svgContainer);
     const nextElementsContainer = setupNextElementsContainer(sanitizedSvgFilePath, electricalElements, vcData, showVoltageButton);
     const contentCol = document.getElementById("content-col");
     contentCol.append(circuitContainer);
@@ -21,13 +21,13 @@ function display_step(pyodide,stepDetails) {
     checkAndAddExplanationButtons(showVoltageButton, stepCalculationText, contentCol, stepVoltageCurrentText);
 
     // The order of function-calls is important
-    checkIfStillNotFinishedAndMakeClickable(electricalElements, nextElementsContainer, sanitizedSvgFilePath, pathElements);
+    checkIfStillNotFinishedAndMakeClickable(electricalElements, nextElementsContainer, sanitizedSvgFilePath);
     prepareNextElementsContainer(contentCol, nextElementsContainer);
     const div = createExplanationBtnContainer(newCalcBtn);
     if (showVoltageButton) div.appendChild(newVCBtn);
 
     setupStepButtonsFunctionality(pyodide, div, stepDetails);
-    congratsAndVCDisplayIfFinished(electricalElements, contentCol, showVoltageButton, vcData);
+    congratsAndVCDisplayIfFinished(electricalElements, contentCol, showVoltageButton, vcData, pyodide);
     MathJax.typeset();
 }
 
@@ -121,9 +121,8 @@ function setupSvgDivContainerAndData(svgData) {
 
 function getElementsFromSvgContainer(svgContainer) {
     const pathElements = svgContainer.querySelectorAll('path');
-    const electricalElements = Array.from(pathElements).filter(path => (path.getAttribute('class') !== 'na')
-        && (!path.getAttribute('class').includes("arrow")));
-    return {pathElements, electricalElements: electricalElements};
+    return Array.from(pathElements).filter(path => (path.getAttribute('class') !== 'na')
+        && (!path.getAttribute('class').includes("arrow")))
 }
 
 function setupBboxRect(bbox, bboxId) {
@@ -411,17 +410,31 @@ function loadData(pyodide, stepDetails) {
     return {data, vcData, svgData, sanitizedSvgFilePath};
 }
 
-function checkIfStillNotFinishedAndMakeClickable(filteredPaths, nextElementsContainer, sanitizedSvgFilePath, pathElements) {
-    if (elementsLeftToBeSimplified(filteredPaths)) {
-        getAllElementsAndMakeClickable(nextElementsContainer, sanitizedSvgFilePath, pathElements);
+function checkIfStillNotFinishedAndMakeClickable(electricalElements, nextElementsContainer, sanitizedSvgFilePath) {
+    if (elementsLeftToBeSimplified(electricalElements)) {
+        getAllElementsAndMakeClickable(nextElementsContainer, sanitizedSvgFilePath, electricalElements);
     }
 }
 
-function congratsAndVCDisplayIfFinished(filteredPaths, contentCol, showVoltageButton, vcData) {
+function congratsAndVCDisplayIfFinished(filteredPaths, contentCol, showVoltageButton, vcData, pyodide) {
     if (onlyOneElementLeft(filteredPaths)) {
         finishCircuit(contentCol, showVoltageButton);
         addFirstVCExplanation(contentCol, showVoltageButton, vcData);
+        addBackButton(pyodide, contentCol);
     }
+}
+
+function addBackButton(pyodide, contentCol) {
+    let backButton = document.createElement("button");
+    backButton.classList.add("btn");
+    backButton.classList.add("btn-primary");
+    backButton.id = "back-btn";
+    backButton.innerHTML = languageManager.currentLang.backBtn;
+    contentCol.appendChild(backButton);
+    backButton.addEventListener("click", () => {
+        resetSimplifierPage(pyodide);
+        pageManager.showSelectPage();
+    });
 }
 
 function addFirstVCExplanation(contentCol, showVoltageButton, vcData) {

@@ -81,6 +81,7 @@ function showMessage(container, message, prio = "warning") {
     msg.classList.add("alert");
     msg.classList.add(`alert-${bootstrapAlert}`);
     msg.classList.add("fixed-bottom");
+    msg.style.bottom = "170px";
     msg.classList.add("m-5");
 
     let emojiSpan = document.createElement('span');
@@ -103,13 +104,6 @@ function showMessage(container, message, prio = "warning") {
 function setPgrBarTo(percent) {
     let progressBar = document.getElementById("pgr-bar");
     progressBar.style.width = `${percent}%`;
-    // Add the progress to the start button on landing page
-    let startBtn = document.getElementById("start-button");
-    startBtn.style.backgroundImage = `linear-gradient(to right, ${colors.keyYellow} ${percent}%, white ${percent + 0}%)`;
-    if (percent === 100) {
-        // add pulse
-        startBtn.style.animation = "pulse 2s infinite";
-    }
 }
 
 function clearSimplifierPageContent() {
