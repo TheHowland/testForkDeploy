@@ -11,7 +11,6 @@ class PageManager {
     }
 
     showLandingPage() {
-        et_pagename = "Test Homepage";
         this.landingPage.style.display = "block";
         this.selectPage.style.display = "none";
         this.simplifierPage.style.display = "none";
@@ -24,7 +23,6 @@ class PageManager {
     }
 
     showSelectPage() {
-        et_pagename = "Test Select page";
         this.landingPage.style.display = "none";
         this.selectPage.style.display = "block";
         this.simplifierPage.style.display = "none";
