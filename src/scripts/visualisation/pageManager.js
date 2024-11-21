@@ -97,18 +97,23 @@ class PageManager {
     }
 
     async landingPageStartBtnClicked(pyodide) {
-        this.showSelectPage();
-        hideAllSelectors();
-        const note = showWaitingNote();
+        if (state.pyodideLoading || state.pyodideReady) {
+            this.showSelectPage();
+        } else {
+            state.pyodideLoading = true;
+            this.showSelectPage();
+            hideAllSelectors();
+            const note = showWaitingNote();
 
-        // Import packages/scripts, create selector svgs
-        await packageManager.doLoadsAndImports(pyodide);
-        await createSvgsForSelectors(pyodide);
+            // Import packages/scripts, create selector svgs
+            await packageManager.doLoadsAndImports(pyodide);
+            await createSvgsForSelectors(pyodide);
 
-        showAllSelectors();
-        note.remove();
+            showAllSelectors();
+            note.innerHTML = "";
 
-        pageManager.setupSelectPage();
+            pageManager.setupSelectPage();
+        }
     }
 
     setupSelectPage() {

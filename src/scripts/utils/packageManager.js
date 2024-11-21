@@ -80,6 +80,7 @@ class PackageManager {
 
         progressBarContainer.style.display = "none";
         state.pyodideReady = true;
+        state.pyodideLoading = false;
     }
 
     async load_packages(pyodide, optAddNames) {

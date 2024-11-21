@@ -28,6 +28,7 @@ class StateObject {
 
     //Boolean to track if the Pyodide environment is ready.
     pyodideReady = false;
+    pyodideLoading = false;
 
     //To count how many svgs are on the screen right now
     pictureCounter = 0;
