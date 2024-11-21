@@ -69,6 +69,7 @@ class PackageManager {
         console.log("Imported: " + packages);
 
         progressBarContainer.style.display = "none";
+        document.title = "Circuit Selection - Ready";
         state.pyodideReady = true;
         state.pyodideLoading = false;
     }
