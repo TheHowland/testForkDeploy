@@ -8,9 +8,14 @@ from lcapy.langSymbols import LangSymbols
 from lcapy.jsonExportCircuitInfo import JsonExportCircuitInfo
 
 
-def solve_circuit(filename: str, filePath="Circuits/", savePath="Solutions/", langSymbols: dict = {}):
+def solve_circuit(filename: str, filePath="Circuits/", savePath="Solutions/", langSymbols: dict = None):
 
-    langSym = LangSymbols(langSymbols)
+    if langSymbols is not None:
+        langSym = LangSymbols()
+        for key in langSymbols.keys():
+            langSym.add(key, langSymbols[key])
+    else:
+        langSym = LangSymbols()
     
     cct = Circuit(FileToImpedance(os.path.join(filePath, filename)))
     cct.namer.reset()
@@ -21,13 +26,18 @@ def solve_circuit(filename: str, filePath="Circuits/", savePath="Solutions/", la
 
 
 class SolveInUserOrder:
-    def __init__(self, filename: str, filePath="", savePath="", langSymbols: dict = {}):
+    def __init__(self, filename: str, filePath="", savePath="", langSymbols: dict = None):
         """
         :param filename: str with filename of circuit to simplify
         :param filePath: str with path to circuit file if not in current directory
         :param savePath: str with path to save the result svg and jason files to
         """
-        langSym = LangSymbols(langSymbols)
+        if langSymbols is not None:
+            langSym = LangSymbols()
+            for key in langSymbols.keys():
+                langSym.add(key, langSymbols[key])
+        else:
+            langSym = LangSymbols()
 
         self.filename = filename
         self.filePath = filePath
