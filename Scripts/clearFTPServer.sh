@@ -3,12 +3,12 @@
 FTP_SERVER="ftp://w0182f79.kasserver.com/simplipfy"
 FTP_USER="f017019e"
 FTP_PASS="EuVumvJ4TyqztDz7Qgwq"
-REMOTE_DIR="/"
 
 # get all files and directories from ftp server
-ncftpls -u f017019e -p EuVumvJ4TyqztDz7Qgwq ftp://w0182f79.kasserver.com > removeFiles.txt
-# exclude index.html
+ncftpls -u $FTP_USER -p $FTP_PASS $FTP_SERVER > removeFiles.txt
+# exclude index.html and matomo
 sed -i '/index\.html/d' removeFiles.txt
+sed -i '/matomo/d' removeFiles.txt
 
 # making commands to clear ftp server
 while IFS= read -r line; do
