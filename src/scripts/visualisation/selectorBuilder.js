@@ -147,8 +147,8 @@ class SelectorBuilder {
     }
 
     circuitSelectorStartButtonPressed(circuitName, circuitMap, pageManager){
-        document.title = "Simplifier";
-        pushPageViewMatomo(circuitMap.selectorGroup + "/" + circuitName);
+        document.title = "Simplifier " + circuitName;
+        _paq.push(['setDocumentTitle', document.title]);
         clearSimplifierPageContent();
         state.currentCircuit = circuitName;
         state.currentCircuitMap = circuitMap;
