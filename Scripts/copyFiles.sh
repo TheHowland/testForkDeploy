@@ -3,7 +3,7 @@
     find . -mindepth 1 -not -path "./.git*" -delete
     cd ..
     echo "copy files"
-    echo -e ".git/\n.idea/\nCircuits.zip\nScripts/\nConfigurations\nGzipSimplePythonHttpServer.py" > exclude-list.txt
+    echo -e ".git/\n.idea/\nCircuits.zip\nScripts/\nConfigurations\nGzipSimplePythonHttpServer.py\nindex.html\n.gitignore" > exclude-list.txt
     rsync -av --exclude-from='exclude-list.txt' Pyodide/ temp/
     rm exclude-list.txt
     cd temp

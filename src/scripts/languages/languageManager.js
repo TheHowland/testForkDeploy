@@ -53,7 +53,24 @@ class LanguageManager {
         cap.innerHTML = this.currentLang.capacitorRowHeading;
         const ind = document.getElementById("inductor");
         ind.innerHTML = this.currentLang.inductorRowHeading;
+    }
 
+    updateDataPrivacyPage() {
+        const backBtn = document.getElementById('back-btn');
+        backBtn.innerHTML = this.currentLang.dataPrivacyBackBtn;
+        const dataPrivacyHeading = document.getElementById('data-privacy-heading');
+        dataPrivacyHeading.innerHTML = this.currentLang.dataPrivacyHeading;
+        const dataPrivacyText = document.getElementById('data-privacy-text');
+        dataPrivacyText.innerHTML = this.currentLang.dataPrivacyText;
+    }
+
+    updateLegalNoticePage() {
+        const backBtn = document.getElementById('back-btn');
+        backBtn.innerHTML = this.currentLang.dataPrivacyBackBtn;
+        const legalNoticeHeading = document.getElementById('legal-notice-heading');
+        legalNoticeHeading.innerHTML = this.currentLang.legalNoticeHeading;
+        const legalNoticeText = document.getElementById('legal-notice-text');
+        legalNoticeText.innerHTML = this.currentLang.legalNoticeText;
     }
 
 }

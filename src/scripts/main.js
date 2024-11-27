@@ -19,6 +19,7 @@ let pageManager;
 // #####################################################################################################################
 
 async function main() {
+    disableStartBtnAndSimplifierLink();
     conf = new Configurations();
     await conf.initialize();
     packageManager = new PackageManager();
@@ -43,6 +44,7 @@ async function main() {
     pageManager.setupCheatSheet();
 
     setupDarkModeSwitch();
+    enableStartBtnAndSimplifierLink();
 }
 
 
@@ -51,11 +53,15 @@ async function main() {
 async function solveCircuit(circuit, circuitMap, pyodide) {
     await clearSolutionsDir(pyodide);
 
+    let paramMap = new Map();
+    paramMap.set("volt", languageManager.currentLang.voltageSymbol);
+    paramMap.set("total", languageManager.currentLang.totalSuffix);
+
     stepSolve = state.solve.SolveInUserOrder(
         circuit,
         `${conf.pyodideCircuitPath}/${circuitMap.sourceDir}`,
         `${conf.pyodideSolutionsPath}/`,
-        languageManager.currentLang.voltageSymbol);
+        paramMap);
     await stepSolve.createStep0().toJs();
 
     // Get information which components are used in this circuit

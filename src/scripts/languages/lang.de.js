@@ -135,10 +135,19 @@ const german = {
     subTableHeading:
         "ZUSAMMENFASSUNGS-FORMELN",
     resReaTableHeading:
-        "KOMPLEXER WIDERSTAND"
+        "KOMPLEXER WIDERSTAND",
 
 
-
-
+    /* Data Privacy Page */
+    dataPrivacyBackBtn:
+        "Zur&uumlck zur Homepage",
+    dataPrivacyHeading:
+        "Datenschutz",
+    dataPrivacyText:
+        "",
+    legalNoticeHeading:
+        "Impressum",
+    legalNoticeText:
+        "",
 
 }

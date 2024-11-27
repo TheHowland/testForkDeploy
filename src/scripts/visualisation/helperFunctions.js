@@ -1,6 +1,18 @@
 /*
 Replaces non-alphanumeric characters in a selector string with underscores to ensure it is a valid CSS selector.
  */
+function enableStartBtnAndSimplifierLink() {
+    document.getElementById("nav-select").classList.remove("disabled");
+    document.getElementById("start-button").classList.remove("disabled");
+    document.getElementById("start-button").style.animation = "pulse 2s infinite";
+}
+
+function disableStartBtnAndSimplifierLink() {
+    document.getElementById("nav-select").classList.add("disabled");
+    document.getElementById("start-button").classList.add("disabled");
+    document.getElementById("start-button").style.animation = "";
+}
+
 function sanitizeSelector(selector) {
     return selector.replace(/[^\w-]/g, '_');
 }
@@ -118,7 +130,11 @@ function clearSimplifierPageContent() {
 }
 
 function resetSolverObject() {
-    stepSolve = state.solve.SolveInUserOrder(state.currentCircuit, `${conf.pyodideCircuitPath}/${state.currentCircuitMap.sourceDir}`, `${conf.pyodideSolutionsPath}/`, languageManager.currentLang.voltageSymbol);
+    let paramMap = new Map();
+    paramMap.set("volt", languageManager.currentLang.voltageSymbol);
+    paramMap.set("total", languageManager.currentLang.totalSuffix);
+
+    stepSolve = state.solve.SolveInUserOrder(state.currentCircuit, `${conf.pyodideCircuitPath}/${state.currentCircuitMap.sourceDir}`, `${conf.pyodideSolutionsPath}/`, paramMap);
 }
 
 function enableCheckBtn() {
@@ -207,10 +223,15 @@ function resetHighlightedBoundingBoxes(svgDiv) {
 async function createSvgsForSelectors(pyodide) {
     await clearSolutionsDir(pyodide);
     // For all circuit sets (e.g. Resistors, Capacitors, ..)
+    let paramMap = new Map();
+    paramMap.set("volt", languageManager.currentLang.voltageSymbol);
+    paramMap.set("total", languageManager.currentLang.totalSuffix);
+
+
     for (const circuitSet of circuitMapper.circuitSets) {
         // For all circuits in this set (e.g., Resistor1, Resistor2, ...)
         for (const circuit of circuitSet.set) {
-            stepSolve = state.solve.SolveInUserOrder(circuit.circuitFile, `${conf.pyodideCircuitPath}/${circuit.sourceDir}`, `${conf.pyodideSolutionsPath}/`, languageManager.currentLang.voltageSymbol);
+            stepSolve = state.solve.SolveInUserOrder(circuit.circuitFile, `${conf.pyodideCircuitPath}/${circuit.sourceDir}`, `${conf.pyodideSolutionsPath}/`, paramMap);
             await stepSolve.createStep0().toJs();
         }
     }

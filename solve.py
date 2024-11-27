@@ -1,37 +1,38 @@
-# for lcapy version: 1.24+inskale.0.21
+# for lcapy version: 1.24+inskale.0.22
 from lcapy import Circuit, FileToImpedance, DrawWithSchemdraw
 from lcapy.solution import Solution
 from lcapy.componentRelation import ComponentRelation
 from lcapy.solutionStep import SolutionStep
 import os
+from lcapy.langSymbols import LangSymbols
 from lcapy.jsonExportCircuitInfo import JsonExportCircuitInfo
 
 
-def solve_circuit(filename: str, filePath="Circuits/", savePath="Solutions/"):
+def solve_circuit(filename: str, filePath="Circuits/", savePath="Solutions/", langSymbols: dict = {}):
+
+    langSym = LangSymbols(langSymbols)
+    
     cct = Circuit(FileToImpedance(os.path.join(filePath, filename)))
     cct.namer.reset()
     steps = cct.simplify_stepwise()
-    sol = Solution(steps)
+    sol = Solution(steps, langSymbols=langSym)
     sol.draw(path=savePath, filename=filename)
     sol.export(path=savePath, filename=filename)
 
 
 class SolveInUserOrder:
-    def __init__(self, filename: str, filePath=None, savePath=None, voltSym: str = "U"):
+    def __init__(self, filename: str, filePath="", savePath="", langSymbols: dict = {}):
         """
         :param filename: str with filename of circuit to simplify
         :param filePath: str with path to circuit file if not in current directory
         :param savePath: str with path to save the result svg and jason files to
         """
-        if filePath is None:
-            filePath = ""
-        if savePath is None:
-            savePath = ""
+        langSym = LangSymbols(langSymbols)
 
         self.filename = filename
         self.filePath = filePath
         self.savePath = savePath
-        self.voltSym = voltSym
+        self.langSymbols = langSym
         self.circuit = Circuit(FileToImpedance(os.path.join(filePath, filename)))
         self.steps: list[SolutionStep] = [
             SolutionStep(self.circuit, None, None, None, None, None,
@@ -64,7 +65,7 @@ class SolveInUserOrder:
         else:
             return False, ("", ""), ""
 
-        sol = Solution(self.steps, voltSym=self.voltSym)
+        sol = Solution(self.steps, langSymbols=self.langSymbols)
         newestStep = sol.available_steps[-1]
 
         jsonName = sol.exportStepAsJson(newestStep, path=self.savePath, filename=os.path.splitext(self.filename)[0])
@@ -79,7 +80,7 @@ class SolveInUserOrder:
         :return tuple with bool if simplification is possible, str with json filename, str with svg filename
         """
 
-        sol = Solution(self.steps, voltSym=self.voltSym)
+        sol = Solution(self.steps, langSymbols=self.langSymbols)
         nameStep0Json = sol.exportStepAsJson("step0", path=self.savePath, filename=self.filename)
         nameStep0Svg = sol.drawStep('step0', filename=self.filename, path=self.savePath)
 
