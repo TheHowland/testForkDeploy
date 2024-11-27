@@ -19,6 +19,4 @@ done < removeFiles.txt
 rm removeFiles.txt
 
 # execute commands to clear ftp server
-ncftp -u $FTP_USER -p $FTP_PASS $FTP_SERVER $FTP_FOLDER <<EOF
-      $modified_content
-EOF
+ncftp -u $FTP_USER -p $FTP_PASS $FTP_SERVER $FTP_FOLDER <<< $modified_content
