@@ -10,8 +10,6 @@ FTP_PASS="EuVumvJ4TyqztDz7Qgwq"
 ncftpls -u $FTP_USER -p $FTP_PASS $FTP_SERVER_FULL_PATH > removeFiles.txt
 # exclude index.html, matomo, Simplipfy
 sed -i '/index\.html/d' removeFiles.txt
-sed -i '/matomo/d' removeFiles.txt
-sed -i '/Simplipfy/d' removeFiles.txt
 
 # making commands to clear ftp server
 while IFS= read -r line; do
