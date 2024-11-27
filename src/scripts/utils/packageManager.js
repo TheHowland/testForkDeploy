@@ -69,8 +69,8 @@ class PackageManager {
         console.log("Imported: " + packages);
 
         progressBarContainer.style.display = "none";
-        document.title = "Circuit Selection";
-        pushPageViewMatomo("Ready");
+        document.title = "Circuit Selection - Ready";
+        _paq.push(['setDocumentTitle', document.title]);
         state.pyodideReady = true;
         state.pyodideLoading = false;
     }
