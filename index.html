@@ -16,6 +16,7 @@
     <script src="src/scripts/utils/circuitMapper.js"></script>
     <script src="src/scripts/utils/configurations.js"></script>
     <script src="src/scripts/utils/packageManager.js"></script>
+    <script src="src/scripts/utils/matomoHelper.js"></script>
 
     <script src="src/scripts/dataObjects/stateObject.js"></script>
     <script src="src/scripts/dataObjects/stepDetails.js"></script>
@@ -46,11 +47,10 @@
     <script>
         var _paq = window._paq = window._paq || [];
         /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
-        _paq.push(['disableCookies']);
         _paq.push(['trackPageView']);
         _paq.push(['enableLinkTracking']);
         (function() {
-            var u="//simplipfy.org/matomo/";
+            var u="//matomo.simplipfy.org/";
             _paq.push(['setTrackerUrl', u+'matomo.php']);
             _paq.push(['setSiteId', '2']);
             var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
@@ -58,6 +58,7 @@
         })();
     </script>
     <!-- End Matomo Code -->
+
 
 </head>
 
