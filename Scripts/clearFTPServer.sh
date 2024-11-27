@@ -1,6 +1,6 @@
 #!/bin/bash
 
-FTP_SERVER="ftp://w0182f79.kasserver.com"
+FTP_SERVER="ftp://w0182f79.kasserver.com/simplipfy"
 FTP_USER="f017019e"
 FTP_PASS="EuVumvJ4TyqztDz7Qgwq"
 
@@ -19,6 +19,6 @@ done < removeFiles.txt
 rm removeFiles.txt
 
 # execute commands to clear ftp server
-ncftp -u f017019e -p EuVumvJ4TyqztDz7Qgwq ftp://w0182f79.kasserver.com <<EOF
+ncftp -u $FTP_USER -p $FTP_PASS $FTP_SERVER <<EOF
       $modified_content
 EOF
