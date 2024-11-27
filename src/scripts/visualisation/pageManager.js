@@ -19,8 +19,8 @@ class PageManager {
         for (let feature of document.querySelectorAll(".feature-container")) {
             feature.classList.remove("visible");
         }
-        document.title = "simpliPFy";
-        pushPageViewMatomo("Home")
+        document.title = "simpliPFy - Home";
+        _paq.push(['setDocumentTitle', document.title]);
     }
 
     showSelectPage() {
@@ -29,12 +29,12 @@ class PageManager {
         this.simplifierPage.style.display = "none";
         this.cheatSheet.style.display = "none";
         this.enableSettings();
-        document.title = "Circuit Selection";
         if (state.pyodideReady) {
-             pushPageViewMatomo("Ready");
+            document.title = "Circuit Selection - Ready";
         } else {
-            pushPageViewMatomo("Loading");
+            document.title = "Circuit Selection - Loading";
         }
+        _paq.push(['setDocumentTitle', document.title]);
     }
 
     showSimplifierPage() {
@@ -44,7 +44,7 @@ class PageManager {
         this.cheatSheet.style.display = "none";
         this.disableSettings();
         document.title = "Simplifier";
-        pushPageViewMatomo();
+        _paq.push(['setDocumentTitle', document.title]);
     }
 
     showCheatSheet() {
@@ -54,7 +54,7 @@ class PageManager {
         this.cheatSheet.style.display = "block";
         this.enableSettings();
         document.title = "Cheat Sheet";
-        pushPageViewMatomo();
+        _paq.push(['setDocumentTitle', document.title]);
     }
 
     disableSettings() {
