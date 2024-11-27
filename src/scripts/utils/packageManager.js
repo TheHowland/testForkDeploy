@@ -70,7 +70,8 @@ class PackageManager {
 
         progressBarContainer.style.display = "none";
         document.title = "Circuit Selection - Ready";
-        _paq.push(['setCustomTitle', document.title]);
+        _paq.push(['setDocumentTitle', document.title]);
+        _paq.push(['trackPageView']);
         state.pyodideReady = true;
         state.pyodideLoading = false;
     }
