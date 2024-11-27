@@ -20,7 +20,8 @@ class PageManager {
             feature.classList.remove("visible");
         }
         document.title = "simpliPFy - Home";
-        _paq.push(['setCustomTitle', document.title]);
+        _paq.push(['setDocumentTitle', document.title]);
+        _paq.push(['trackPageView']);
     }
 
     showSelectPage() {
@@ -34,7 +35,8 @@ class PageManager {
         } else {
             document.title = "Circuit Selection - Loading";
         }
-        _paq.push(['setCustomTitle', document.title]);
+        _paq.push(['setDocumentTitle', document.title]);
+        _paq.push(['trackPageView']);
     }
 
     showSimplifierPage() {
@@ -44,7 +46,8 @@ class PageManager {
         this.cheatSheet.style.display = "none";
         this.disableSettings();
         document.title = "Simplifier";
-        _paq.push(['setCustomTitle', document.title]);
+        _paq.push(['setDocumentTitle', document.title]);
+        _paq.push(['trackPageView']);
     }
 
     showCheatSheet() {
@@ -54,7 +57,8 @@ class PageManager {
         this.cheatSheet.style.display = "block";
         this.enableSettings();
         document.title = "Cheat Sheet";
-        _paq.push(['setCustomTitle', document.title]);
+        _paq.push(['setDocumentTitle', document.title]);
+        _paq.push(['trackPageView']);
     }
 
     disableSettings() {
