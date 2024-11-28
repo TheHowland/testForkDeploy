@@ -364,7 +364,7 @@ function generateTexts(data, vcData, componentTypes) {
 
 function finishCircuit(contentCol, showVoltageButton) {
     document.getElementById("check-btn").disabled = true;
-    showMessage(contentCol, languageManager.currentLang.msgCongratsFinishedCircuit, "success");
+    showMessage(contentCol, languageManager.currentLang.msgCongratsFinishedCircuit, "success", false);
     confetti({
         particleCount: 150,
         angle: 90,
@@ -418,9 +418,9 @@ function checkIfStillNotFinishedAndMakeClickable(electricalElements, nextElement
 
 function congratsAndVCDisplayIfFinished(filteredPaths, contentCol, showVoltageButton, vcData, pyodide) {
     if (onlyOneElementLeft(filteredPaths)) {
-        finishCircuit(contentCol, showVoltageButton);
         addFirstVCExplanation(contentCol, showVoltageButton, vcData);
         addBackButton(pyodide, contentCol);
+        finishCircuit(contentCol, showVoltageButton);
     }
 }
 
@@ -488,6 +488,7 @@ function createTotalCurrentBtn() {
 }
 
 function setStyleAndEvent(element, nextElementsList) {
+    element.style.pointerEvents = "bounding-box";
     element.style.cursor = 'pointer';
     element.addEventListener('click', () =>
         chooseElement(element, nextElementsList)
