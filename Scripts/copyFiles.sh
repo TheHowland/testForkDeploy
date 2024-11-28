@@ -7,4 +7,3 @@
     rsync -av --exclude-from='exclude-list.txt' Pyodide/ temp/
     rm exclude-list.txt
     cd temp
-    zip -r Circuits Circuits && rm -r Circuits/

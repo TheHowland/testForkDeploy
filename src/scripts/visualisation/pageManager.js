@@ -106,7 +106,8 @@ class PageManager {
 
             // Import packages/scripts, create selector svgs
             await packageManager.doLoadsAndImports(pyodide);
-            await createSvgsForSelectors(pyodide);
+            //await createSvgsForSelectors(pyodide);
+
 
             showAllSelectors();
             note.innerHTML = "";

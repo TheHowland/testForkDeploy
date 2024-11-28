@@ -95,7 +95,8 @@ class CircuitMapper {
             circuitFile: circuitFileName,
             sourceDir: dir,
             svgFile: `${this._svgsPath}/${circuitId}_step0.svg`,
-            selectorGroup: id
+            selectorGroup: id,
+            overViewSvgFile: `${this._circuitsPath}/acdc/${circuitId}_step0.svg`
         }
     }
 
@@ -118,7 +119,7 @@ class CircuitMapper {
         this.files = {};
         for (let dir of this.circuitDirs) {
             let circuits = this.pyodide.FS.readdir(this._circuitsPath + "/" + dir);
-            circuits = circuits.filter((file) => file !== "." && file !== "..");
+            circuits = circuits.filter((file) => file !== "." && file !== ".." && !file.endsWith(".svg"));
             this.files[dir] = circuits
         }
     }

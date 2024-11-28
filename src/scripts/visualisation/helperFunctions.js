@@ -222,6 +222,7 @@ function resetHighlightedBoundingBoxes(svgDiv) {
     }
 }
 
+// ToDo maybe Remove
 async function createSvgsForSelectors(pyodide) {
     await clearSolutionsDir(pyodide);
     // For all circuit sets (e.g. Resistors, Capacitors, ..)

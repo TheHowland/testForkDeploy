@@ -5,7 +5,6 @@ from lcapy.componentRelation import ComponentRelation
 from lcapy.solutionStep import SolutionStep
 import os
 from lcapy.langSymbols import LangSymbols
-from lcapy.jsonExportCircuitInfo import JsonExportCircuitInfo
 
 
 def solve_circuit(filename: str, filePath="Circuits/", savePath="Solutions/", langSymbols: dict = {}):

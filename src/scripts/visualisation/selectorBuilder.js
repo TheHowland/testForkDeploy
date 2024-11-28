@@ -105,7 +105,7 @@ class SelectorBuilder {
         const btnOverlay = document.getElementById(circuitMap.btnOverlay);
 
         // Fill div with svg
-        let svgData = pyodide.FS.readFile(circuitMap.svgFile, {encoding: "utf8"});
+        let svgData = pyodide.FS.readFile(circuitMap.overViewSvgFile, {encoding: "utf8"});
         svgData = setSvgWidthTo(svgData, "100%");
         svgData = setSvgColorMode(svgData);
         circuitDiv.innerHTML = svgData;
