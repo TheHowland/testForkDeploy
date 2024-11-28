@@ -376,6 +376,7 @@ function finishCircuit(contentCol, showVoltageButton) {
         enableVoltageCurrentBtns();
         showArrows(contentCol);
     }
+    pushPageViewMatomo("Finished");
 }
 
 function setupStepButtonsFunctionality(pyodide, div, stepDetails) {
