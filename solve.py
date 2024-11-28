@@ -1,10 +1,11 @@
-# for lcapy version: 1.24+inskale.0.22
+# for lcapy version: 1.24+inskale.0.23
 from lcapy import Circuit, FileToImpedance, DrawWithSchemdraw
 from lcapy.solution import Solution
 from lcapy.componentRelation import ComponentRelation
 from lcapy.solutionStep import SolutionStep
 import os
 from lcapy.langSymbols import LangSymbols
+from lcapy.jsonExportCircuitInfo import JsonExportCircuitInfo
 
 
 def solve_circuit(filename: str, filePath="Circuits/", savePath="Solutions/", langSymbols: dict = {}):
