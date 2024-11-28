@@ -44,19 +44,7 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
     <!-- Matomo -->
-    <script>
-        var _paq = window._paq = window._paq || [];
-        /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
-        _paq.push(['trackPageView']);
-        _paq.push(['enableLinkTracking']);
-        (function() {
-            var u="//matomo.simplipfy.org/";
-            _paq.push(['setTrackerUrl', u+'matomo.php']);
-            _paq.push(['setSiteId', '2']);
-            var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-            g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
-        })();
-    </script>
+    <script>loadMatomo()</script>
     <!-- End Matomo Code -->
 
 
@@ -91,13 +79,13 @@
                             <img src="src/resources/navigation/uk.png" id="activeLanguageFlag" class="flag"></a>
                         <ul class="dropdown-menu" id="languagesDropdown" aria-labelledby="Dropdown" style="background-color: #33393f; width: min-content">
                             <li>
-                                <a id="select-english" class="d-flex" style="text-decoration: none; color:white">
+                                <a id="select-english" class="d-flex lang-selector" style="text-decoration: none; color:white">
                                     <img src="src/resources/navigation/uk.png" class="flag my-auto mx-2">
                                     <p class="my-auto" style="font-size: 20px">English</p>
                                 </a>
                             </li>
                             <li>
-                                <a id="select-german" class="d-flex" style="text-decoration: none; color:white">
+                                <a id="select-german" class="d-flex lang-selector" style="text-decoration: none; color:white">
                                     <img src="src/resources/navigation/germany.png" class="flag my-auto mx-2">
                                     <p class="my-auto" style="font-size: 20px">Deutsch</p>
                                 </a>

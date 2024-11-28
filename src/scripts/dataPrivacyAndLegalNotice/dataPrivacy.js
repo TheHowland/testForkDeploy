@@ -1,10 +1,23 @@
 function setupDataPrivacyPage() {
     const selectEnglish = document.getElementById("select-english");
     const selectGerman = document.getElementById("select-german");
+    let backBtn = document.getElementById("back-btn");
+    let navLogo = document.getElementById("nav-logo");
+    let navHome = document.getElementById("nav-home");
     let languageManager = new LanguageManager();
 
     document.getElementById("data-privacy-darkmode-switch").disabled = true;
     languageManager.updateDataPrivacyPage();
+
+    backBtn.addEventListener("click", () => {
+        window.location.pathname = window.location.pathname.substring(0, window.location.pathname.indexOf('datenschutz.html'))
+    });
+    navLogo.addEventListener("click", () => {
+        window.location.pathname = window.location.pathname.substring(0, window.location.pathname.indexOf('datenschutz.html'))
+    });
+    navHome.addEventListener("click", () => {
+        window.location.pathname = window.location.pathname.substring(0, window.location.pathname.indexOf('datenschutz.html'))
+    });
 
     selectEnglish.addEventListener("click", () => {
         languageManager.currentLang = english;

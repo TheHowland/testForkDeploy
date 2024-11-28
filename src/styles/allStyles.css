@@ -238,6 +238,10 @@ th, td {
     }
 }
 
+#bootstrap-overrides a.lang-selector {
+    cursor: pointer;
+}
+
 #bootstrap-overrides #darkmode-label {
     font-family: 'Roboto Condensed', sans-serif;
     font-size: small;
