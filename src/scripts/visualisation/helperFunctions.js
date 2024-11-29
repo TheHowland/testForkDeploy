@@ -279,6 +279,18 @@ function showArrows(contentCol) {
     }
 }
 
+function whenAvailable(name, callback) {
+    var interval = 10; // ms
+    window.setTimeout(function() {
+        if (window[name]) {
+            callback(window[name]);
+        } else {
+            whenAvailable(name, callback);
+        }
+    }, interval);
+}
+
+
 
 
 

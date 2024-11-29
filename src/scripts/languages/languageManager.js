@@ -21,9 +21,12 @@ class LanguageManager {
     }
 
     updateLanguageSelectorPage() {
-        for (const circuitSet of circuitMapper.circuitSets) {
-            const heading = document.getElementById(`${circuitSet.identifier}-heading`);
-            heading.innerHTML = this.currentLang.carouselHeadings[circuitSet.identifier];
+        // circuit mapper is only instantiated in when start button pressed
+        if (circuitMapper !== null) {
+            for (const circuitSet of circuitMapper.circuitSets) {
+                const heading = document.getElementById(`${circuitSet.identifier}-heading`);
+                heading.innerHTML = this.currentLang.carouselHeadings[circuitSet.identifier];
+            }
         }
     }
 

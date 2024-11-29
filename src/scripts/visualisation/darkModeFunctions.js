@@ -15,7 +15,9 @@ function changeToDarkMode() {
     updateAvailableBsClassesTo(colors.bsColorSchemeDark);
     updateNavigationColorsTo(colors.bootstrapDark, colors.languagesDarkBg);
     updateCheatSheetPageColorsTo(colors.bsColorSchemeDark);
-    updateSelectorPageSvgStrokeColor(colors.lightModeSvgStrokeColor, colors.darkModeSvgStrokeColor);
+    if (circuitMapper !== null) {
+        updateSelectorPageSvgStrokeColor(colors.lightModeSvgStrokeColor, colors.darkModeSvgStrokeColor);
+    }
 }
 
 function changeToLightMode() {
@@ -23,7 +25,9 @@ function changeToLightMode() {
     updateAvailableBsClassesTo(colors.bsColorSchemeLight);
     updateNavigationColorsTo(colors.bootstrapWhite, colors.languagesLightBg);
     updateCheatSheetPageColorsTo(colors.bsColorSchemeLight);
-    updateSelectorPageSvgStrokeColor(colors.darkModeSvgStrokeColor, colors.lightModeSvgStrokeColor);
+    if (circuitMapper !== null) {
+        updateSelectorPageSvgStrokeColor(colors.darkModeSvgStrokeColor, colors.lightModeSvgStrokeColor);
+    }
 }
 
 function updateNavigationColorsTo(navigationToggleBgColor, languagesBgColor) {
