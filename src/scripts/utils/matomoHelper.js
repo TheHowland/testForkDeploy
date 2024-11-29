@@ -4,10 +4,25 @@ const circuitActions = {
     Reset: "Reset",
 }
 
+const configActions = {
+    SetDarkMode: "DarkMode",
+    SetLanguage: "Sprache",
+}
+
+const configDarkModeValues = {
+    Dark: "Dunkel",
+    Light: "Hell",
+}
+
+const configLanguageValues = {
+    German: "Deutsch",
+    English: "Englisch",
+}
+
 function pushPageViewMatomo(title="") {
-  if (typeof _paq !== 'undefined') {
-    _paq.push(['setDocumentTitle', document.title + "/" + title]);
-    _paq.push(['trackPageView']);
+  if (typeof _paq !== "undefined") {
+    _paq.push(["setDocumentTitle", document.title + "/" + title]);
+    _paq.push(["trackPageView"]);
   }
 }
 
@@ -18,7 +33,7 @@ function mapCategory(category) {
   return null;
 }
 
-function pushCircuitEventMatomo(action, value=0) {
+function pushCircuitEventMatomo(action, value=-1) {
   let category = state.currentCircuitMap.selectorGroup
   let circuitName = state.currentCircuitMap.circuitFile
 
@@ -36,29 +51,48 @@ function pushCircuitEventMatomo(action, value=0) {
     console.log("Either change the action or adapt the possible actions");
     return;
   }
-  if (value === 0) {
-    _paq.push(['trackEvent', mappedCategory, action, circuitName]);
+  if (value === -1) {
+    _paq.push(["trackEvent", mappedCategory, action, circuitName]);
   } else {
-    _paq.push(['trackEvent', mappedCategory, action, circuitName, value]);
+    _paq.push(["trackEvent", mappedCategory, action, circuitName, value]);
   }
 }
 
-function pushConfigurationEventMatomo(action, configuration, value=0) {
+function pushConfigurationEventMatomo(action, configuration, value=-1) {
+    let possibleActions = Object.values(configActions);
+    if (!(possibleActions.includes(action))) {
+        console.log("Action not in " + possibleActions);
+        console.log("Action: " + action);
+        console.log("Either change the action or adapt the possible actions");
+        return;
+    }
+    if (value === -1) {
+      _paq.push(["trackEvent", "Konfigurationen", action, configuration]);
+    } else {
+      _paq.push(["trackEvent", "Konfigurationen", action, configuration, value]);
+    }
+}
 
+function pushLanguageEventMatomo(language) {
+  pushConfigurationEventMatomo(configActions.SetLanguage, language);
+}
+
+function pushDarkModeEventMatomo(mode) {
+  pushConfigurationEventMatomo(configActions.SetDarkMode, mode);
 }
 
 
 function loadMatomo() {
   var _paq = window._paq = window._paq || [];
   /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
-  _paq.push(['disableCookies']);
-  _paq.push(['trackPageView']);
-  _paq.push(['enableLinkTracking']);
+  _paq.push(["disableCookies"]);
+  _paq.push(["trackPageView"]);
+  _paq.push(["enableLinkTracking"]);
   (function() {
     var u="//matomo.simplipfy.org/";
-    _paq.push(['setTrackerUrl', u+'matomo.php']);
-    _paq.push(['setSiteId', '2']);
-    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-    g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+    _paq.push(["setTrackerUrl", u+"matomo.php"]);
+    _paq.push(["setSiteId", "2"]);
+    var d=document, g=d.createElement("script"), s=d.getElementsByTagName("script")[0];
+    g.async=true; g.src=u+"matomo.js"; s.parentNode.insertBefore(g,s);
   })();
 }

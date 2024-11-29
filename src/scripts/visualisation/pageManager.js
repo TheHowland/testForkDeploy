@@ -173,6 +173,7 @@ class PageManager {
             activeFlagIcon.setAttribute("src", "src/resources/navigation/uk.png");
             closeNavbar();
             languageManager.updatesLanguageFields();
+            pushLanguageEventMatomo(configLanguageValues.English);
         })
         selectGerman.addEventListener("click", () => {
             languageManager.currentLang = german;
@@ -180,6 +181,7 @@ class PageManager {
             activeFlagIcon.setAttribute("src", "src/resources/navigation/germany.png");
             closeNavbar();
             languageManager.updatesLanguageFields();
+            pushLanguageEventMatomo(configLanguageValues.German);
         })
 
         const toggler = document.getElementById("nav-toggler");
