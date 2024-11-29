@@ -138,14 +138,23 @@ function resetSolverObject() {
     paramMap.set("volt", languageManager.currentLang.voltageSymbol);
     paramMap.set("total", languageManager.currentLang.totalSuffix);
 
-    stepSolve = state.solve.SolveInUserOrder(state.currentCircuit, `${conf.pyodideCircuitPath}/${state.currentCircuitMap.sourceDir}`, `${conf.pyodideSolutionsPath}/`, paramMap);
+    stepSolve = state.solve.SolveInUserOrder(state.currentCircuitMap.circuitFile, `${conf.pyodideCircuitPath}/${state.currentCircuitMap.sourceDir}`, `${conf.pyodideSolutionsPath}/`, paramMap);
 }
 
 function enableCheckBtn() {
     document.getElementById("check-btn").disabled = false;
 }
 
-function resetSimplifierPage(pyodide) {
+function resetSimplifierPage(pyodide, calledFromResetBtn = false) {
+    if (state.currentCircuitMap !== null) {
+        // If the back btn exists, the user has finished the simplification
+        // That means if the page is reset and the btn does not exist, the user aborted the simplification
+        // If calledFromResetBtn, then don't push the event because it's reset, and not aborted
+        let backBtnDoesNotExist = document.getElementById("back-btn") === null;
+        if (backBtnDoesNotExist && !calledFromResetBtn) {
+            pushCircuitEventMatomo(circuitActions.Aborted, state.pictureCounter);
+        }
+    }
     clearSimplifierPageContent();
     resetSolverObject();
     state.selectedElements = [];

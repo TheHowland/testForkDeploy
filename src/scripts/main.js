@@ -40,7 +40,7 @@ async function main() {
 
 
 // #####################################################################################################################
-async function solveCircuit(circuit, circuitMap, pyodide) {
+async function solveCircuit(circuitMap, pyodide) {
     await clearSolutionsDir(pyodide);
 
     let paramMap = new Map();
@@ -48,7 +48,7 @@ async function solveCircuit(circuit, circuitMap, pyodide) {
     paramMap.set("total", languageManager.currentLang.totalSuffix);
 
     stepSolve = state.solve.SolveInUserOrder(
-        circuit,
+        circuitMap.circuitFile,
         `${conf.pyodideCircuitPath}/${circuitMap.sourceDir}`,
         `${conf.pyodideSolutionsPath}/`,
         paramMap);
@@ -64,7 +64,7 @@ async function solveCircuit(circuit, circuitMap, pyodide) {
 }
 
 function startSolving(pyodide) {
-    solveCircuit(state.currentCircuit, state.currentCircuitMap, pyodide);
+    solveCircuit(state.currentCircuitMap, pyodide);
     //The div element that contains the SVG representation of the circuit diagram.
     const svgDiv = document.querySelector('.svg-container');
     //The div element that contains the list of elements that have been clicked or selected in the circuit diagram.

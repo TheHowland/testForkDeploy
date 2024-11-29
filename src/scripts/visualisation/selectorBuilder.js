@@ -113,7 +113,7 @@ class SelectorBuilder {
 
         this.setupSelectionCircuit(circuitDiv, startBtn, btnOverlay);
         startBtn.addEventListener("click", () =>
-            this.circuitSelectorStartButtonPressed(circuitMap.circuitFile, circuitMap, pageManager))
+            this.circuitSelectorStartButtonPressed(circuitMap, pageManager))
     }
 
     hideSvgArrows(circuitDiv) {
@@ -146,11 +146,10 @@ class SelectorBuilder {
         prev.hidden = true;
     }
 
-    circuitSelectorStartButtonPressed(circuitName, circuitMap, pageManager){
+    circuitSelectorStartButtonPressed(circuitMap, pageManager){
         document.title = "Simplifier";
-        pushPageViewMatomo(circuitMap.selectorGroup + "/" + circuitName);
+        pushPageViewMatomo(circuitMap.selectorGroup + "/" + circuitMap.circuitFile)
         clearSimplifierPageContent();
-        state.currentCircuit = circuitName;
         state.currentCircuitMap = circuitMap;
         state.pictureCounter = 0;
         if (state.pyodideReady) {
