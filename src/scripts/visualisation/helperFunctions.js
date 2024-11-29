@@ -111,7 +111,9 @@ function showMessage(container, message, prio = "warning", fixedBottom = true) {
 
     container.appendChild(msg);
     setTimeout(() => {
-        container.removeChild(msg);
+        if (container.contains(msg)) {
+            container.removeChild(msg);
+        }
     }, 3000);
 }
 
@@ -162,7 +164,7 @@ function enableLastCalcButton() {
     }, 100);
 }
 
-function scrollToBottom() {
+function scrollNextElementsContainerIntoView() {
     setTimeout(() => {
         const nextElementsText = document.getElementById("nextElementsContainer");
         if (nextElementsText != null) {nextElementsText.scrollIntoView()}

@@ -81,6 +81,7 @@ class PageManager {
         landingStartButton.addEventListener("click", async () => {
             await this.landingPageStartBtnClicked(this.pyodide)
         })
+        // Left - right animation for feature containers
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -90,7 +91,6 @@ class PageManager {
                 }
             });
         }, { threshold: 1});
-
         const trigger = document.getElementById("trigger");
         observer.observe(trigger);
     }
@@ -152,7 +152,7 @@ class PageManager {
             }
         })
         navCheatLink.addEventListener("click", () => {
-            checkIfSimplifierPageNeedsReset();
+            checkIfSimplifierPageNeedsReset(this.pyodide);
             closeNavbar();
             this.showCheatSheet();
         })
