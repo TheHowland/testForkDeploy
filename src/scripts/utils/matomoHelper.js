@@ -7,6 +7,12 @@ const circuitActions = {
     ViewTotalExplanation: "Gesamtrechnung angeschaut",
 }
 
+const circuitCategories = {
+    Sub: "Ersatzschaltungen",
+    AcDc: "Gleich-/Wechselstromkreise",
+    Mixed: "Gemischte Schaltungen",
+}
+
 const configActions = {
     SetDarkMode: "DarkMode",
     SetLanguage: "Sprache",
@@ -35,6 +41,9 @@ function pushCircuitEventMatomo(action, value=-1) {
 
     let mappedCategory = mapCategory(category);
     if (mappedCategory === null) return;
+    if (mappedCategory === circuitCategories.Sub) circuitName += " - sub";
+    if (mappedCategory === circuitCategories.AcDc) circuitName += " - acdc";
+
     if (!allowedAction(action)) return;
     pushEventToMatomo(mappedCategory, action, circuitName, value);
 }
@@ -50,9 +59,9 @@ function pushDarkModeEventMatomo(mode) {
 function mapCategory(category) {
     // Map the categories in order to be flexible in the future with the input
     // so we can also send the same kind of category (because they don't change in matomo)
-    if (["sub"].includes(category)) return "Ersatzschaltungen";
-    if (["acdc"].includes(category)) return "Gleich-/Wechselstromkreise";
-    if (["mixed"].includes(category)) return "Gemischte Schaltungen";
+    if (["sub"].includes(category)) return circuitCategories.Sub;
+    if (["acdc"].includes(category)) return circuitCategories.AcDc;
+    if (["mixed"].includes(category)) return circuitCategories.Mixed;
     console.log("Category not possible, check: " + category);
     return null;
 }
