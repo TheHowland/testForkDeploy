@@ -251,6 +251,7 @@ async function checkAndSimplifyNext(pyodide, div, stepDetails){
         checkAndSimplify(simplifyObject, pyodide, contentCol, div, stepDetails);
     } else {
         showMessage(contentCol, languageManager.currentLang.alertChooseTwoElements, "only2");
+        pushCircuitEventMatomo(circuitActions.ErrOnly2, state.selectedElements.length)
     }
     MathJax.typeset();
 }
@@ -271,6 +272,7 @@ function checkAndSimplify(simplifyObject, pyodide, contentCol, div, stepDetails)
         display_step(pyodide, stepDetails);
     } else {
         showMessage(contentCol, languageManager.currentLang.alertCanNotSimplify, "warning");
+        pushCircuitEventMatomo(circuitActions.ErrCanNotSimpl);
     }
 }
 

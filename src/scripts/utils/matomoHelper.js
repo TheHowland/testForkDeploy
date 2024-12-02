@@ -2,6 +2,8 @@ const circuitActions = {
     Finished: "Fertig",
     Aborted: "Abgebrochen",
     Reset: "Reset",
+    ErrOnly2: "Nicht 2 gewählt",
+    ErrCanNotSimpl: "Kann nicht vereinfacht werden",
     ViewVcExplanation: "VC Rechnung angeschaut",
     ViewZExplanation: "Z Rechnung angeschaut",
     ViewTotalExplanation: "Gesamtrechnung angeschaut",
@@ -9,6 +11,8 @@ const circuitActions = {
 
 const circuitCategories = {
     Sub: "Ersatzschaltungen",
+    _SubIdx: " - sub",
+    _AcDcIdx: " - acdc",
     AcDc: "Gleich-/Wechselstromkreise",
     Mixed: "Gemischte Schaltungen",
 }
@@ -41,8 +45,8 @@ function pushCircuitEventMatomo(action, value=-1) {
 
     let mappedCategory = mapCategory(category);
     if (mappedCategory === null) return;
-    if (mappedCategory === circuitCategories.Sub) circuitName += " - sub";
-    if (mappedCategory === circuitCategories.AcDc) circuitName += " - acdc";
+    if (mappedCategory === circuitCategories.Sub) circuitName += circuitCategories._SubIdx;
+    if (mappedCategory === circuitCategories.AcDc) circuitName += circuitCategories._AcDcIdx;
 
     if (!allowedAction(action)) return;
     pushEventToMatomo(mappedCategory, action, circuitName, value);
