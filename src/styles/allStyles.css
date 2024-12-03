@@ -555,6 +555,11 @@ th, td {
     color: #222222;
 }
 
+/* List Elements of all values box*/
+#bootstrap-overrides #stLi {
+    list-style-type: none;
+}
+
 /* Data Privacy Page */
 #bootstrap-overrides #data-privacy-container {
     background-color: #212529;

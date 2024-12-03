@@ -68,6 +68,8 @@ const german = {
         "Ausblenden",
     firstVCStepBtn:
         "Gesamtstrom",
+    solutionsBtn:
+        "Alle Werte",
     msgVoltAndCurrentAvailable:
         "Du kannst nun zur&uumlckscrollen und schauen wie die Spannungen und Str&oumlme berechnet werden k&oumlnnen",
     msgShowVoltage:

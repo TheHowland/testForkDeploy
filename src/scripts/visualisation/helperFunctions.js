@@ -43,11 +43,11 @@ function showAllSelectors() {
 }
 
 function circuitIsNotSubstituteCircuit(circuitMap) {
-    let showVoltageButton = true;
+    let showVCData = true;
     if (circuitMap.selectorGroup === circuitMapper.selectorIds.subId) {
-        showVoltageButton = false;
+        showVCData = false;
     }
-    return showVoltageButton;
+    return showVCData;
 }
 
 function notLastPicture() {
@@ -335,7 +335,7 @@ function startSolving(pyodide) {
 
 function fillStepDetailsObject(circuitMap, componentTypes) {
     let stepDetails = new StepDetails;
-    stepDetails.showVCButton = circuitIsNotSubstituteCircuit(circuitMap);
+    stepDetails.showVCData = circuitIsNotSubstituteCircuit(circuitMap);
     stepDetails.jsonZPath = `${conf.pyodideSolutionsPath}/${state.jsonFiles_Z[state.currentStep]}`;
     stepDetails.jsonZVCath = (state.jsonFiles_VC === null) ? null : `${conf.pyodideSolutionsPath}/${state.jsonFiles_VC[state.currentStep]}`;
     stepDetails.svgPath = `${conf.pyodideSolutionsPath}/${state.svgFiles[state.currentStep]}`;

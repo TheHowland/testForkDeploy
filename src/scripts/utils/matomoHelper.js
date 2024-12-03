@@ -7,6 +7,7 @@ const circuitActions = {
     ViewVcExplanation: "VC Rechnung angeschaut",
     ViewZExplanation: "Z Rechnung angeschaut",
     ViewTotalExplanation: "Gesamtrechnung angeschaut",
+    ViewSolutions: "Lösungen angeschaut",
 }
 
 const circuitCategories = {
