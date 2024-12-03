@@ -152,6 +152,7 @@ class SelectorBuilder {
         clearSimplifierPageContent();
         state.currentCircuitMap = circuitMap;
         state.pictureCounter = 0;
+        state.allValuesMap = new Map();
         if (state.pyodideReady) {
             startSolving(pageManager.pyodide);
         }

@@ -159,6 +159,7 @@ function resetSimplifierPage(pyodide, calledFromResetBtn = false) {
     resetSolverObject();
     state.selectedElements = [];
     state.pictureCounter = 0;
+    state.allValuesMap = new Map();
     if (state.pyodideReady) {
         startSolving(pyodide);  // Draw the first picture again
     }

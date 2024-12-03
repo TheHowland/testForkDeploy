@@ -27,21 +27,7 @@ function display_step(pyodide,stepDetails) {
     if (showVCData) div.appendChild(newVCBtn);
 
     setupStepButtonsFunctionality(pyodide, div, stepDetails);
-    console.log(data);
-    console.log(vcData);
-    if (showVCData) {
-        console.log("show vc")
-        state.allValuesMap.set(vcData.noFormat().names1[0], vcData.noFormat().values1[0]);  // Z
-        state.allValuesMap.set(vcData.noFormat().names1[1], vcData.noFormat().values1[1]);  // U
-        state.allValuesMap.set(vcData.noFormat().names1[2], vcData.noFormat().values1[2]);  // I
-        state.allValuesMap.set(vcData.noFormat().names2[0], vcData.noFormat().values2[0]);  // Z
-        state.allValuesMap.set(vcData.noFormat().names2[1], vcData.noFormat().values2[1]);  // U
-        state.allValuesMap.set(vcData.noFormat().names2[2], vcData.noFormat().values2[2]);  // I
-    } else {
-        state.allValuesMap.set(data.noFormat().name1, data.noFormat().value1);
-        state.allValuesMap.set(data.noFormat().name2, data.noFormat().value2);
-    }
-    console.log(state.allValuesMap)
+    appendToAllValuesMap(showVCData, vcData, data);
     congratsAndVCDisplayIfFinished(electricalElements, contentCol, showVCData, vcData, pyodide);
     MathJax.typeset();
 }
@@ -49,6 +35,22 @@ function display_step(pyodide,stepDetails) {
 // ####################################################################################################################
 // ############################################# Helper functions #####################################################
 // ####################################################################################################################
+
+function appendToAllValuesMap(showVCData, vcData, data) {
+    if (showVCData) {
+        // If voltage/current is shown, add all Z U and I values to the map
+        state.allValuesMap.set(vcData.noFormat().names1[0], vcData.noFormat().values1[0]);  // Z
+        state.allValuesMap.set(vcData.noFormat().names1[1], vcData.noFormat().values1[1]);  // U
+        state.allValuesMap.set(vcData.noFormat().names1[2], vcData.noFormat().values1[2]);  // I
+        state.allValuesMap.set(vcData.noFormat().names2[0], vcData.noFormat().values2[0]);  // Z
+        state.allValuesMap.set(vcData.noFormat().names2[1], vcData.noFormat().values2[1]);  // U
+        state.allValuesMap.set(vcData.noFormat().names2[2], vcData.noFormat().values2[2]);  // I
+    } else {
+        // If voltage/current is not shown, add only the Z values to the map
+        state.allValuesMap.set(data.noFormat().name1, data.noFormat().value1);
+        state.allValuesMap.set(data.noFormat().name2, data.noFormat().value2);
+    }
+}
 
 function createExplanationBtnContainer(element) {
     const div = document.createElement("div");
@@ -443,35 +445,64 @@ function checkIfStillNotFinishedAndMakeClickable(electricalElements, nextElement
 
 function congratsAndVCDisplayIfFinished(filteredPaths, contentCol, showVCData, vcData, pyodide) {
     if (onlyOneElementLeft(filteredPaths)) {
-        addFirstVCExplanation(contentCol, showVCData, vcData);
-        addSolutionsButton(contentCol, showVCData, vcData);
+        addFirstVCExplanation(showVCData, vcData);
+        addSolutionsButton(pyodide, showVCData, vcData);
         addBackButton(pyodide, contentCol);
         finishCircuit(contentCol, showVCData);
     }
 }
 
-function addSolutionsButton(contentCol, showVCData, vcData) {
-    const solBtnContainer = createSolutionsBtnContainer();
-    const solBtn = createSolutionsBtn();
-    addBtnToContainer(solBtnContainer, solBtn);
-    state.allValuesMap.set(vcData.noFormat().oldNames[0], vcData.noFormat().oldValues[0]);  // Z
+function prepareAllValuesMap(vcData, showVCData) {
+    // Add total values
+    state.allValuesMap.set(vcData.noFormat().oldNames[0], vcData.noFormat().oldValues[0]);  // total Z
+    if (showVCData) {
+        state.allValuesMap.set(vcData.noFormat().oldNames[1], vcData.noFormat().oldValues[1]);  // total U
+        state.allValuesMap.set(vcData.noFormat().oldNames[2], vcData.noFormat().oldValues[2]);  // total I
+    }
+    // Remove null values
     for (let k of state.allValuesMap.keys()) {
         if (k === null)
             state.allValuesMap.delete(k);
     }
-    let text = generateSolutionsText();
+    // Sort by key names
+    state.allValuesMap = new Map([...state.allValuesMap.entries()].sort());
+}
+
+function addSolutionsButton(pyodide, showVCData, vcData) {
+    const solBtnContainer = createSolutionsBtnContainer();
+    const solBtn = createSolutionsBtn();
+    addBtnToContainer(solBtnContainer, solBtn);
+    prepareAllValuesMap(vcData, showVCData);
+    let table = generateSolutionsTable(showVCData);
+
+    let originalStep0Svg = document.getElementById("svgDiv1");
+    let clonedSvgData = originalStep0Svg.cloneNode(true);
+    clonedSvgData.id = "clonedOverviewSvg";
+    clonedSvgData.appendChild(table);
+    if (showVCData) {
+        let arrows = clonedSvgData.getElementsByClassName("arrow");
+        for (let arrow of arrows) {
+            arrow.style.display = "block";
+            arrow.style.opacity = "0.5";
+        }
+    }
+    let div = document.createElement("div");
+    div.classList.add("circuit-container");
+    div.classList.add("justify-content-center");
+    div.classList.add("row");
+    div.appendChild(clonedSvgData);
 
     solBtn.addEventListener("click", () => {
         if (solBtn.textContent === languageManager.currentLang.solutionsBtn) {
             // Open explanation
             solBtn.textContent = languageManager.currentLang.hideVoltageBtn;
-            solBtnContainer.appendChild(text);
+            solBtnContainer.appendChild(div);
             MathJax.typeset();
             pushCircuitEventMatomo(circuitActions.ViewSolutions);
         } else {
             // Close explanation
             solBtn.textContent = languageManager.currentLang.solutionsBtn;
-            solBtnContainer.removeChild(text);
+            solBtnContainer.removeChild(div);
         }
     })
 }
@@ -489,7 +520,7 @@ function addBackButton(pyodide, contentCol) {
     });
 }
 
-function addFirstVCExplanation(contentCol, showVCData, vcData) {
+function addFirstVCExplanation(showVCData, vcData) {
     if (showVCData) {
         const totalCurrentContainer = createTotalCurrentContainer();
         const totalCurrentBtn = createTotalCurrentBtn();
@@ -512,9 +543,9 @@ function addFirstVCExplanation(contentCol, showVCData, vcData) {
     }
 }
 
-function addBtnToContainer(totalCurrentContainer, totalCurrentBtn) {
-    document.getElementById("reset-btn").insertAdjacentElement("beforebegin", totalCurrentContainer);
-    totalCurrentContainer.appendChild(totalCurrentBtn);
+function addBtnToContainer(container, element) {
+    document.getElementById("reset-btn").insertAdjacentElement("beforebegin", container);
+    container.appendChild(element);
 }
 
 function generateTextElement(vcData) {
@@ -523,14 +554,48 @@ function generateTextElement(vcData) {
     return text;
 }
 
-function generateSolutionsText() {
-    let text = document.createElement("div");
-    text.classList.add("mx-auto");
-    text.classList.add("px-auto");
-    for (let i = 0; i < state.allValuesMap.size; i++) {
-        text.innerHTML += `<li class="stLi">$$${Array.from(state.allValuesMap.keys())[i]} = ${Array.from(state.allValuesMap.values())[i]}$$</li>`;
+function generateZIUArrays() {
+    let iMap = new Map();
+    let uMap = new Map();
+    let zMap = new Map();
+    for (let [key, value] of state.allValuesMap.entries()) {
+        if (key.startsWith('U') || key.startsWith('V')) {
+            uMap.set(key, value);
+        } else if (key.startsWith('I')) {
+            iMap.set(key, value);
+        } else {
+            zMap.set(key, value);
+        }
     }
-    return text;
+    let iArray = Array.from(iMap);
+    let uArray = Array.from(uMap);
+    let zArray = Array.from(zMap);
+    return {iArray, uArray, zArray};
+}
+
+function generateSolutionsTable(showVCData) {
+    let table = document.createElement("div");
+    let tableData = `<table id="solutionsTable" class="table table-dark"><tbody>`;
+    table.style.display = "flex";
+    table.style.justifyContent = "center";
+    table.style.alignItems = "center";
+    if (showVCData) {
+        let {iArray, uArray, zArray} = generateZIUArrays();
+        for (let i = 0; i < zArray.length; i++) {
+            tableData += `<tr>
+                <td>$$${zArray[i][0]} = ${zArray[i][1]}$$</td>
+                <td>$$${uArray[i][0]} = ${uArray[i][1]}$$</td>
+                <td>$$${iArray[i][0]} = ${iArray[i][1]}$$</td>
+            </tr>`;
+        }
+    } else {
+        for (let [key, value] of state.allValuesMap.entries()) {
+                tableData += `<tr><td>$$${key} = ${value}$$</td></tr>`;
+        }
+    }
+    tableData += `</tbody></table></div>`;
+    table.innerHTML = tableData;
+    return table;
 }
 
 function createTotalCurrentContainer() {
@@ -545,6 +610,7 @@ function createSolutionsBtnContainer() {
     const solutionsContainer = document.createElement("div");
     solutionsContainer.id = "solutionsBtnContainer";
     solutionsContainer.classList.add("container");
+    solutionsContainer.classList.add("mb-5");
     solutionsContainer.classList.add("justify-content-center");
     return solutionsContainer;
 }
@@ -567,7 +633,7 @@ function createSolutionsBtn() {
     // Adjust margins from normal VC Btn because reset button is right below, give more space
     totalCurrentBtn.classList.remove("my-3");
     totalCurrentBtn.classList.add("mt-3");
-    totalCurrentBtn.classList.add("mb-5");
+    totalCurrentBtn.classList.add("mb-3");
     return totalCurrentBtn;
 }
 
@@ -575,6 +641,6 @@ function setStyleAndEvent(element, nextElementsList) {
     element.style.pointerEvents = "bounding-box";
     element.style.cursor = 'pointer';
     element.addEventListener('click', () =>
-        chooseElement(element, nextElementsList)
+    chooseElement(element, nextElementsList)
     );
 }

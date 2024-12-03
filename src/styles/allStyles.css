@@ -230,57 +230,6 @@ img {
     max-height: 375px;
 }
 
-#bootstrap-overrides #cookie-banner {
-    border-radius: 10px;
-    width: 95%;
-    bottom: 10px;
-}
-
-#bootstrap-overrides #cookie-banner-title {
-    color: white;
-    font-size: xx-large;
-    font-weight: bolder;
-    font-family: 'Roboto Condensed', sans-serif;
-}
-
-#bootstrap-overrides #cookie-banner-text {
-    color: white;
-    text-align: center;
-}
-
-#bootstrap-overrides .cookie-selection {
-    color: white;
-}
-#bootstrap-overrides #btn-cookies-all {
-    background-color: #FFC107;
-    color: #222222;
-    border: none;
-    font-family: 'Roboto Condensed', sans-serif;
-}
-
-#bootstrap-overrides #btn-cookies-some {
-    background-color: #212529;
-    color: #FFC107;
-    border: solid 1px #FFC107;
-    font-family: 'Roboto Condensed', sans-serif;
-}
-
-#bootstrap-overrides #btn-cookies-none {
-    background-color: #212529;
-    color: #FFC107;
-    border: solid 1px #FFC107;
-    font-family: 'Roboto Condensed', sans-serif;
-}
-
-#bootstrap-overrides .cookie-checkbox {
-    accent-color: #FFC107;
-    margin-right: 2px;
-}
-
-
-
-
-
 mjx-container mjx-c::before {
     will-change: opacity;
     padding-top: 20px !important;
@@ -298,7 +247,6 @@ th, td {
     vertical-align: middle;
     text-align: center
 }
-
 
 #bootstrap-overrides #nav-select{
     color: #FFC107;
@@ -555,9 +503,18 @@ th, td {
     color: #222222;
 }
 
-/* List Elements of all values box*/
-#bootstrap-overrides #stLi {
-    list-style-type: none;
+#bootstrap-overrides #solutionsTable {
+    tbody {
+        tr {
+            td {
+                border: none;
+                mjx-container {
+                    margin-top: 0;
+                    margin-bottom: 0;
+                }
+            }
+        }
+    }
 }
 
 /* Data Privacy Page */
