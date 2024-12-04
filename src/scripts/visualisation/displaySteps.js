@@ -578,6 +578,7 @@ function generateZIUArrays() {
 
 function generateSolutionsTable(showVCData) {
     let table = document.createElement("div");
+    table.classList.add("table-responsive");
     let isDarkMode = document.getElementById("darkmode-switch").checked;
     let tableData, color;
     let regex = /[A-Z]s\d*/;  // To differentiate between X1 and Xs1
@@ -587,9 +588,6 @@ function generateSolutionsTable(showVCData) {
         tableData = `<table id="solutionsTable" class="table table-light"><tbody>`;
     }
 
-    table.style.display = "flex";
-    table.style.justifyContent = "center";
-    table.style.alignItems = "center";
     if (showVCData) {
         let {iArray, uArray, zArray} = generateZIUArrays();
         for (let i = 0; i < zArray.length; i++) {
