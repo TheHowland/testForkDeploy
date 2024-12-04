@@ -10,12 +10,13 @@ const circuitActions = {
     ViewSolutions: "Lösungen angeschaut",
 }
 
-const circuitCategories = {
+const eventCategories = {
     Sub: "Ersatzschaltungen",
     _SubIdx: " - sub",
     _AcDcIdx: " - acdc",
     AcDc: "Gleich-/Wechselstromkreise",
     Mixed: "Gemischte Schaltungen",
+    Configurations: "Konfigurationen",
 }
 
 const configActions = {
@@ -46,10 +47,10 @@ function pushCircuitEventMatomo(action, value=-1) {
 
     let mappedCategory = mapCategory(category);
     if (mappedCategory === null) return;
-    if (mappedCategory === circuitCategories.Sub) circuitName += circuitCategories._SubIdx;
-    if (mappedCategory === circuitCategories.AcDc) circuitName += circuitCategories._AcDcIdx;
+    if (mappedCategory === eventCategories.Sub) circuitName += eventCategories._SubIdx;
+    if (mappedCategory === eventCategories.AcDc) circuitName += eventCategories._AcDcIdx;
 
-    if (!allowedAction(action)) return;
+    if (!allowedCircuitAction(action)) return;
     pushEventToMatomo(mappedCategory, action, circuitName, value);
 }
 
@@ -64,14 +65,14 @@ function pushDarkModeEventMatomo(mode) {
 function mapCategory(category) {
     // Map the categories in order to be flexible in the future with the input
     // so we can also send the same kind of category (because they don't change in matomo)
-    if (["sub"].includes(category)) return circuitCategories.Sub;
-    if (["acdc"].includes(category)) return circuitCategories.AcDc;
-    if (["mixed"].includes(category)) return circuitCategories.Mixed;
+    if (["sub"].includes(category)) return eventCategories.Sub;
+    if (["acdc"].includes(category)) return eventCategories.AcDc;
+    if (["mixed"].includes(category)) return eventCategories.Mixed;
     console.log("Category not possible, check: " + category);
     return null;
 }
 
-function allowedAction(action) {
+function allowedCircuitAction(action) {
     let possibleActions = Object.values(circuitActions);
     if (!(possibleActions.includes(action))) {
         console.log("Action not in " + possibleActions);
@@ -82,9 +83,20 @@ function allowedAction(action) {
     return true;
 }
 
+function allowedConfigurationAction(action) {
+    let possibleActions = Object.values(configActions);
+    if (!(possibleActions.includes(action))) {
+        console.log("Action not in " + possibleActions);
+        console.log("Action: " + action);
+        console.log("Either change the action or adapt the possible actions");
+        return false;
+    }
+    return true;
+}
+
 function pushConfigurationEventMatomo(action, configuration, value=-1) {
-    if (!allowedAction(action)) return;
-    pushEventToMatomo("Konfigurationen", action, configuration, value);
+    if (!allowedConfigurationAction(action)) return;
+    pushEventToMatomo(eventCategories.Configurations, action, configuration, value);
 }
 
 function pushEventToMatomo(category, action, name, value=-1) {

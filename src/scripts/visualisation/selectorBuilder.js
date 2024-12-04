@@ -77,6 +77,16 @@ class SelectorBuilder {
         return carouselElementString;
     }
 
+    adaptSelectorFrameColor() {
+        // Adapt border color if darkmode changed before selector is built
+        if (!document.getElementById("darkmode-switch").checked) {
+            const svgSelectors = document.getElementsByClassName("svg-selector");
+            for (const svgSelector of svgSelectors) {
+                svgSelector.style.borderColor = colors.currentForeground;
+            }
+        }
+    }
+
     createCarouselItemForCircuit(circuit) {
         return `<div class="carousel-item justify-content-center">
                     <div id="${circuit.btnOverlay}" class="img-overlay">

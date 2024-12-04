@@ -575,22 +575,40 @@ function generateZIUArrays() {
 
 function generateSolutionsTable(showVCData) {
     let table = document.createElement("div");
-    let tableData = `<table id="solutionsTable" class="table table-dark"><tbody>`;
+    let isDarkMode = document.getElementById("darkmode-switch").checked;
+    let tableData, color;
+    let regex = /[A-Z]s\d*/;  // To differentiate between X1 and Xs1
+    if (isDarkMode) {
+        tableData = `<table id="solutionsTable" class="table table-dark"><tbody>`;
+    } else {
+        tableData = `<table id="solutionsTable" class="table table-light"><tbody>`;
+    }
+
     table.style.display = "flex";
     table.style.justifyContent = "center";
     table.style.alignItems = "center";
     if (showVCData) {
         let {iArray, uArray, zArray} = generateZIUArrays();
         for (let i = 0; i < zArray.length; i++) {
+            if (regex.test(zArray[i][0])) {
+                color = colors.keyGreyedOut;
+            } else {
+                color = ((isDarkMode) ? colors.keyLight : colors.keyDark);
+            }
             tableData += `<tr>
-                <td>$$${zArray[i][0]} = ${zArray[i][1]}$$</td>
-                <td>$$${uArray[i][0]} = ${uArray[i][1]}$$</td>
-                <td>$$${iArray[i][0]} = ${iArray[i][1]}$$</td>
+                <td style="color: ${color}">$$${zArray[i][0]} = ${zArray[i][1]}$$</td>
+                <td style="color: ${color}">$$${uArray[i][0]} = ${uArray[i][1]}$$</td>
+                <td style="color: ${color}">$$${iArray[i][0]} = ${iArray[i][1]}$$</td>
             </tr>`;
         }
     } else {
         for (let [key, value] of state.allValuesMap.entries()) {
-                tableData += `<tr><td>$$${key} = ${value}$$</td></tr>`;
+            if (regex.test(key)) {
+                color = colors.keyGreyedOut;
+            } else {
+                color = ((isDarkMode) ? colors.keyLight : colors.keyDark);
+            }
+            tableData += `<tr><td style="color: ${color}">$$${key} = ${value}$$</td></tr>`;
         }
     }
     tableData += `</tbody></table></div>`;

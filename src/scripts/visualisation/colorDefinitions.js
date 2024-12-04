@@ -3,6 +3,7 @@ class ColorDefinitions {
     keyYellow = "#FFC107";
     keyLight = "white";
     keyDark = "black";
+    keyGreyedOut = "#b1b1b1";
     bootstrapDark = "#212529";
     bootstrapWhite = "#f8f9fa";
     languagesDarkBg = "#33393f";

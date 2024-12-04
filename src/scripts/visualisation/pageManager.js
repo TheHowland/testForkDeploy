@@ -114,7 +114,7 @@ class PageManager {
             await packageManager.doLoadsAndImports(this.pyodide);
             //await createSvgsForSelectors(pyodide);
 
-
+            selectorBuilder.adaptSelectorFrameColor();
             showAllSelectors();
             note.innerHTML = "";
 
@@ -154,7 +154,7 @@ class PageManager {
                 this.showSelectPage();
             }
             else {
-                await this.landingPageStartBtnClicked(this.pyodide);
+                await this.landingPageStartBtnClicked();
             }
         })
         navCheatLink.addEventListener("click", () => {
