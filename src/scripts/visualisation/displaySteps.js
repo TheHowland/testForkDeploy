@@ -261,8 +261,6 @@ async function checkAndSimplifyNext(pyodide, div, stepDetails){
     const nextElementsContainer = document.getElementById("nextElementsContainer");
     const svgDiv = document.getElementById(`svgDiv${state.pictureCounter}`);
 
-    setTimeout(() => {resetNextElements(svgDiv, nextElementsContainer)},100);
-
     if (twoElementsChosen()) {
         const simplifyObject = await stepSolve.simplifyTwoCpts(state.selectedElements).toJs();
         checkAndSimplify(simplifyObject, pyodide, contentCol, div, stepDetails);
@@ -270,6 +268,7 @@ async function checkAndSimplifyNext(pyodide, div, stepDetails){
         showMessage(contentCol, languageManager.currentLang.alertChooseTwoElements, "only2");
         pushCircuitEventMatomo(circuitActions.ErrOnly2, state.selectedElements.length)
     }
+    resetNextElements(svgDiv, nextElementsContainer);
     MathJax.typeset();
 }
 
@@ -410,7 +409,11 @@ function setupStepButtonsFunctionality(pyodide, div, stepDetails) {
         resetSimplifierPage(pyodide, true);
     });
     document.getElementById("check-btn").addEventListener('click', async () => {
-        checkAndSimplifyNext(pyodide, div, stepDetails);
+        document.getElementById("check-btn").innerHTML = "<span class='spinner-border spinner-border-sm'></span>";
+        setTimeout(() => {
+            checkAndSimplifyNext(pyodide, div, stepDetails);
+            document.getElementById("check-btn").innerHTML = "check";
+        }, 0);
     });
 }
 
