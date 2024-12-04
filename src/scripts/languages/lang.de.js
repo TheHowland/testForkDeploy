@@ -149,7 +149,5 @@ const german = {
         "",
     legalNoticeHeading:
         "Impressum",
-    legalNoticeText:
-        "",
 
 }

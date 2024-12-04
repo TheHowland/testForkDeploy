@@ -145,9 +145,6 @@ const english = {
         "",
     legalNoticeHeading:
         "Legal Notice",
-    legalNoticeText:
-        "",
-
 
 
 }

@@ -72,8 +72,6 @@ class LanguageManager {
         backBtn.innerHTML = this.currentLang.dataPrivacyBackBtn;
         const legalNoticeHeading = document.getElementById('legal-notice-heading');
         legalNoticeHeading.innerHTML = this.currentLang.legalNoticeHeading;
-        const legalNoticeText = document.getElementById('legal-notice-text');
-        legalNoticeText.innerHTML = this.currentLang.legalNoticeText;
     }
 
 }
