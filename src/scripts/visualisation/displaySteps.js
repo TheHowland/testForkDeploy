@@ -413,7 +413,7 @@ function setupStepButtonsFunctionality(pyodide, div, stepDetails) {
         setTimeout(() => {
             checkAndSimplifyNext(pyodide, div, stepDetails);
             document.getElementById("check-btn").innerHTML = "check";
-        }, 0);
+        }, 50);
     });
 }
 
