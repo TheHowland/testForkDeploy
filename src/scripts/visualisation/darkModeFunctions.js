@@ -9,6 +9,7 @@ function setupDarkModeSwitch() {
             changeToLightMode();
             pushDarkModeEventMatomo(configDarkModeValues.Light)
         }
+        closeNavbar();
     });
 }
 
