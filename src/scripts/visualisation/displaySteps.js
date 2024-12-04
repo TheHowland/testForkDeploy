@@ -410,10 +410,12 @@ function setupStepButtonsFunctionality(pyodide, div, stepDetails) {
     });
     document.getElementById("check-btn").addEventListener('click', async () => {
         document.getElementById("check-btn").innerHTML = "<span class='spinner-border spinner-border-sm'></span>";
-        setTimeout(() => {
-            checkAndSimplifyNext(pyodide, div, stepDetails);
-            document.getElementById("check-btn").innerHTML = "check";
-        }, 50);
+        requestAnimationFrame(() => {
+            setTimeout(() => {
+                checkAndSimplifyNext(pyodide, div, stepDetails);
+                document.getElementById("check-btn").innerHTML = "check";
+            }, 0);
+        });
     });
 }
 
