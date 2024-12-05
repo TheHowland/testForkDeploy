@@ -38,7 +38,7 @@ function display_step(pyodide,stepDetails) {
 
 function appendToAllValuesMap(showVCData, vcData, data) {
     if (showVCData) {
-        // If voltage/current is shown, add all Z U and I values to the map
+        // If voltage/current is shown, add all Z/R/C/L U and I values to the map
         state.allValuesMap.set(vcData.noFormat().names1[0], vcData.noFormat().values1[0]);  // Z
         state.allValuesMap.set(vcData.noFormat().names1[1], vcData.noFormat().values1[1]);  // U
         state.allValuesMap.set(vcData.noFormat().names1[2], vcData.noFormat().values1[2]);  // I
@@ -47,8 +47,17 @@ function appendToAllValuesMap(showVCData, vcData, data) {
         state.allValuesMap.set(vcData.noFormat().names2[2], vcData.noFormat().values2[2]);  // I
     } else {
         // If voltage/current is not shown, add only the Z values to the map
-        state.allValuesMap.set(data.noFormat().name1, data.noFormat().value1);
-        state.allValuesMap.set(data.noFormat().name2, data.noFormat().value2);
+        // Only add the key if it is not already in the map (example Rs1 will be added with nemName and when used again as name1), we don't want to overwrite it
+        if (!state.allValuesMap.has(data.noFormat().name1)) state.allValuesMap.set(data.noFormat().name1, data.noFormat().value1);
+        if (!state.allValuesMap.has(data.noFormat().name2)) state.allValuesMap.set(data.noFormat().name2, data.noFormat().value2);
+        // Also explain the simplified component (now only in sub circuits because it needs too much space)
+        let explanation = data.noFormat().result;
+        if (data.noFormat().relation === "parallel") {
+             explanation += "\\ (" + data.noFormat().name1 + "\\ || \\ " + data.noFormat().name2 + ")";
+        } else {
+            explanation += "\\ (" + data.noFormat().name1 + "+" + data.noFormat().name2 + ")";
+        }
+        state.allValuesMap.set(data.noFormat().newName, explanation);
     }
 }
 
@@ -458,11 +467,15 @@ function congratsAndVCDisplayIfFinished(filteredPaths, contentCol, showVCData, v
 }
 
 function prepareAllValuesMap(vcData, showVCData) {
-    // Add total values
-    state.allValuesMap.set(vcData.noFormat().oldNames[0], vcData.noFormat().oldValues[0]);  // total Z
+    let zWithTotal = vcData.noFormat().oldNames[0][0] + "_{" + languageManager.currentLang.totalSuffix + "}";  // Only first letter Z/R/L/C
     if (showVCData) {
-        state.allValuesMap.set(vcData.noFormat().oldNames[1], vcData.noFormat().oldValues[1]);  // total U
-        state.allValuesMap.set(vcData.noFormat().oldNames[2], vcData.noFormat().oldValues[2]);  // total I
+        let uWithTotal = vcData.noFormat().oldNames[1][0] + "_{" + languageManager.currentLang.totalSuffix + "}";  // Only first letter U/V
+        let iWithTotal = vcData.noFormat().oldNames[2][0] + "_{" + languageManager.currentLang.totalSuffix + "}";  // Only first letter I
+        state.allValuesMap.set(zWithTotal, vcData.noFormat().convOldValue[0]);  // total R/L/C (not complex), but maybe sometime
+        state.allValuesMap.set(uWithTotal, vcData.noFormat().oldValues[1]);  // total U
+        state.allValuesMap.set(iWithTotal, vcData.noFormat().oldValues[2]);  // total I
+    } else {
+        state.allValuesMap.set(zWithTotal, vcData.noFormat().convOldValue[0]);  // total R/L/C (not complex)
     }
     // Remove null values
     for (let k of state.allValuesMap.keys()) {
