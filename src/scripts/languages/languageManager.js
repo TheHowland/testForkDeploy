@@ -61,10 +61,6 @@ class LanguageManager {
     updateDataPrivacyPage() {
         const backBtn = document.getElementById('back-btn');
         backBtn.innerHTML = this.currentLang.dataPrivacyBackBtn;
-        const dataPrivacyHeading = document.getElementById('data-privacy-heading');
-        dataPrivacyHeading.innerHTML = this.currentLang.dataPrivacyHeading;
-        const dataPrivacyText = document.getElementById('data-privacy-text');
-        dataPrivacyText.innerHTML = this.currentLang.dataPrivacyText;
     }
 
     updateLegalNoticePage() {
