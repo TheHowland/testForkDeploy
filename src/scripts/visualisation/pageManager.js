@@ -20,7 +20,7 @@ class PageManager {
             feature.classList.remove("visible");
         }
         document.title = "simpliPFy";
-        pushPageViewMatomo("Home")
+        pushPageViewMatomo()
     }
 
     showSelectPage() {
