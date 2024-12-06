@@ -114,7 +114,7 @@ function showMessage(container, message, prio = "warning", fixedBottom = true) {
         if (container.contains(msg)) {
             container.removeChild(msg);
         }
-    }, 3000);
+    }, 2000);
 }
 
 function setPgrBarTo(percent) {
