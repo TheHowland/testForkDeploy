@@ -498,9 +498,7 @@ th, td {
 }
 
 #bootstrap-overrides #back-btn {
-    background-color: #FFC107;
     border: none;
-    color: #222222;
 }
 
 #bootstrap-overrides #solutionsTable {
@@ -523,7 +521,7 @@ th, td {
     color: white;
 }
 
-#bootstrap-overrides #back-btn {
+#bootstrap-overrides #back-btn-data-privacy {
     background-color: #FFC107;
     border: none;
     color: #222222;

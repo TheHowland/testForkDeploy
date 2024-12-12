@@ -111,7 +111,7 @@ const english = {
     currentSplits:
         "The current splits up",
     backBtn:
-        "back to selection",
+        "back",
 
     // Cheat sheet
     resistanceColHeading:

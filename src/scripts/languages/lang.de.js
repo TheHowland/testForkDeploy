@@ -114,7 +114,7 @@ const german = {
     currentSplits:
         "Der Strom teilt sich auf",
     backBtn:
-        "zur&uumlck zur Auswahl",
+        "zur&uumlck",
 
     // Cheat sheet
     resistanceColHeading:
