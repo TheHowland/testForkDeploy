@@ -38,7 +38,8 @@ function display_step(pyodide,stepDetails) {
 
 function appendToAllValuesMap(showVCData, vcData, data) {
     if (showVCData) {
-        // If voltage/current is shown, add all Z/R/C/L U and I values to the map
+        // If voltage/current is shown, add all Z/R/C/L U and I values to the map from the two elements
+        // TODO this needs to be adapted according to the new data structure
         state.allValuesMap.set(vcData.noFormat().names1[0], vcData.noFormat().values1[0]);  // Z
         state.allValuesMap.set(vcData.noFormat().names1[1], vcData.noFormat().values1[1]);  // U
         state.allValuesMap.set(vcData.noFormat().names1[2], vcData.noFormat().values1[2]);  // I
@@ -77,14 +78,14 @@ function getFinishMsg(vcData, showVCData) {
         msg = `
         <p>${languageManager.currentLang.msgVoltAndCurrentAvailable}.<br></p>
         <p>${languageManager.currentLang.msgShowVoltage}<br>$$ ${languageManager.currentLang.voltageSymbol}_{${languageManager.currentLang.totalSuffix}}=${vcData.noFormat().oldValues[1]}$$</p>
-        <button class="btn btn-primary mx-1" id="reset-btn">reset</button>
+        <button class="btn btn-secondary mx-1" id="reset-btn">reset</button>
         <button class="btn btn-primary mx-1 disabled" id="check-btn">check</button>
         <button class="btn btn-secondary mx-1" id="back-btn">back</button>
     `;
     } else {
         // No msg, just the two buttons
         msg = `
-        <button class="btn btn-primary mx-1" id="reset-btn">reset</button>
+        <button class="btn btn-secondary mx-1" id="reset-btn">reset</button>
         <button class="btn btn-primary mx-1 disabled" id="check-btn">check</button>
         <button class="btn btn-secondary mx-1" id="back-btn">back</button>
     `;
@@ -107,7 +108,7 @@ function setupNextElementsContainer(sanitizedSvgFilePath, filteredPaths, vcData,
         nextElementsContainer.innerHTML = `
         <h3>${languageManager.currentLang.nextElementsHeading}</h3>
         <ul class="px-0" id="next-elements-list-${sanitizedSvgFilePath}"></ul>
-        <button class="btn btn-primary mx-1 ${state.pictureCounter === 1 ? "disabled" : ""}" id="reset-btn">reset</button>
+        <button class="btn btn-secondary mx-1 ${state.pictureCounter === 1 ? "disabled" : ""}" id="reset-btn">reset</button>
         <button class="btn btn-primary mx-1" id="check-btn">check</button>
         <button class="btn btn-secondary mx-1" id="back-btn">back</button>
     `;
@@ -137,10 +138,14 @@ function addInfoHelpButton(svgDiv) {
     infoBtn.id = "open-info-gif-btn";
     infoBtn.classList.add("btn");
     infoBtn.classList.add("btn-primary");
+    infoBtn.style.position = "absolute";
+    infoBtn.style.top = "5px";
+    infoBtn.style.left = "5px";
     infoBtn.style.float = "left";
-    infoBtn.style.color = colors.keyDark;
-    infoBtn.style.border = "none";
-    infoBtn.style.background = colors.keyYellow;
+    infoBtn.style.color = colors.keyYellow;
+    infoBtn.style.border = `1px solid ${colors.keyYellow}`;
+    infoBtn.style.background = "none";
+    infoBtn.style.fontWeight = "bold";
     infoBtn.innerText = "?";
     infoBtn.setAttribute("data-bs-toggle", "modal");
     infoBtn.setAttribute("data-bs-target", "#infoGif");
@@ -158,6 +163,7 @@ function setupSvgDivContainerAndData(svgData, stepDetails) {
     svgDiv.style.borderRadius = "6px";
     svgDiv.style.width = "350px";
     svgDiv.style.maxWidth = "350px;";
+    svgDiv.style.position = "relative";
     // Svg manipulation - set width and color for dark mode
     svgData = setSvgColorMode(svgData);
     //TODOD
@@ -187,10 +193,13 @@ function addNameValueToggleBtn(svgDiv, stepDetails) {
     nameValueToggleBtn.id = "nameValueToggleBtn";
     nameValueToggleBtn.classList.add("btn");
     nameValueToggleBtn.classList.add("btn-secondary");
-    nameValueToggleBtn.style.float = "right";
-    nameValueToggleBtn.style.color = colors.keyDark;
-    nameValueToggleBtn.style.border = "none";
-    nameValueToggleBtn.innerText = "R->42";
+    nameValueToggleBtn.style.position = "absolute";
+    nameValueToggleBtn.style.top = "5px";
+    nameValueToggleBtn.style.right = "5px";
+    nameValueToggleBtn.style.color = colors.keyLight;
+    nameValueToggleBtn.style.border = `1px solid ${colors.keyLight}`;
+    nameValueToggleBtn.style.background = "none";
+    nameValueToggleBtn.innerText = "⮂";
     nameValueToggleBtn.onclick = () => {toggleNameValue(svgDiv, stepDetails)};
     svgDiv.insertAdjacentElement("afterbegin", nameValueToggleBtn);
 }
@@ -206,14 +215,14 @@ function toggleNameValue(svgDiv, stepDetails) {
         if (value.includes("\\Omega")) {
             value = value.replace("\\Omega", "Ω");
         }
-        if (document.getElementById("nameValueToggleBtn").innerText === "R->42") {
+        if (document.getElementById("nameValueToggleBtn").innerText === "⮂") {
             tspan.innerHTML = tspan.innerHTML.replace(key, `${value}`);
         } else {
             tspan.innerHTML = tspan.innerHTML.replace(`${value}`, key);
         }
     }
 
-    document.getElementById("nameValueToggleBtn").innerText = document.getElementById("nameValueToggleBtn").innerText === "R->42" ? "42->R" : "R->42";
+    document.getElementById("nameValueToggleBtn").innerText = document.getElementById("nameValueToggleBtn").innerText === "⮂" ? "⮀" : "⮂";
 }
 
 function getElementsFromSvgContainer(svgContainer) {
