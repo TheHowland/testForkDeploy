@@ -492,13 +492,14 @@ th, td {
 }
 
 #bootstrap-overrides #reset-btn {
-    background-color: #b61117;
+    /*background-color: #b61117;*/
     border: none;
     color: white;
 }
 
 #bootstrap-overrides #back-btn {
     border: none;
+    color: white;
 }
 
 #bootstrap-overrides #solutionsTable {
