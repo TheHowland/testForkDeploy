@@ -44,8 +44,15 @@ const german = {
 
 
     // Simplifier page text
+    // info gif
     closeBtn:
         "Schlie&szligen",
+    infoGifHeading:
+        "Anleitung",
+    infoGifText:
+        "Klicke auf die Elemente die du vereinfachen m&oumlchtest und &uumlberpr&uumlfe deine Auswahl mit dem 'check' Button. " +
+        "Wenn die Elemente vereinfacht werden k&oumlnnen, siehst du den n&aumlchsten Schritt und kannst dort die n&aumlchsten Elemente ausw&aumlhlen.",
+    // next elements container and interactions
     nextElementsHeading:
         "N&aumlchste Elemente",
     showCalculationBtn:

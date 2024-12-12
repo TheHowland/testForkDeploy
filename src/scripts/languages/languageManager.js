@@ -34,6 +34,10 @@ class LanguageManager {
     updateLanguageSimplifierPage() {
         const InfoGifCloseBtn = document.getElementById("info-gif-close-btn");
         InfoGifCloseBtn.innerHTML = this.currentLang.closeBtn;
+        const infoGifHeading = document.getElementById("info-gif-title");
+        infoGifHeading.innerHTML = this.currentLang.infoGifHeading;
+        const infoGifText = document.getElementById("info-gif-text");
+        infoGifText.innerHTML = this.currentLang.infoGifText;
     }
 
     updateLanguageCheatSheetPage() {

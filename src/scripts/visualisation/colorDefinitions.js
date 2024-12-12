@@ -12,6 +12,7 @@ class ColorDefinitions {
 
     currentForeground = this.keyLight;
     currentBackground = this.keyDark;
+    currentBsBackground = this.bootstrapDark;
 
     prevNextBtnBackgroundColor = "#808080";
 
@@ -24,9 +25,11 @@ class ColorDefinitions {
     setDarkModeColors() {
         this.currentForeground = this.keyLight;
         this.currentBackground = this.keyDark;
+        this.currentBsBackground = this.bootstrapDark;
     }
     setLightModeColors() {
         this.currentForeground = this.keyDark;
         this.currentBackground = this.keyLight;
+        this.currentBsBackground = this.bootstrapWhite;
     }
 }

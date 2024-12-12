@@ -209,6 +209,11 @@ class PageManager {
         }
     }
 
+    setupSimplifierPage() {
+        languageManager.updateLanguageSimplifierPage();
+        updateSimplifierPageColors();
+    }
+
     setupCheatSheet() {
         languageManager.updateLanguageCheatSheetPage();
 
