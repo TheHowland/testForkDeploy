@@ -99,13 +99,21 @@ class SelectorBuilder {
 
     // ######################### Setup #######################################
     setupSelector(circuitSet, pageManager) {
-        for (const circuit of circuitSet.set) {
+        for (const [idx, circuit] of circuitSet.set.entries()) {
+            this._showFirstQuickCircuitAsSelected(idx, circuitSet);
             this.setupSpecificCircuitSelector(circuit, pageManager, pageManager.pyodide);
         }
         if (moreThanOneCircuitInSet(circuitSet)) {
             this.setupNextAndPrevButtons(circuitSet);
         } else {
             this.hideNextAndPrevButtons(circuitSet);
+        }
+    }
+
+    _showFirstQuickCircuitAsSelected(idx, circuitSet) {
+        if ((idx === 0) && (circuitSet.identifier === circuitMapper.selectorIds.quick)) {
+            this.showCircuitAsSelected(document.getElementById(circuitSet.set[0].circuitDivID),
+                document.getElementById(circuitSet.set[0].btnOverlay));
         }
     }
 

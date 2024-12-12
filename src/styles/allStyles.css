@@ -430,10 +430,10 @@ th, td {
     max-width: 500px; /* to limit the distance of the next/prev buttons from the picture */
 }
 #bootstrap-overrides .carousel-control-next {
-    z-index: 3;
+    z-index: 10;
 }
 #bootstrap-overrides .carousel-control-prev {
-    z-index: 3;
+    z-index: 10;
 }
 
 
