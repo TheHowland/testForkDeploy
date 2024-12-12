@@ -48,6 +48,22 @@
 </head>
 
 <body id="bootstrap-overrides" class="bg-dark">
+
+    <!-- Info Gif Modal, needs to be on top level for display purposes -->
+    <div class="modal modal-sm fade" id="infoGif" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body" style="background: #222">
+                    <img class="img-fluid rounded mx-auto d-block" src="./src/resources/simplifier/howto.gif" alt="click on two elements and then on check two simplify these two elements">
+                </div>
+                <div class="modal-footer justify-content-center" style="background: #222">
+                    <button id="info-gif-close-btn" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schlie&szligen</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navbar Navigation -->
     <nav class="navbar navbar-dark bg-dark p-2" id="navbar">
         <button id="nav-toggler" class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>

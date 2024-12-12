@@ -13,7 +13,7 @@ class ColorDefinitions {
     currentForeground = this.keyLight;
     currentBackground = this.keyDark;
 
-    prevNextBtnBackgroundColor = this.keyDark;
+    prevNextBtnBackgroundColor = "#808080";
 
     bsColorSchemeLight = "light";
     bsColorSchemeDark = "dark";

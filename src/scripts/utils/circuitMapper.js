@@ -11,7 +11,9 @@ class CircuitMapper {
         await this.fillFilesObject();
 
         for (let dir of this.circuitDirs) {
-            if (dir === "acdc") {
+            if (dir === "quickstart") {
+                this.addQuickstartCircuitMaps(dir);
+            } else if (dir === "acdc") {
                 this.addSubAcdcCircuitMaps(dir);
             } else if (dir === "mixed") {
                 this.addMixedCircuitMaps(dir);
@@ -27,9 +29,15 @@ class CircuitMapper {
     _svgsPath = "Solutions"
 
     selectorIds = {
+        quick: "quick",
         subId: "sub",
         acdcId: "acdc",
         mixedId: "mixed"
+    }
+
+    _quickstart = {
+        identifier: this.selectorIds.quick,
+        set: []
     }
 
     _substitute = {
@@ -47,6 +55,27 @@ class CircuitMapper {
 
     circuitSets = [];
 
+    updateCircuitSets() {
+        if (this._quickstart.set.length !== 0) {
+            this.circuitSets.push(this._quickstart);
+        }
+        if (this._acdc.set.length !== 0) {
+            this.circuitSets.push(this._substitute);
+            this.circuitSets.push(this._acdc);
+        }
+        if (this._mixed.set.length !== 0) {
+            this.circuitSets.push(this._mixed);
+        }
+    }
+
+    addQuickstartCircuitMaps(dir) {
+        for (let circuitFileName of this.files[dir]) {
+            let quickStartCircuit = this.createCircuitMap(circuitFileName, dir, this.selectorIds.quick)
+            this._quickstart.set.push(quickStartCircuit);
+        }
+        this._quickstart.set.sort(this._compareByCircuitDivIds);
+    }
+
     addMixedCircuitMaps(dir) {
         for (let circuitFileName of this.files[dir]) {
             let mixedCircuit = this.createCircuitMap(circuitFileName, dir, this.selectorIds.mixedId)
@@ -60,20 +89,14 @@ class CircuitMapper {
         for (let circuitFileName of this.files[dir]) {
             let subCircuit = this.createCircuitMap(circuitFileName, dir, this.selectorIds.subId)
             this._substitute.set.push(subCircuit);
-
-            // RELEASE V1.0 EXCEPTION
-            // For the current release, we don't want to show complex current and voltage
-            // calculation, therefore we remove all C and L Circuits from the acdc selector
-
-            if (circuitFileName.includes("capacitor") || circuitFileName.includes("inductor")) {
-            } else {
-                let acdcCircuit = this.createCircuitMap(circuitFileName, dir, this.selectorIds.acdcId)
-                this._acdc.set.push(acdcCircuit);
-            }
+            let acdcCircuit = this.createCircuitMap(circuitFileName, dir, this.selectorIds.acdcId)
+            this._acdc.set.push(acdcCircuit);
         }
         this._substitute.set.sort(this._compareByCircuitDivIds);
         this._acdc.set.sort(this._compareByCircuitDivIds);
     }
+
+
 
     _compareByCircuitDivIds(a,b) {
         // circuitDivId = {circuitFileName without Extension}-{id}-div
@@ -98,16 +121,6 @@ class CircuitMapper {
             svgFile: `${this._svgsPath}/${circuitId}_step0.svg`,
             selectorGroup: id,
             overViewSvgFile: `${this._circuitsPath}/${dir}/${circuitId}_step0.svg`
-        }
-    }
-
-    updateCircuitSets() {
-        if (this._acdc.set.length !== 0) {
-            this.circuitSets.push(this._substitute);
-            this.circuitSets.push(this._acdc);
-        }
-        if (this._mixed.set.length !== 0) {
-            this.circuitSets.push(this._mixed);
         }
     }
 

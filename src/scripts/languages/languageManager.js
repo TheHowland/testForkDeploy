@@ -4,6 +4,7 @@ class LanguageManager {
     updatesLanguageFields() {
         this.updateLanguageLandingPage();
         this.updateLanguageSelectorPage();
+        this.updateLanguageSimplifierPage();
         this.updateLanguageCheatSheetPage();
     }
 
@@ -28,6 +29,11 @@ class LanguageManager {
                 heading.innerHTML = this.currentLang.carouselHeadings[circuitSet.identifier];
             }
         }
+    }
+
+    updateLanguageSimplifierPage() {
+        const InfoGifCloseBtn = document.getElementById("info-gif-close-btn");
+        InfoGifCloseBtn.innerHTML = this.currentLang.closeBtn;
     }
 
     updateLanguageCheatSheetPage() {

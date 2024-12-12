@@ -128,6 +128,23 @@ function hideSvgArrows(svgDiv) {
     for (let arrow of arrows) arrow.style.display = "none";
 }
 
+function addInfoHelpButton(svgDiv) {
+    let infoBtn = document.createElement("button");
+    infoBtn.type = "button";
+    infoBtn.id = "open-info-gif-btn";
+    infoBtn.classList.add("btn");
+    infoBtn.classList.add("btn-primary");
+    infoBtn.style.position = "absolute";
+    infoBtn.style.color = colors.keyDark;
+    infoBtn.style.border = "none";
+    infoBtn.style.background = colors.keyYellow;
+    infoBtn.innerText = "?";
+    infoBtn.setAttribute("data-bs-toggle", "modal");
+    infoBtn.setAttribute("data-bs-target", "#infoGif");
+    infoBtn.onclick = () => {infoBtn.blur()};
+    svgDiv.insertAdjacentElement("afterbegin", infoBtn);
+}
+
 function setupSvgDivContainerAndData(svgData) {
     const svgDiv = document.createElement('div');
     svgDiv.id = `svgDiv${state.pictureCounter}`;
@@ -142,6 +159,9 @@ function setupSvgDivContainerAndData(svgData) {
     svgData = setSvgColorMode(svgData);
     svgDiv.innerHTML = svgData;
     hideSvgArrows(svgDiv);
+    if (state.pictureCounter === 1) {
+        addInfoHelpButton(svgDiv);
+    }
     return svgDiv;
 }
 
@@ -397,7 +417,7 @@ function generateTexts(data, vcData, componentTypes) {
 
 function finishCircuit(contentCol, showVCData) {
     document.getElementById("check-btn").disabled = true;
-    showMessage(contentCol, languageManager.currentLang.msgCongratsFinishedCircuit, "success", false);
+    showMessage(contentCol, languageManager.currentLang.msgCongratsFinishedCircuit, "success");
     confetti({
         particleCount: 150,
         angle: 90,
@@ -496,6 +516,7 @@ function addSolutionsButton(pyodide, showVCData, vcData) {
     let originalStep0Svg = document.getElementById("svgDiv1");
     let clonedSvgData = originalStep0Svg.cloneNode(true);
     clonedSvgData.id = "clonedOverviewSvg";
+    clonedSvgData.removeChild(clonedSvgData.querySelector("button"));  // remove info gif button
     clonedSvgData.appendChild(table);
     if (showVCData) {
         let arrows = clonedSvgData.getElementsByClassName("arrow");

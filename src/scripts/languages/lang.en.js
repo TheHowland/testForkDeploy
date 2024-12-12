@@ -1,17 +1,4 @@
 const english = {
-    cookies: {
-        customize: "CUSTOMIZE",
-        applySome: "APPLY",
-        rejectAll: "REJECT ALL",
-        acceptAll: "ACCEPT ALL",
-        title: "Cookie Settings",
-        text: "We value your privacy. We use cookies to provide you with the best possible experience on our website.",
-        necessary: "Necessary",
-        analytics: "Analytics",
-        preferences: "Preferences",
-        marketing: "Marketing"
-    },
-
     // Landing page text
     landingPageGreeting:
         "a free browser tool for learning<br>" +
@@ -47,12 +34,15 @@ const english = {
     // Selector page text
     carouselHeadings:
         {
+            "quick": "QUICKSTART",
             "sub":  "SUBSTITUTE CIRCUITS",
             "acdc": "AC/DC CIRCUITS",
             "mixed": "MIXED CIRCUITS",
         },
 
     // Simplifier page text
+    closeBtn:
+        "Close",
     nextElementsHeading:
         "Next elements",
     showCalculationBtn:
