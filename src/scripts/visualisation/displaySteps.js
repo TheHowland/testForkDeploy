@@ -78,13 +78,15 @@ function getFinishMsg(vcData, showVCData) {
         <p>${languageManager.currentLang.msgVoltAndCurrentAvailable}.<br></p>
         <p>${languageManager.currentLang.msgShowVoltage}<br>$$ ${languageManager.currentLang.voltageSymbol}_{${languageManager.currentLang.totalSuffix}}=${vcData.noFormat().oldValues[1]}$$</p>
         <button class="btn btn-primary mx-1" id="reset-btn">reset</button>
-        <button class="btn btn-primary mx-1" id="check-btn">check</button>
+        <button class="btn btn-primary mx-1 disabled" id="check-btn">check</button>
+        <button class="btn btn-secondary mx-1" id="back-btn">back</button>
     `;
     } else {
         // No msg, just the two buttons
         msg = `
         <button class="btn btn-primary mx-1" id="reset-btn">reset</button>
-        <button class="btn btn-primary mx-1" id="check-btn">check</button>
+        <button class="btn btn-primary mx-1 disabled" id="check-btn">check</button>
+        <button class="btn btn-secondary mx-1" id="back-btn">back</button>
     `;
     }
     return msg;
@@ -105,8 +107,9 @@ function setupNextElementsContainer(sanitizedSvgFilePath, filteredPaths, vcData,
         nextElementsContainer.innerHTML = `
         <h3>${languageManager.currentLang.nextElementsHeading}</h3>
         <ul class="px-0" id="next-elements-list-${sanitizedSvgFilePath}"></ul>
-        <button class="btn btn-primary mx-1" id="reset-btn">reset</button>
+        <button class="btn btn-primary mx-1 ${state.pictureCounter === 1 ? "disabled" : ""}" id="reset-btn">reset</button>
         <button class="btn btn-primary mx-1" id="check-btn">check</button>
+        <button class="btn btn-secondary mx-1" id="back-btn">back</button>
     `;
     }
     return nextElementsContainer;
@@ -416,7 +419,6 @@ function generateTexts(data, vcData, componentTypes) {
 }
 
 function finishCircuit(contentCol, showVCData) {
-    document.getElementById("check-btn").disabled = true;
     showMessage(contentCol, languageManager.currentLang.msgCongratsFinishedCircuit, "success");
     confetti({
         particleCount: 150,
@@ -445,6 +447,12 @@ function setupStepButtonsFunctionality(pyodide, div, stepDetails) {
                 document.getElementById("check-btn").innerHTML = "check";
             }, 0);
         });
+    });
+    const backButton = document.getElementById("back-btn");
+    backButton.innerHTML = languageManager.currentLang.backBtn;
+    backButton.addEventListener("click", () => {
+        resetSimplifierPage(pyodide);
+        pageManager.showSelectPage();
     });
 }
 
@@ -481,7 +489,6 @@ function congratsAndVCDisplayIfFinished(filteredPaths, contentCol, showVCData, v
     if (onlyOneElementLeft(filteredPaths)) {
         addFirstVCExplanation(showVCData, vcData);
         addSolutionsButton(pyodide, showVCData, vcData);
-        addBackButton(pyodide, contentCol);
         finishCircuit(contentCol, showVCData);
     }
 }
@@ -544,19 +551,6 @@ function addSolutionsButton(pyodide, showVCData, vcData) {
             solBtnContainer.removeChild(div);
         }
     })
-}
-
-function addBackButton(pyodide, contentCol) {
-    let backButton = document.createElement("button");
-    backButton.classList.add("btn");
-    backButton.classList.add("btn-primary");
-    backButton.id = "back-btn";
-    backButton.innerHTML = languageManager.currentLang.backBtn;
-    contentCol.appendChild(backButton);
-    backButton.addEventListener("click", () => {
-        resetSimplifierPage(pyodide);
-        pageManager.showSelectPage();
-    });
 }
 
 function addFirstVCExplanation(showVCData, vcData) {
