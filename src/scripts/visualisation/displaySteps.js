@@ -9,7 +9,7 @@ function display_step(pyodide,stepDetails) {
     state.pictureCounter++;  // increment before usage in the below functions
 
     // Create the new elements for the current step
-    const {circuitContainer, svgContainer} = setupCircuitContainer(svgData);
+    const {circuitContainer, svgContainer} = setupCircuitContainer(svgData, stepDetails);
     const {newCalcBtn, newVCBtn} = setupExplanationButtons(showVCData);
     const electricalElements = getElementsFromSvgContainer(svgContainer);
     const nextElementsContainer = setupNextElementsContainer(sanitizedSvgFilePath, electricalElements, vcData, showVCData);
@@ -115,13 +115,13 @@ function setupNextElementsContainer(sanitizedSvgFilePath, filteredPaths, vcData,
     return nextElementsContainer;
 }
 
-function setupCircuitContainer(svgData) {
+function setupCircuitContainer(svgData, stepDetails) {
     const circuitContainer = document.createElement('div');
     circuitContainer.classList.add('circuit-container');
     circuitContainer.classList.add("row"); // use flexbox property for scaling display sizes
     circuitContainer.classList.add("justify-content-center"); // centers the content
     circuitContainer.classList.add("my-2"); // centers the content
-    const svgContainer = setupSvgDivContainerAndData(svgData);
+    const svgContainer = setupSvgDivContainerAndData(svgData, stepDetails);
     circuitContainer.appendChild(svgContainer)
     return {circuitContainer, svgContainer};
 }
@@ -137,7 +137,7 @@ function addInfoHelpButton(svgDiv) {
     infoBtn.id = "open-info-gif-btn";
     infoBtn.classList.add("btn");
     infoBtn.classList.add("btn-primary");
-    infoBtn.style.position = "absolute";
+    infoBtn.style.float = "left";
     infoBtn.style.color = colors.keyDark;
     infoBtn.style.border = "none";
     infoBtn.style.background = colors.keyYellow;
@@ -148,7 +148,7 @@ function addInfoHelpButton(svgDiv) {
     svgDiv.insertAdjacentElement("afterbegin", infoBtn);
 }
 
-function setupSvgDivContainerAndData(svgData) {
+function setupSvgDivContainerAndData(svgData, stepDetails) {
     const svgDiv = document.createElement('div');
     svgDiv.id = `svgDiv${state.pictureCounter}`;
     svgDiv.classList.add("svg-container");
@@ -160,12 +160,60 @@ function setupSvgDivContainerAndData(svgData) {
     svgDiv.style.maxWidth = "350px;";
     // Svg manipulation - set width and color for dark mode
     svgData = setSvgColorMode(svgData);
+    //TODOD
+    svgData = addClasses(svgData);
+
     svgDiv.innerHTML = svgData;
     hideSvgArrows(svgDiv);
     if (state.pictureCounter === 1) {
         addInfoHelpButton(svgDiv);
     }
+    addNameValueToggleBtn(svgDiv, stepDetails);
     return svgDiv;
+}
+
+//TODO REMOVE
+function addClasses(svgData) {
+    svgData = svgData.replace(">R1</tspan>", " class='R1'>R1</tspan>");
+    svgData = svgData.replace(">R2</tspan>", " class='R2'>R2</tspan>");
+    svgData = svgData.replace(">R3</tspan>", " class='R3'>R3</tspan>");
+    svgData = svgData.replace(">R4</tspan>", " class='R4'>R4</tspan>");
+    return svgData;
+}
+
+function addNameValueToggleBtn(svgDiv, stepDetails) {
+    const nameValueToggleBtn = document.createElement("button");
+    nameValueToggleBtn.type = "button";
+    nameValueToggleBtn.id = "nameValueToggleBtn";
+    nameValueToggleBtn.classList.add("btn");
+    nameValueToggleBtn.classList.add("btn-secondary");
+    nameValueToggleBtn.style.float = "right";
+    nameValueToggleBtn.style.color = colors.keyDark;
+    nameValueToggleBtn.style.border = "none";
+    nameValueToggleBtn.innerText = "R->42";
+    nameValueToggleBtn.onclick = () => {toggleNameValue(svgDiv, stepDetails)};
+    svgDiv.insertAdjacentElement("afterbegin", nameValueToggleBtn);
+}
+
+function toggleNameValue(svgDiv, stepDetails) {
+    console.log("Toggle name value");
+    let nameValueMap = stepDetails.getElementNamesAndValues();
+    // TODO Add all help values like Rs1, Rs2, Cs1, Cs2, Ls1, Ls2
+
+    for (let [key, value] of Object.entries(nameValueMap)) {
+        let tspan = svgDiv.querySelector(`.${key}`);
+        if (tspan === null) continue;
+        if (value.includes("\\Omega")) {
+            value = value.replace("\\Omega", "Ω");
+        }
+        if (document.getElementById("nameValueToggleBtn").innerText === "R->42") {
+            tspan.innerHTML = tspan.innerHTML.replace(key, `${value}`);
+        } else {
+            tspan.innerHTML = tspan.innerHTML.replace(`${value}`, key);
+        }
+    }
+
+    document.getElementById("nameValueToggleBtn").innerText = document.getElementById("nameValueToggleBtn").innerText === "R->42" ? "42->R" : "R->42";
 }
 
 function getElementsFromSvgContainer(svgContainer) {
