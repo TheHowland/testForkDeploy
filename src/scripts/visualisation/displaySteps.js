@@ -17,7 +17,7 @@ function display_step(pyodide,stepDetails) {
     contentCol.append(circuitContainer);
 
     // Create the texts and buttons for the detailed calculation explanation
-    let {stepCalculationText, stepVoltageCurrentText} = generateTexts(data, vcData, stepDetails.componentTypes);
+    let {stepCalculationText, stepVoltageCurrentText} = generateTexts(data, vcData, stepDetails.getComponentTypes());
     checkAndAddExplanationButtons(showVCData, stepCalculationText, contentCol, stepVoltageCurrentText);
 
     // The order of function-calls is important

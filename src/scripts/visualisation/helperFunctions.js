@@ -194,11 +194,10 @@ function scrollBodyToTop() {
     window.scrollTo(0,0);
 }
 
-async function getCircuitComponentTypes(pyodide) {
+async function getCircuitInfo(pyodide) {
     let circuitInfoPath = await stepSolve.createCircuitInfo();
     let circuitInfoFile = await pyodide.FS.readFile(circuitInfoPath, {encoding: "utf8"});
-    const circuitInfo = JSON.parse(circuitInfoFile);
-    return circuitInfo["componentTypes"];
+    return JSON.parse(circuitInfoFile);
 }
 
 async function getJsonAndSvgStepFiles(pyodide) {
@@ -324,10 +323,10 @@ async function solveCircuit(circuitMap, pyodide) {
     await stepSolve.createStep0().toJs();
 
     // Get information which components are used in this circuit
-    const componentTypes = await getCircuitComponentTypes(pyodide);
+    const circuitInfo = await getCircuitInfo(pyodide);
 
     await getJsonAndSvgStepFiles(pyodide);
-    let stepDetails = fillStepDetailsObject(circuitMap, componentTypes);
+    let stepDetails = fillStepDetailsObject(circuitMap, circuitInfo);
 
     display_step(pyodide, stepDetails);
 }
@@ -343,13 +342,13 @@ function startSolving(pyodide) {
     }
 }
 
-function fillStepDetailsObject(circuitMap, componentTypes) {
+function fillStepDetailsObject(circuitMap, circuitInfo) {
     let stepDetails = new StepDetails;
     stepDetails.showVCData = circuitIsNotSubstituteCircuit(circuitMap);
     stepDetails.jsonZPath = `${conf.pyodideSolutionsPath}/${state.jsonFiles_Z[state.currentStep]}`;
     stepDetails.jsonZVCath = (state.jsonFiles_VC === null) ? null : `${conf.pyodideSolutionsPath}/${state.jsonFiles_VC[state.currentStep]}`;
     stepDetails.svgPath = `${conf.pyodideSolutionsPath}/${state.svgFiles[state.currentStep]}`;
-    stepDetails.componentTypes = componentTypes;
+    stepDetails.circuitInfo = circuitInfo;
     return stepDetails;
 }
 
