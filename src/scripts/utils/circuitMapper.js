@@ -17,7 +17,14 @@ class CircuitMapper {
                 this.addSubAcdcCircuitMaps(dir);
             } else if (dir === "mixed") {
                 this.addMixedCircuitMaps(dir);
+            } else if (dir === "resistor") {
+                this.addResistorCircuitMaps(dir);
+            } else if (dir === "capacitor") {
+                this.addCapacitorCircuitMaps(dir);
+            } else if (dir === "inductor") {
+                this.addInductorCircuitMaps(dir);
             }
+
         }
         this.updateCircuitSets();
     }
@@ -31,6 +38,9 @@ class CircuitMapper {
     selectorIds = {
         quick: "quick",
         subId: "sub",
+        res: "res",
+        cap: "cap",
+        ind: "ind",
         acdcId: "acdc",
         mixedId: "mixed"
     }
@@ -39,7 +49,6 @@ class CircuitMapper {
         identifier: this.selectorIds.quick,
         set: []
     }
-
     _substitute = {
         identifier: this.selectorIds.subId,
         set: []
@@ -50,6 +59,18 @@ class CircuitMapper {
     }
     _mixed = {
         identifier: this.selectorIds.mixedId,
+        set: []
+    }
+    _resistor = {
+        identifier: this.selectorIds.res,
+        set: []
+    }
+    _capacitor = {
+        identifier: this.selectorIds.cap,
+        set: []
+    }
+    _inductor = {
+        identifier: this.selectorIds.ind,
         set: []
     }
 
@@ -65,6 +86,15 @@ class CircuitMapper {
         }
         if (this._mixed.set.length !== 0) {
             this.circuitSets.push(this._mixed);
+        }
+        if (this._resistor.set.length !== 0) {
+            this.circuitSets.push(this._resistor);
+        }
+        if (this._capacitor.set.length !== 0) {
+            this.circuitSets.push(this._capacitor);
+        }
+        if (this._inductor.set.length !== 0) {
+            this.circuitSets.push(this._inductor);
         }
     }
 
@@ -94,6 +124,30 @@ class CircuitMapper {
         }
         this._substitute.set.sort(this._compareByCircuitDivIds);
         this._acdc.set.sort(this._compareByCircuitDivIds);
+    }
+
+    addResistorCircuitMaps(dir) {
+        for (let circuitFileName of this.files[dir]) {
+            let resistorCircuit = this.createCircuitMap(circuitFileName, dir, this.selectorIds.res)
+            this._resistor.set.push(resistorCircuit);
+        }
+        this._resistor.set.sort(this._compareByCircuitDivIds);
+    }
+
+    addCapacitorCircuitMaps(dir) {
+        for (let circuitFileName of this.files[dir]) {
+            let capacitorCircuit = this.createCircuitMap(circuitFileName, dir, this.selectorIds.cap)
+            this._capacitor.set.push(capacitorCircuit);
+        }
+        this._capacitor.set.sort(this._compareByCircuitDivIds);
+    }
+
+    addInductorCircuitMaps(dir) {
+        for (let circuitFileName of this.files[dir]) {
+            let inductorCircuit = this.createCircuitMap(circuitFileName, dir, this.selectorIds.ind)
+            this._inductor.set.push(inductorCircuit);
+        }
+        this._inductor.set.sort(this._compareByCircuitDivIds);
     }
 
 

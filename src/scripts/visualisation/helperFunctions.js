@@ -33,6 +33,24 @@ function hideAllSelectors() {
     }
 }
 
+function hideQuickstart() {
+    document.getElementById("quick-carousel").hidden = true;
+    document.getElementById("quick-heading").hidden = true;
+}
+
+function hideAccordion() {
+    document.getElementById("accordionFlushExample").hidden = true;
+}
+
+function showQuickstart() {
+    document.getElementById("quick-carousel").hidden = false;
+    document.getElementById("quick-heading").hidden = false;
+}
+
+function showAccordion() {
+    document.getElementById("accordionFlushExample").hidden = false;
+}
+
 function showAllSelectors() {
     for (const circuitSet of circuitMapper.circuitSets) {
         const carousel = document.getElementById(`${circuitSet.identifier}-carousel`);

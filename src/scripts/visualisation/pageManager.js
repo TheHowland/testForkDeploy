@@ -108,14 +108,18 @@ class PageManager {
 
             selectorBuilder.buildSelectorsForAllCircuitSets();
 
-            hideAllSelectors();
+            //hideAllSelectors();
+            hideQuickstart();
+            hideAccordion();
 
             // Import packages/scripts, create selector svgs
             await packageManager.doLoadsAndImports(this.pyodide);
             //await createSvgsForSelectors(pyodide);
 
             selectorBuilder.adaptSelectorFrameColor();
-            showAllSelectors();
+            //showAllSelectors();
+            showQuickstart();
+            showAccordion();
             note.innerHTML = "";
 
             pageManager.setupSelectPage();
@@ -124,8 +128,10 @@ class PageManager {
 
     setupSelectPage() {
         for (const circuitSet of circuitMapper.circuitSets) {
-            this.updateSelectorHeadings(circuitSet.identifier);
-            selectorBuilder.setupSelector(circuitSet, this);
+            if (circuitSet.identifier === "quick") {
+                this.updateSelectorHeadings(circuitSet.identifier);
+                selectorBuilder.setupSelector(circuitSet, this);
+            }
         }
     }
 
