@@ -369,6 +369,8 @@ function checkAndSimplify(simplifyObject, contentCol, div, stepDetails) {
             enableLastCalcButton();
             scrollNextElementsContainerIntoView();
         }
+        // Remove event listeners from old picture elements
+        removeOldEventListeners();
         display_step(stepDetails);
     } else {
         showMessage(contentCol, languageManager.currentLang.alertCanNotSimplify, "warning");
@@ -492,6 +494,7 @@ function setupStepButtonsFunctionality(div, stepDetails) {
         pushCircuitEventMatomo(circuitActions.Reset, state.pictureCounter);
         resetSimplifierPage(true);
     });
+    // Check btn clicked, set spinner inside and simplify next step
     document.getElementById("check-btn").addEventListener('click', async () => {
         document.getElementById("check-btn").innerHTML = "<span class='spinner-border spinner-border-sm'></span>";
         requestAnimationFrame(() => {
@@ -507,6 +510,18 @@ function setupStepButtonsFunctionality(div, stepDetails) {
         resetSimplifierPage();
         pageManager.showSelectPage();
     });
+}
+
+function removeOldEventListeners() {
+    const svgDiv = document.getElementById(`svgDiv${state.pictureCounter}`);
+    const pathElements = svgDiv.querySelectorAll('path');
+    let electricElements = Array.from(pathElements).filter(path => (path.getAttribute('class') !== 'na')
+        && (!path.getAttribute('class').includes("arrow")));
+    for (let element of electricElements) {
+        // Clone the node and replace its original with the clone, this removes all event listeners
+        let clone = element.cloneNode(true);
+        element.parentNode.replaceChild(clone, element);
+    }
 }
 
 function getAllElementsAndMakeClickable(nextElementsContainer, sanitizedSvgFilePath, electricalElements) {
@@ -745,6 +760,6 @@ function setStyleAndEvent(element, nextElementsList) {
     element.style.pointerEvents = "bounding-box";
     element.style.cursor = 'pointer';
     element.addEventListener('click', () =>
-    chooseElement(element, nextElementsList)
+        chooseElement(element, nextElementsList)
     );
 }
