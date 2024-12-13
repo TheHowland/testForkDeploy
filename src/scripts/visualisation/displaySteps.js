@@ -166,7 +166,7 @@ function setupSvgDivContainerAndData(svgData, stepDetails) {
     svgDiv.style.position = "relative";
     // Svg manipulation - set width and color for dark mode
     svgData = setSvgColorMode(svgData);
-    //TODOD
+    // TODO REMOVE
     svgData = addClasses(svgData);
 
     svgDiv.innerHTML = svgData;
@@ -190,21 +190,20 @@ function addClasses(svgData) {
 function addNameValueToggleBtn(svgDiv, stepDetails) {
     const nameValueToggleBtn = document.createElement("button");
     nameValueToggleBtn.type = "button";
-    nameValueToggleBtn.id = "nameValueToggleBtn";
-    nameValueToggleBtn.classList.add("btn");
-    nameValueToggleBtn.classList.add("btn-secondary");
+    nameValueToggleBtn.id = `toggle-view-${state.pictureCounter}`;
+    nameValueToggleBtn.classList.add("btn", "btn-secondary", "toggle-view");
     nameValueToggleBtn.style.position = "absolute";
     nameValueToggleBtn.style.top = "5px";
     nameValueToggleBtn.style.right = "5px";
-    nameValueToggleBtn.style.color = colors.keyLight;
-    nameValueToggleBtn.style.border = `1px solid ${colors.keyLight}`;
+    nameValueToggleBtn.style.color = colors.currentForeground;
+    nameValueToggleBtn.style.border = `1px solid ${colors.currentForeground}`;
     nameValueToggleBtn.style.background = "none";
     nameValueToggleBtn.innerText = "⮂";
-    nameValueToggleBtn.onclick = () => {toggleNameValue(svgDiv, stepDetails)};
+    nameValueToggleBtn.onclick = () => {toggleNameValue(nameValueToggleBtn, svgDiv, stepDetails)};
     svgDiv.insertAdjacentElement("afterbegin", nameValueToggleBtn);
 }
 
-function toggleNameValue(svgDiv, stepDetails) {
+function toggleNameValue(nameValueToggleBtn, svgDiv, stepDetails) {
     console.log("Toggle name value");
     let nameValueMap = stepDetails.getElementNamesAndValues();
     // TODO Add all help values like Rs1, Rs2, Cs1, Cs2, Ls1, Ls2
@@ -219,14 +218,14 @@ function toggleNameValue(svgDiv, stepDetails) {
             value = value.replace("\\text{", "");
             value = value.replace("} ", "");
         }
-        if (document.getElementById("nameValueToggleBtn").innerText === "⮂") {
+        if (nameValueToggleBtn.innerText === "⮂") {
             tspan.innerHTML = tspan.innerHTML.replace(key, `${value}`);
         } else {
             tspan.innerHTML = tspan.innerHTML.replace(`${value}`, key);
         }
     }
 
-    document.getElementById("nameValueToggleBtn").innerText = document.getElementById("nameValueToggleBtn").innerText === "⮂" ? "⮀" : "⮂";
+    nameValueToggleBtn.innerText = nameValueToggleBtn.innerText === "⮂" ? "⮀" : "⮂";
 }
 
 function getElementsFromSvgContainer(svgContainer) {

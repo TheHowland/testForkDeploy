@@ -260,24 +260,6 @@ function resetHighlightedBoundingBoxes(svgDiv) {
     }
 }
 
-// ToDo maybe Remove
-async function createSvgsForSelectors(pyodide) {
-    await clearSolutionsDir(pyodide);
-    // For all circuit sets (e.g. Resistors, Capacitors, ..)
-    let paramMap = new Map();
-    paramMap.set("volt", languageManager.currentLang.voltageSymbol);
-    paramMap.set("total", languageManager.currentLang.totalSuffix);
-
-
-    for (const circuitSet of circuitMapper.circuitSets) {
-        // For all circuits in this set (e.g., Resistor1, Resistor2, ...)
-        for (const circuit of circuitSet.set) {
-            stepSolve = state.solve.SolveInUserOrder(circuit.circuitFile, `${conf.pyodideCircuitPath}/${circuit.sourceDir}`, `${conf.pyodideSolutionsPath}/`, paramMap);
-            await stepSolve.createStep0();
-        }
-    }
-}
-
 function moreThanOneCircuitInSet(circuitSet) {
     return circuitSet.set.length > 1;
 }
