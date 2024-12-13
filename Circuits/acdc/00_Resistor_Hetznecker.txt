@@ -1,7 +1,0 @@
-V1 1 0 dc {4}; up
-R1 1 2 {2}; right
-R2 2 3 {1}; right
-R3 2 4 {4}; down
-R4 3 5 {3}; down
-W 5 4; left
-W 4 0; left

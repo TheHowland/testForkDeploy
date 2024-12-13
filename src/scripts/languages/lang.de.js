@@ -34,11 +34,12 @@ const german = {
         "nicht ver&aumlnderbar.",
 
     // Selector page text
-    carouselHeadings:
+    selectorHeadings:
         {
             "quick": "SCHNELLSTART",
-            "sub":  "ERSATZSCHALTUNGEN",
-            "acdc": "GLEICH-/WECHSELSTROMKREISE",
+            "res":  "WIDERSTÄNDE",  // use the ä character because &auml is not rendered correctly here
+            "cap": "KONDENSATOREN",
+            "ind": "SPULEN",
             "mixed": "GEMISCHTE SCHALTUNGEN",
         },
 

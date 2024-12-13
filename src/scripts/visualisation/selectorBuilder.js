@@ -4,10 +4,47 @@ class SelectorBuilder {
 
     // ############################# Necessary function for outside ###############################
 
-    buildSelectorsForAllCircuitSets() {
-        for (const circuitSet of circuitMapper.circuitSets.reverse()) {
-            this.buildSelector(circuitSet.identifier);
+    buildAccordionSelectors() {
+        let accordion = document.createElement("div");
+        accordion.classList.add("accordion", "accordion-flush", "mt-5");
+        accordion.id =  "selector-accordion";
+
+        for (let circuitSet of circuitMapper.circuitSets) {
+            if (circuitSet.identifier === circuitMapper.selectorIds.quick) continue; // already built
+            let item = this.buildAccordionItem(circuitSet.identifier);
+            accordion.appendChild(item);
         }
+
+        return accordion;
+    }
+
+    buildAccordionItem(identifier) {
+        let accordionItem = document.createElement("div");
+        accordionItem.classList.add("accordion-item");
+        accordionItem.innerHTML = `
+            <h2 class="accordion-header" id="flush-heading-${identifier}">
+                <button id="${identifier}-acc-btn" class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse-${identifier}" aria-expanded="false" aria-controls="flush-collapse-${identifier}">
+                    ${languageManager.currentLang.selectorHeadings[identifier]}
+                </button>
+            </h2>
+            <div id="flush-collapse-${identifier}" class="accordion-collapse collapse" aria-labelledby="flush-heading-${identifier}" data-bs-parent="#selector-accordion" style="">
+                <div class="accordion-body">
+                    <!-- OVERVIEW BUTTON button onclick="document.getElementById('overviewBtnModal').blur()" id="overviewBtnModal" type="button" class="btn mt-1 mb-3 btn-primary" data-bs-toggle="modal" data-bs-target="#overviewModal">OVERVIEW</--button-->
+                    ${this.createCarousel(identifier)}
+                </div>
+            </div>`;
+        return accordionItem;
+    }
+
+
+    buildSelectorsForAllCircuitSets() {
+        // Build the quick selector outside accordion
+        this.buildSelector(circuitMapper.selectorIds.quick);
+
+        let accordion = this.buildAccordionSelectors();
+
+        const quickCarousel = document.getElementById("quick-carousel");
+        quickCarousel.insertAdjacentElement("afterend", accordion);
     }
 
     // ################################ Helper functions ###########################################
@@ -17,7 +54,7 @@ class SelectorBuilder {
         const heading = this.createHeadingContainer(identifier);
         const carousel = this.createCarouselContainer();
 
-        carousel.innerHTML = this.createSelectorBody(identifier);
+        carousel.innerHTML = this.createCarousel(identifier);
 
         pgrBar.insertAdjacentElement("afterend", heading);
         heading.insertAdjacentElement("afterend", carousel);
@@ -41,7 +78,7 @@ class SelectorBuilder {
         return carousel;
     }
 
-    createSelectorBody(identifier) {
+    createCarousel(identifier) {
         const carouselElements = this.createCarouselElements(identifier);
         return `
             <div id="${identifier}-carousel" class="carousel slide" data-interval="false">

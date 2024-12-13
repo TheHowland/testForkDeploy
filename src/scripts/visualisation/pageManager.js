@@ -108,14 +108,15 @@ class PageManager {
 
             selectorBuilder.buildSelectorsForAllCircuitSets();
 
-            hideAllSelectors();
+            hideQuickstart();
+            hideAccordion();
 
-            // Import packages/scripts, create selector svgs
             await packageManager.doLoadsAndImports(this.pyodide);
-            //await createSvgsForSelectors(pyodide);
 
             selectorBuilder.adaptSelectorFrameColor();
-            showAllSelectors();
+
+            showQuickstart();
+            showAccordion();
             note.innerHTML = "";
 
             pageManager.setupSelectPage();
@@ -123,15 +124,11 @@ class PageManager {
     }
 
     setupSelectPage() {
+        // Fill accordion and carousels with svg data
+        languageManager.updateLanguageSelectorPage();
         for (const circuitSet of circuitMapper.circuitSets) {
-            this.updateSelectorHeadings(circuitSet.identifier);
             selectorBuilder.setupSelector(circuitSet, this);
         }
-    }
-
-    updateSelectorHeadings(circuitSetId) {
-        const heading = document.getElementById(`${circuitSetId}-heading`);
-        heading.innerHTML = languageManager.currentLang.carouselHeadings[circuitSetId];
     }
 
     setupNavigation() {
