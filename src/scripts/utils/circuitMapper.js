@@ -13,8 +13,6 @@ class CircuitMapper {
         for (let dir of this.circuitDirs) {
             if (dir === "quickstart") {
                 this.addQuickstartCircuitMaps(dir);
-            } else if (dir === "acdc") {
-                this.addSubAcdcCircuitMaps(dir);
             } else if (dir === "mixed") {
                 this.addMixedCircuitMaps(dir);
             } else if (dir === "resistor") {
@@ -37,24 +35,14 @@ class CircuitMapper {
 
     selectorIds = {
         quick: "quick",
-        subId: "sub",
         res: "res",
         cap: "cap",
         ind: "ind",
-        acdcId: "acdc",
         mixedId: "mixed"
     }
 
     _quickstart = {
         identifier: this.selectorIds.quick,
-        set: []
-    }
-    _substitute = {
-        identifier: this.selectorIds.subId,
-        set: []
-    }
-    _acdc = {
-        identifier: this.selectorIds.acdcId,
         set: []
     }
     _mixed = {
@@ -79,10 +67,6 @@ class CircuitMapper {
     updateCircuitSets() {
         if (this._quickstart.set.length !== 0) {
             this.circuitSets.push(this._quickstart);
-        }
-        if (this._acdc.set.length !== 0) {
-            this.circuitSets.push(this._substitute);
-            this.circuitSets.push(this._acdc);
         }
         if (this._mixed.set.length !== 0) {
             this.circuitSets.push(this._mixed);
@@ -114,18 +98,6 @@ class CircuitMapper {
         this._mixed.set.sort(this._compareByCircuitDivIds);
     }
 
-    addSubAcdcCircuitMaps(dir) {
-        // Sub and acdc circuits use the same source dir
-        for (let circuitFileName of this.files[dir]) {
-            let subCircuit = this.createCircuitMap(circuitFileName, dir, this.selectorIds.subId)
-            this._substitute.set.push(subCircuit);
-            let acdcCircuit = this.createCircuitMap(circuitFileName, dir, this.selectorIds.acdcId)
-            this._acdc.set.push(acdcCircuit);
-        }
-        this._substitute.set.sort(this._compareByCircuitDivIds);
-        this._acdc.set.sort(this._compareByCircuitDivIds);
-    }
-
     addResistorCircuitMaps(dir) {
         for (let circuitFileName of this.files[dir]) {
             let resistorCircuit = this.createCircuitMap(circuitFileName, dir, this.selectorIds.res)
@@ -149,7 +121,6 @@ class CircuitMapper {
         }
         this._inductor.set.sort(this._compareByCircuitDivIds);
     }
-
 
 
     _compareByCircuitDivIds(a,b) {
