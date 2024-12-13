@@ -208,6 +208,11 @@ class SelectorBuilder {
         pushPageViewMatomo(circuitMap.selectorGroup + "/" + circuitMap.circuitFile)
         clearSimplifierPageContent();
         state.currentCircuitMap = circuitMap;
+        if (circuitMap.selectorGroup === circuitMapper.selectorIds.quick) {
+            state.currentCircuitShowVC = showVCinQuickStart;
+        } else {
+            state.currentCircuitShowVC = document.getElementById(`${circuitMap.selectorGroup}-showVCData`).checked;
+        }
         state.pictureCounter = 0;
         state.allValuesMap = new Map();
         if (state.pyodideReady) {
