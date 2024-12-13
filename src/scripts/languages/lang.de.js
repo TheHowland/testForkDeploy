@@ -44,6 +44,8 @@ const german = {
         },
     showVCCheckBox:
         "Spannung und Strom anzeigen",
+    overviewModalBtn:
+        "Übersicht",
 
 
     // Simplifier page text
