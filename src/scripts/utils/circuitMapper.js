@@ -86,6 +86,11 @@ class CircuitMapper {
     }
 
     addCircuitMaps(dir, set, identifier) {
+        if (!Object.values(this.selectorIds).includes(identifier)) {
+            console.error("Unknown identifier: " + identifier);
+            console.error("Allowed Identifiers: " + Object.values(this.selectorIds));
+        }
+
         for (let circuitFileName of this.files[dir]) {
             let circuit = this.createCircuitMap(circuitFileName, dir, identifier)
             set.set.push(circuit);

@@ -42,6 +42,8 @@ const english = {
         },
     showVCCheckBox:
         "Show voltage and current",
+    overviewModalBtn:
+        "Overview",
 
     // Simplifier page text
     // info gif

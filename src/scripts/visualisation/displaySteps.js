@@ -143,7 +143,7 @@ function addInfoHelpButton(svgDiv) {
     infoBtn.innerText = "?";
     infoBtn.setAttribute("data-bs-toggle", "modal");
     infoBtn.setAttribute("data-bs-target", "#infoGif");
-    infoBtn.onclick = () => {infoBtn.blur()};
+    infoBtn.onclick = () => {infoBtn.blur()};  // make sure focus is removed when opening modal
     svgDiv.insertAdjacentElement("afterbegin", infoBtn);
 }
 

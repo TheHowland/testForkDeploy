@@ -34,6 +34,8 @@ class LanguageManager {
                 titleBtn.innerHTML = this.currentLang.selectorHeadings[circuitSet.identifier];
                 const checkBoxLabel = document.getElementById(`${circuitSet.identifier}-checkBox-label`);
                 checkBoxLabel.innerHTML = this.currentLang.showVCCheckBox;
+                const overviewModalBtn = document.getElementById(`${circuitSet.identifier}-overviewModalBtn`);
+                overviewModalBtn.innerHTML = this.currentLang.overviewModalBtn;
             }
         }
     }

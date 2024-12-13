@@ -62,6 +62,27 @@ function updateSelectorPageColors() {
     for (const checkBox of checkBoxes) {
         checkBox.style.color = colors.currentForeground;
     }
+    const overviewModalBtns = document.getElementsByClassName("modalOverviewBtn");
+    for (const overviewModalBtn of overviewModalBtns) {
+        overviewModalBtn.style.color = colors.currentHeadingsForeground;
+        overviewModalBtn.style.borderColor = colors.currentHeadingsForeground;
+    }
+
+    updateOverviewModals();
+}
+
+function updateOverviewModals() {
+    for (let circuitSet of circuitMapper.circuitSets) {
+        const modal = document.getElementById(`${circuitSet.identifier}-overviewModal`);
+        if (modal !== null) {
+            const modalBody = modal.querySelector(".modal-body");
+            modalBody.style.color = colors.currentForeground;
+            modalBody.style.backgroundColor = colors.currentBsBackground;
+            const modalFooter = modal.querySelector(".modal-footer");
+            modalFooter.style.color = colors.currentForeground;
+            modalFooter.style.backgroundColor = colors.currentBsBackground;
+        }
+    }
 }
 
 function updateSimplifierPageColors() {
@@ -140,9 +161,17 @@ function updateSelectorPageSvgStrokeColor(fromSvgColor, toSvgColor) {
     // Change svg color
     for (const circuitSet of circuitMapper.circuitSets) {
         for (const circuit of circuitSet.set) {
+            // Carousels
             let svgData = document.getElementById(circuit.circuitDivID).innerHTML;
             svgData = svgData.replaceAll(fromSvgColor, toSvgColor);
             document.getElementById(circuit.circuitDivID).innerHTML = svgData;
+            // Overview modal, can be null for quickstart for example
+            let modal = document.getElementById(`${circuit.circuitDivID}-overviewModal`);
+            if (modal !== null) {
+                let svgDataModal = modal.innerHTML;
+                svgDataModal = svgDataModal.replaceAll(fromSvgColor, toSvgColor);
+                document.getElementById(`${circuit.circuitDivID}-overviewModal`).innerHTML = svgDataModal; // overview
+            }
         }
     }
 }

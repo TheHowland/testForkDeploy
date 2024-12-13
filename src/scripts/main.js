@@ -19,6 +19,12 @@ let pageManager;
 // #####################################################################################################################
 
 async function main() {
+    // This is to prevent the focus from staying on the modal when it is closed
+    document.addEventListener('hide.bs.modal', function (event) {
+        if (document.activeElement) {
+            document.activeElement.blur();
+        }
+    });
     disableStartBtnAndSimplifierLink();
     conf = new Configurations();
     await conf.initialize();

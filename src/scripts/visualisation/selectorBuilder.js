@@ -12,7 +12,9 @@ class SelectorBuilder {
         for (let circuitSet of circuitMapper.circuitSets) {
             if (circuitSet.identifier === circuitMapper.selectorIds.quick) continue; // already built
             let item = this.buildAccordionItem(circuitSet.identifier);
+            let modal = this.buildOverviewModal(circuitSet);
             accordion.appendChild(item);
+            document.body.appendChild(modal);  // needs to be on the top level to work
         }
 
         return accordion;
@@ -30,11 +32,14 @@ class SelectorBuilder {
             <div id="flush-collapse-${identifier}" class="accordion-collapse collapse" aria-labelledby="flush-heading-${identifier}" data-bs-parent="#selector-accordion" style="">
                 <div class="accordion-body">
                     <div class="container vcCheckBox" style="text-align: left; max-width: 350px; padding: 0; color:${colors.currentForeground};">
-                        <div class="form-check my-1">
+                        <button onclick="document.getElementById('${identifier}-overviewModal').blur()" id="${identifier}-overviewModalBtn" type="button" 
+                            class="btn my-1 btn-primary modalOverviewBtn" data-bs-toggle="modal" data-bs-target="#${identifier}-overviewModal">
+                                ${languageManager.currentLang.overviewModalBtn}
+                        </button>
+                        <div class="form-check mt-1 mb-3">
                             <input class="form-check-input" type="checkbox" value="" id="${identifier}-showVCData" checked>
                             <label class="form-check-label" id="${identifier}-checkBox-label" for="${identifier}-showVCData">${languageManager.currentLang.showVCCheckBox}</label>
                         </div>
-                        <!--button onclick="document.getElementById('overviewBtnModal').blur()" id="overviewBtnModal" type="button" class="disabled btn mt-1 mb-3 btn-primary" data-bs-toggle="modal" data-bs-target="#overviewModal">OVERVIEW</button-->
                     </div>
                     ${this.createCarousel(identifier)}
                 </div>
@@ -42,6 +47,46 @@ class SelectorBuilder {
         return accordionItem;
     }
 
+    buildOverviewModal(circuitSet) {
+        let id = circuitSet.identifier;
+        let modal = document.createElement("div");
+        modal.classList.add("modal", "fade", "modal-xl");
+        modal.id = `${id}-overviewModal`;
+        modal.tabIndex = "-1";
+        modal.setAttribute("aria-labelledby", `${id}-overviewModalLabel`);
+        modal.setAttribute("aria-hidden", "true");
+
+        modal.innerHTML = `
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-body" style="background: #222; color: white;">
+                        ${this.generateOverviewGrid(circuitSet)}
+                    </div>
+                    <div class="modal-footer justify-content-center" style="background: #222">
+                        <button id="${id}-overviewCloseBtn" type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            ${languageManager.currentLang.closeBtn}
+                        </button>
+                    </div>
+                </div>
+            </div>
+                `;
+        return modal;
+    }
+
+    generateOverviewGrid(circuitSet) {
+        let grid = document.createElement("div");
+        grid.classList.add("row");
+        for (let circuit of circuitSet.set) {
+            let col = document.createElement("div");
+            col.classList.add("col-md-4", "col-sm-6",  "col-12",  "mb-4", "text-center", "justify-content-center");
+            col.innerHTML = `
+                <div id="${circuit.circuitDivID}-overviewModal" class="svg-selector mx-auto"></div>
+                <button id="${circuit.btn}-modalBtn" class="btn btn-warning text-dark px-5 circuitStartBtnModal">start</button>
+                `;
+            grid.appendChild(col);
+        }
+        return grid.outerHTML;
+    }
 
     buildSelectorsForAllCircuitSets() {
         // Build the quick selector outside accordion
@@ -168,9 +213,27 @@ class SelectorBuilder {
         circuitDiv.innerHTML = svgData;
         this.hideSvgArrows(circuitDiv);
 
+        // Setup specific circuit in overview modal
+        this.setupOverviewModalCircuit(circuitMap, circuitDiv, pageManager);
+
         this.setupSelectionCircuit(circuitDiv, startBtn, btnOverlay);
         startBtn.addEventListener("click", () =>
             this.circuitSelectorStartButtonPressed(circuitMap, pageManager))
+    }
+
+    setupOverviewModalCircuit(circuitMap, circuitDiv, pageManager) {
+        if (circuitMap.selectorGroup !== circuitMapper.selectorIds.quick) {
+            const gridElement = document.getElementById(`${circuitMap.circuitDivID}-overviewModal`);
+            gridElement.innerHTML = circuitDiv.innerHTML;  // copy svg without arrows to modal
+            const overviewStartBtn = document.getElementById(`${circuitMap.btn}-modalBtn`);
+            overviewStartBtn.addEventListener("click", () => {
+                // we need the bootstrap modal instance in order to close it
+                const modal = document.getElementById(`${circuitMap.selectorGroup}-overviewModal`);
+                var modalInstance = bootstrap.Modal.getInstance(modal) || new bootstrap.Modal(modal);
+                modalInstance.hide();
+                this.circuitSelectorStartButtonPressed(circuitMap, pageManager);
+            });
+        }
     }
 
     hideSvgArrows(circuitDiv) {
