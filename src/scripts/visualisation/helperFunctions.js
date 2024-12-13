@@ -39,7 +39,7 @@ function hideQuickstart() {
 }
 
 function hideAccordion() {
-    document.getElementById("accordionFlushExample").hidden = true;
+    document.getElementById("selector-accordion").hidden = true;
 }
 
 function showQuickstart() {
@@ -48,7 +48,7 @@ function showQuickstart() {
 }
 
 function showAccordion() {
-    document.getElementById("accordionFlushExample").hidden = false;
+    document.getElementById("selector-accordion").hidden = false;
 }
 
 function showAllSelectors() {

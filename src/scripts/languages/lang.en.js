@@ -32,11 +32,12 @@ const english = {
         "light or dark mode. While simplifying circuits, these settings cannot be changed.",
 
     // Selector page text
-    carouselHeadings:
+    selectorHeadings:
         {
             "quick": "QUICKSTART",
-            "sub":  "SUBSTITUTE CIRCUITS",
-            "acdc": "AC/DC CIRCUITS",
+            "res":  "RESISTORS",
+            "cap": "CAPACITORS",
+            "ind": "INDUCTORS",
             "mixed": "MIXED CIRCUITS",
         },
 

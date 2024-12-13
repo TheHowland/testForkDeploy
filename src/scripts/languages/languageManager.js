@@ -24,11 +24,10 @@ class LanguageManager {
     updateLanguageSelectorPage() {
         // circuit mapper is only instantiated in when start button pressed
         if (circuitMapper !== null) {
-            for (const circuitSet of circuitMapper.circuitSets) {
-                const heading = document.getElementById(`${circuitSet.identifier}-heading`);
-                heading.innerHTML = this.currentLang.carouselHeadings[circuitSet.identifier];
-            }
+            const quickHeading = document.getElementById("quick-heading");
+            quickHeading.innerHTML = this.currentLang.selectorHeadings[circuitMapper.selectorIds.quick];
         }
+        // TODO for every accordion item title
     }
 
     updateLanguageSimplifierPage() {
