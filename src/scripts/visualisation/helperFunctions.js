@@ -60,14 +60,6 @@ function showAllSelectors() {
     }
 }
 
-function circuitIsNotSubstituteCircuit(circuitMap) {
-    let showVCData = true;
-    if (circuitMap.selectorGroup === circuitMapper.selectorIds.subId) {
-        showVCData = false;
-    }
-    return showVCData;
-}
-
 function notLastPicture() {
     // Because on the last picture, this element won't exist
     return document.getElementById("nextElementsContainer") != null;
@@ -345,7 +337,7 @@ function startSolving(pyodide) {
 
 function fillStepDetailsObject(circuitMap, circuitInfo) {
     let stepDetails = new StepDetails;
-    stepDetails.showVCData = circuitIsNotSubstituteCircuit(circuitMap);
+    stepDetails.showVCData = getCheckBoxValue(circuitMap);
     stepDetails.jsonZPath = `${conf.pyodideSolutionsPath}/${state.jsonFiles_Z[state.currentStep]}`;
     stepDetails.jsonZVCath = (state.jsonFiles_VC === null) ? null : `${conf.pyodideSolutionsPath}/${state.jsonFiles_VC[state.currentStep]}`;
     stepDetails.svgPath = `${conf.pyodideSolutionsPath}/${state.svgFiles[state.currentStep]}`;
@@ -353,6 +345,11 @@ function fillStepDetailsObject(circuitMap, circuitInfo) {
     return stepDetails;
 }
 
+function getCheckBoxValue(circuitMap) {
+    // only check the checkbox corresponding to the current circuit group
+    const checkBox = document.getElementById(`${circuitMap.selectorGroup}-showVCData`);
+    return checkBox.checked;
+}
 
 
 
