@@ -19,6 +19,7 @@ function changeToDarkMode() {
     updateNavigationColorsTo(colors.bootstrapDark, colors.languagesDarkBg);
     updateCheatSheetPageColorsTo(colors.bsColorSchemeDark);
     updateSelectorPageNote();
+    updateSelectorPageAccordion();
     if (circuitMapper !== null) {
         updateSelectorPageSvgStrokeColor(colors.lightModeSvgStrokeColor, colors.darkModeSvgStrokeColor);
     }
@@ -30,8 +31,20 @@ function changeToLightMode() {
     updateNavigationColorsTo(colors.bootstrapWhite, colors.languagesLightBg);
     updateCheatSheetPageColorsTo(colors.bsColorSchemeLight);
     updateSelectorPageNote();
+    updateSelectorPageAccordion();
     if (circuitMapper !== null) {
         updateSelectorPageSvgStrokeColor(colors.darkModeSvgStrokeColor, colors.lightModeSvgStrokeColor);
+    }
+}
+
+function updateSelectorPageAccordion() {
+    const accordionButtons = document.getElementsByClassName("accordion-button");
+    for (const accordionButton of accordionButtons) {
+        accordionButton.style.backgroundColor = colors.currentBsBackground;
+    }
+    const accordionBodies = document.getElementsByClassName("accordion-body");
+    for (const accordionBody of accordionBodies) {
+        accordionBody.style.backgroundColor = colors.currentBsBackground;
     }
 }
 
