@@ -100,10 +100,10 @@ class PageManager {
 
             state.pyodideLoading = true;
             // Get the pyodide instance and setup pages with functionality
-            this.pyodide = await loadPyodide();
+            state.pyodide = await loadPyodide();
 
             // Map all circuits into map and build the selectors
-            circuitMapper = new CircuitMapper(this.pyodide);
+            circuitMapper = new CircuitMapper();
             await circuitMapper.mapCircuits();
 
             selectorBuilder.buildSelectorsForAllCircuitSets();
@@ -111,7 +111,7 @@ class PageManager {
             hideQuickstart();
             hideAccordion();
 
-            await packageManager.doLoadsAndImports(this.pyodide);
+            await packageManager.doLoadsAndImports();
 
             selectorBuilder.adaptSelectorFrameColor();
 
@@ -140,12 +140,12 @@ class PageManager {
         const selectGerman = document.getElementById("select-german");
 
         navHomeLink.addEventListener("click", () => {
-            checkIfSimplifierPageNeedsReset(this.pyodide);  // must be in front of page change
+            checkIfSimplifierPageNeedsReset();  // must be in front of page change
             closeNavbar();
             this.showLandingPage();
         })
         navSimplifierLink.addEventListener("click", async () => {
-            checkIfSimplifierPageNeedsReset(this.pyodide);  // must be in front of page change
+            checkIfSimplifierPageNeedsReset();  // must be in front of page change
             closeNavbar();
             if (state.pyodideReady) {
                 this.showSelectPage();
@@ -155,12 +155,12 @@ class PageManager {
             }
         })
         navCheatLink.addEventListener("click", () => {
-            checkIfSimplifierPageNeedsReset(this.pyodide);
+            checkIfSimplifierPageNeedsReset();
             closeNavbar();
             this.showCheatSheet();
         })
         navLogo.addEventListener("click", () => {
-            checkIfSimplifierPageNeedsReset(this.pyodide);  // must be in front of page change
+            checkIfSimplifierPageNeedsReset();  // must be in front of page change
             closeNavbar();
             this.showLandingPage();
         })

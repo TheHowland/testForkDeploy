@@ -1,7 +1,6 @@
 class CircuitMapper {
 
-    constructor(pyodide) {
-        this.pyodide = pyodide
+    constructor() {
         this.files = {}
     }
 
@@ -120,13 +119,13 @@ class CircuitMapper {
 
     async fillFilesObject() {
         let cirArrBuff = await (await fetch(conf.sourceCircuitPath)).arrayBuffer();
-        await this.pyodide.unpackArchive(cirArrBuff, ".zip");
+        await state.pyodide.unpackArchive(cirArrBuff, ".zip");
 
-        this.circuitDirs = this.pyodide.FS.readdir(this._circuitsPath);
+        this.circuitDirs = state.pyodide.FS.readdir(this._circuitsPath);
         this.circuitDirs = this.circuitDirs.filter((file) => file !== "." && file !== "..");
         this.files = {};
         for (let dir of this.circuitDirs) {
-            let circuits = this.pyodide.FS.readdir(this._circuitsPath + "/" + dir);
+            let circuits = state.pyodide.FS.readdir(this._circuitsPath + "/" + dir);
             circuits = circuits.filter((file) => file !== "." && file !== ".." && !file.endsWith(".svg"));
             this.files[dir] = circuits
         }

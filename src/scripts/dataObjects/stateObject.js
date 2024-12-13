@@ -27,6 +27,7 @@ class StateObject {
     solve;
 
     //Boolean to track if the Pyodide environment is ready.
+    pyodide = null;
     pyodideReady = false;
     pyodideLoading = false;
 

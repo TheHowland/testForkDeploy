@@ -100,8 +100,7 @@ function showMessage(container, message, prio = "warning", fixedBottom = true) {
         bootstrapAlert = "success";
     }
     const msg = document.createElement('div');
-    msg.classList.add("alert");
-    msg.classList.add(`alert-${bootstrapAlert}`);
+    msg.classList.add("alert", `alert-${bootstrapAlert}`);
     if (fixedBottom) {
         msg.classList.add("fixed-bottom");
         msg.style.bottom = "170px";
@@ -164,7 +163,7 @@ function enableCheckBtn() {
     document.getElementById("check-btn").disabled = false;
 }
 
-function resetSimplifierPage(pyodide, calledFromResetBtn = false) {
+function resetSimplifierPage(calledFromResetBtn = false) {
     if (state.currentCircuitMap !== null) {
         // If the back btn exists, the user has finished the simplification
         // That means if the page is reset and the btn does not exist, the user aborted the simplification
@@ -181,7 +180,7 @@ function resetSimplifierPage(pyodide, calledFromResetBtn = false) {
     state.pictureCounter = 0;
     state.allValuesMap = new Map();
     if (state.pyodideReady) {
-        startSolving(pyodide);  // Draw the first picture again
+        startSolving();  // Draw the first picture again
     }
     scrollBodyToTop();
 }
@@ -205,14 +204,14 @@ function scrollBodyToTop() {
     window.scrollTo(0,0);
 }
 
-async function getCircuitInfo(pyodide) {
+async function getCircuitInfo() {
     let circuitInfoPath = await stepSolve.createCircuitInfo();
-    let circuitInfoFile = await pyodide.FS.readFile(circuitInfoPath, {encoding: "utf8"});
+    let circuitInfoFile = await state.pyodide.FS.readFile(circuitInfoPath, {encoding: "utf8"});
     return JSON.parse(circuitInfoFile);
 }
 
-async function getJsonAndSvgStepFiles(pyodide) {
-    const files = await pyodide.FS.readdir(`${conf.pyodideSolutionsPath}`);
+async function getJsonAndSvgStepFiles() {
+    const files = await state.pyodide.FS.readdir(`${conf.pyodideSolutionsPath}`);
     state.jsonFiles_Z = files.filter(file => !file.endsWith("VC.json") && file.endsWith(".json"));
     state.jsonFiles_VC = files.filter(file => file.endsWith("VC.json"));
     if (state.jsonFiles_VC === []) {
@@ -222,13 +221,13 @@ async function getJsonAndSvgStepFiles(pyodide) {
     state.currentStep = 0;
 }
 
-async function clearSolutionsDir(pyodide) {
+async function clearSolutionsDir() {
     try {
         //An array of file names representing the solution files in the Solutions directory.
-        let solutionFiles = await pyodide.FS.readdir(`${conf.pyodideSolutionsPath}`);
+        let solutionFiles = await state.pyodide.FS.readdir(`${conf.pyodideSolutionsPath}`);
         solutionFiles.forEach(file => {
             if (file !== "." && file !== "..") {
-                pyodide.FS.unlink(`${conf.pyodideSolutionsPath}/${file}`);
+                state.pyodide.FS.unlink(`${conf.pyodideSolutionsPath}/${file}`);
             }
         });
     } catch (error) {
@@ -261,9 +260,9 @@ function simplifierPageCurrentlyVisible() {
     return document.getElementById("simplifier-page-container").style.display === "block";
 }
 
-function checkIfSimplifierPageNeedsReset(pyodide) {
+function checkIfSimplifierPageNeedsReset() {
     if (simplifierPageCurrentlyVisible()) {
-        resetSimplifierPage(pyodide);
+        resetSimplifierPage();
     }
 }
 
@@ -301,8 +300,8 @@ function whenAvailable(name, callback) {
     }, interval);
 }
 
-async function solveCircuit(circuitMap, pyodide) {
-    await clearSolutionsDir(pyodide);
+async function solveCircuit(circuitMap) {
+    await clearSolutionsDir();
 
     let paramMap = new Map();
     paramMap.set("volt", languageManager.currentLang.voltageSymbol);
@@ -316,16 +315,16 @@ async function solveCircuit(circuitMap, pyodide) {
     await stepSolve.createStep0().toJs();
 
     // Get information which components are used in this circuit
-    const circuitInfo = await getCircuitInfo(pyodide);
+    const circuitInfo = await getCircuitInfo();
 
-    await getJsonAndSvgStepFiles(pyodide);
+    await getJsonAndSvgStepFiles();
     let stepDetails = fillStepDetailsObject(circuitMap, circuitInfo);
 
-    display_step(pyodide, stepDetails);
+    display_step(stepDetails);
 }
 
-function startSolving(pyodide) {
-    solveCircuit(state.currentCircuitMap, pyodide);
+function startSolving() {
+    solveCircuit(state.currentCircuitMap);
     //The div element that contains the SVG representation of the circuit diagram.
     const svgDiv = document.querySelector('.svg-container');
     //The div element that contains the list of elements that have been clicked or selected in the circuit diagram.

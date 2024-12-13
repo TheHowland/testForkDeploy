@@ -29,10 +29,10 @@ class SelectorBuilder {
             </h2>
             <div id="flush-collapse-${identifier}" class="accordion-collapse collapse" aria-labelledby="flush-heading-${identifier}" data-bs-parent="#selector-accordion" style="">
                 <div class="accordion-body">
-                    <div class="container" style="text-align: left; max-width: 350px; padding: 0; color:white;">
+                    <div class="container vcCheckBox" style="text-align: left; max-width: 350px; padding: 0; color:${colors.currentForeground};">
                         <div class="form-check my-1">
                             <input class="form-check-input" type="checkbox" value="" id="${identifier}-showVCData" checked>
-                            <label class="form-check-label" for="${identifier}-showVCData">Show U/I</label>
+                            <label class="form-check-label" id="${identifier}-checkBox-label" for="${identifier}-showVCData">${languageManager.currentLang.showVCCheckBox}</label>
                         </div>
                         <!--button onclick="document.getElementById('overviewBtnModal').blur()" id="overviewBtnModal" type="button" class="disabled btn mt-1 mb-3 btn-primary" data-bs-toggle="modal" data-bs-target="#overviewModal">OVERVIEW</button-->
                     </div>
@@ -70,17 +70,13 @@ class SelectorBuilder {
     createHeadingContainer(identifier) {
         const heading = document.createElement("p");
         heading.id = `${identifier}-heading`;
-        heading.classList.add("pt-3");
-        heading.classList.add("big-heading");
+        heading.classList.add("pt-3", "big-heading");
         return heading;
     }
 
     createCarouselContainer() {
         const carousel = document.createElement("div");
-        carousel.classList.add("container-fluid");
-        carousel.classList.add("h-50");
-        carousel.classList.add("mb-5");
-        carousel.classList.add("selector-container");
+        carousel.classList.add("container-fluid", "h-50", "mb-5", "selector-container");
         return carousel;
     }
 
@@ -144,7 +140,7 @@ class SelectorBuilder {
     setupSelector(circuitSet, pageManager) {
         for (const [idx, circuit] of circuitSet.set.entries()) {
             this._showFirstQuickCircuitAsSelected(idx, circuitSet);
-            this.setupSpecificCircuitSelector(circuit, pageManager, pageManager.pyodide);
+            this.setupSpecificCircuitSelector(circuit, pageManager);
         }
         if (moreThanOneCircuitInSet(circuitSet)) {
             this.setupNextAndPrevButtons(circuitSet);
@@ -160,13 +156,13 @@ class SelectorBuilder {
         }
     }
 
-    setupSpecificCircuitSelector(circuitMap, pageManager, pyodide) {
+    setupSpecificCircuitSelector(circuitMap, pageManager) {
         const circuitDiv = document.getElementById(circuitMap.circuitDivID);
         const startBtn = document.getElementById(circuitMap.btn);
         const btnOverlay = document.getElementById(circuitMap.btnOverlay);
 
         // Fill div with svg
-        let svgData = pyodide.FS.readFile(circuitMap.overViewSvgFile, {encoding: "utf8"});
+        let svgData = state.pyodide.FS.readFile(circuitMap.overViewSvgFile, {encoding: "utf8"});
         svgData = setSvgWidthTo(svgData, "100%");
         svgData = setSvgColorMode(svgData);
         circuitDiv.innerHTML = svgData;
@@ -215,7 +211,7 @@ class SelectorBuilder {
         state.pictureCounter = 0;
         state.allValuesMap = new Map();
         if (state.pyodideReady) {
-            startSolving(pageManager.pyodide);
+            startSolving();
         }
 
         pageManager.disableSettings();
