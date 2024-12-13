@@ -96,21 +96,23 @@ class PageManager {
             this.showSelectPage();
         } else {
             this.showSelectPage();
+            setPgrBarTo(0);
             const note = showWaitingNote();
-
+            setPgrBarTo(1);
             state.pyodideLoading = true;
             // Get the pyodide instance and setup pages with functionality
             state.pyodide = await loadPyodide();
-
+            setPgrBarTo(5);
             // Map all circuits into map and build the selectors
             circuitMapper = new CircuitMapper();
             await circuitMapper.mapCircuits();
-
+            setPgrBarTo(10);
             selectorBuilder.buildSelectorsForAllCircuitSets();
 
             hideQuickstart();
             hideAccordion();
 
+            // Starts with 10%
             await packageManager.doLoadsAndImports();
 
             selectorBuilder.adaptSelectorFrameColor();

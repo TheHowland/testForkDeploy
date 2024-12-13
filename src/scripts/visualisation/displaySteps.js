@@ -198,6 +198,7 @@ function addNameValueToggleBtn(svgDiv, stepDetails) {
 function toggleNameValue(nameValueToggleBtn, svgDiv, stepDetails) {
     console.log("Toggle name value");
     let nameValueMap = stepDetails.getElementNamesAndValues();
+
     // TODO Add all help values like Rs1, Rs2, Cs1, Cs2, Ls1, Ls2
 
     for (let [key, value] of Object.entries(nameValueMap)) {
