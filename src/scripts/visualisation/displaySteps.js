@@ -3,7 +3,8 @@
 // ####################################################################################################################
 function display_step(stepDetails) {
     // Load data
-    let showVCData = stepDetails.showVCData;
+
+    let showVCData = state.currentCircuitShowVC;
 
     let {data,vcData,svgData,sanitizedSvgFilePath} = loadData(stepDetails);
     state.pictureCounter++;  // increment before usage in the below functions

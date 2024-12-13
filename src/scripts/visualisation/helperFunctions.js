@@ -171,7 +171,7 @@ function resetSimplifierPage(calledFromResetBtn = false) {
         // Also don't push the event if the user is on the first picture, maybe it was just a missclick
         let backBtnDoesNotExist = document.getElementById("back-btn") === null;
         if (backBtnDoesNotExist && !calledFromResetBtn && state.pictureCounter > 1) {
-            pushCircuitEventMatomo(circuitActions.Aborted, state.pictureCounter);
+            pushCircuitEventMatomo(circuitActions.Aborted, state. state.pictureCounter);
         }
     }
     clearSimplifierPageContent();
@@ -318,6 +318,7 @@ async function solveCircuit(circuitMap) {
     const circuitInfo = await getCircuitInfo();
 
     await getJsonAndSvgStepFiles();
+    state.currentCircuitShowVC = getCheckBoxValueOrQuickStartDef(circuitMap);
     let stepDetails = fillStepDetailsObject(circuitMap, circuitInfo);
 
     display_step(stepDetails);
@@ -336,7 +337,6 @@ function startSolving() {
 
 function fillStepDetailsObject(circuitMap, circuitInfo) {
     let stepDetails = new StepDetails;
-    stepDetails.showVCData = getCheckBoxValue(circuitMap);
     stepDetails.jsonZPath = `${conf.pyodideSolutionsPath}/${state.jsonFiles_Z[state.currentStep]}`;
     stepDetails.jsonZVCath = (state.jsonFiles_VC === null) ? null : `${conf.pyodideSolutionsPath}/${state.jsonFiles_VC[state.currentStep]}`;
     stepDetails.svgPath = `${conf.pyodideSolutionsPath}/${state.svgFiles[state.currentStep]}`;
@@ -344,9 +344,9 @@ function fillStepDetailsObject(circuitMap, circuitInfo) {
     return stepDetails;
 }
 
-function getCheckBoxValue(circuitMap) {
+function getCheckBoxValueOrQuickStartDef(circuitMap) {
     if (circuitMap.selectorGroup === circuitMapper.selectorIds.quick) {
-        return true; // Definition of what the quickstart does show, make false if no VC wished here
+        return showVCinQuickStart; // Definition of what the quickstart does show, make false if no VC wished here
     }
     // only check the checkbox corresponding to the current circuit group
     const checkBox = document.getElementById(`${circuitMap.selectorGroup}-showVCData`);
