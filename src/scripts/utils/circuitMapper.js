@@ -10,18 +10,20 @@ class CircuitMapper {
         await this.fillFilesObject();
 
         for (let dir of this.circuitDirs) {
-            if (dir === "quickstart") {
+            if (dir === allowedDirNames.quickstart) {
                 this.addCircuitMaps(dir, this._quickstart, this.selectorIds.quick);
-            } else if (dir === "resistor") {
+            } else if (dir === allowedDirNames.resistor) {
                 this.addCircuitMaps(dir, this._resistor, this.selectorIds.res);
-            } else if (dir === "capacitor") {
+            } else if (dir === allowedDirNames.capacitor) {
                 this.addCircuitMaps(dir, this._capacitor, this.selectorIds.cap);
-            } else if (dir === "inductor") {
+            } else if (dir === allowedDirNames.inductor) {
                 this.addCircuitMaps(dir, this._inductor, this.selectorIds.ind);
-            } else if (dir === "mixed") {
+            } else if (dir === allowedDirNames.mixed) {
                 this.addCircuitMaps(dir, this._mixed, this.selectorIds.mixedId);
             } else {
                 console.error("Unknown directory: " + dir);
+                console.error("Allowed Names: " + Object.values(allowedDirNames));
+                console.info("See allowedDirNames.js for more information");
             }
         }
         this.updateCircuitSets();
