@@ -215,6 +215,10 @@ function toggleNameValue(svgDiv, stepDetails) {
         if (value.includes("\\Omega")) {
             value = value.replace("\\Omega", "Ω");
         }
+        if (value.includes("\\text{")) {
+            value = value.replace("\\text{", "");
+            value = value.replace("} ", "");
+        }
         if (document.getElementById("nameValueToggleBtn").innerText === "⮂") {
             tspan.innerHTML = tspan.innerHTML.replace(key, `${value}`);
         } else {
