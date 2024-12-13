@@ -54,7 +54,7 @@ class PackageManager {
         let progressBarContainer = document.getElementById("pgr-bar-container");
         // set the bar to 40% because we already did some stuff, just a ruff estimation
         // this will enable us to start the new calculation from a fixed point
-        let basePercentage = 40;
+        let basePercentage = 30;
         setPgrBarTo(basePercentage);
 
         let progress = 0;
@@ -76,7 +76,8 @@ class PackageManager {
     }
 
     async load_packages(optAddNames) {
-        setPgrBarTo(0);
+        let basePercentage = 10;
+        setPgrBarTo(basePercentage);
 
         let packageAddress = conf.sourcePackageDir;
         let packages = await this.fetchDirectoryListing(packageAddress, ".whl");
@@ -90,7 +91,7 @@ class PackageManager {
         let progress = 0;
         const updateProgress = () => {
             progress += 1;
-            let percent = Math.floor(((progress / packages.length) * 100) / 3);
+            let percent = basePercentage + Math.floor(((progress / packages.length) * 100) / 5);
             setPgrBarTo(percent);
         };
 
