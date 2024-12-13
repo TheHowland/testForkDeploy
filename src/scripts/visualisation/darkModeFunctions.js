@@ -18,7 +18,7 @@ function changeToDarkMode() {
     updateAvailableBsClassesTo(colors.bsColorSchemeDark);
     updateNavigationColorsTo(colors.bootstrapDark, colors.languagesDarkBg);
     updateCheatSheetPageColorsTo(colors.bsColorSchemeDark);
-    updateSelectorPageNote();
+    updateSelectorPageColors();
     if (circuitMapper !== null) {
         updateSelectorPageSvgStrokeColor(colors.lightModeSvgStrokeColor, colors.darkModeSvgStrokeColor);
     }
@@ -30,9 +30,33 @@ function changeToLightMode() {
     updateNavigationColorsTo(colors.bootstrapWhite, colors.languagesLightBg);
     updateCheatSheetPageColorsTo(colors.bsColorSchemeLight);
     updateSimplifierPageColors();
-    updateSelectorPageNote();
+    updateSelectorPageColors();
     if (circuitMapper !== null) {
         updateSelectorPageSvgStrokeColor(colors.darkModeSvgStrokeColor, colors.lightModeSvgStrokeColor);
+    }
+}
+
+function updateSelectorPageColors() {
+    updateSelectorPageNote();
+
+    if (circuitMapper !== null) {
+        for (let circuitSet of circuitMapper.circuitSets) {
+            if (circuitSet.identifier === circuitMapper.selectorIds.quick) {
+                const quickHeading = document.getElementById(`${circuitMapper.selectorIds.quick}-heading`);
+                quickHeading.style.color = colors.currentHeadingsForeground
+                continue;
+            }
+            const titleBtn = document.getElementById(`${circuitSet.identifier}-acc-btn`);
+            titleBtn.style.color = colors.currentHeadingsForeground
+        }
+    }
+    const accordionButtons = document.getElementsByClassName("accordion-button");
+    for (const accordionButton of accordionButtons) {
+        accordionButton.style.backgroundColor = colors.currentBsBackground;
+    }
+    const accordionBodies = document.getElementsByClassName("accordion-body");
+    for (const accordionBody of accordionBodies) {
+        accordionBody.style.backgroundColor = colors.currentBsBackground;
     }
 }
 
@@ -46,6 +70,11 @@ function updateSimplifierPageColors() {
     const infoGifFooter = document.getElementById("info-gif-footer");
     infoGifFooter.style.color = colors.currentForeground;
     infoGifFooter.style.backgroundColor = colors.currentBsBackground;
+
+    const toggleViewButtons = document.getElementsByClassName("toggle-view");
+    for (const toggleViewButton of toggleViewButtons) {
+        toggleViewButton.style.color = colors.currentForeground;
+    }
 }
 
 function updateSelectorPageNote() {

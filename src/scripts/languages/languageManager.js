@@ -24,10 +24,16 @@ class LanguageManager {
     updateLanguageSelectorPage() {
         // circuit mapper is only instantiated in when start button pressed
         if (circuitMapper !== null) {
-            const quickHeading = document.getElementById("quick-heading");
-            quickHeading.innerHTML = this.currentLang.selectorHeadings[circuitMapper.selectorIds.quick];
+            for (let circuitSet of circuitMapper.circuitSets) {
+                if (circuitSet.identifier === circuitMapper.selectorIds.quick) {
+                    const quickHeading = document.getElementById(`${circuitMapper.selectorIds.quick}-heading`);
+                    quickHeading.innerHTML = this.currentLang.selectorHeadings[circuitMapper.selectorIds.quick];
+                    continue;
+                }
+                const titleBtn = document.getElementById(`${circuitSet.identifier}-acc-btn`);
+                titleBtn.innerHTML = this.currentLang.selectorHeadings[circuitSet.identifier];
+            }
         }
-        // TODO for every accordion item title
     }
 
     updateLanguageSimplifierPage() {
