@@ -139,8 +139,8 @@ class SelectorBuilder {
     // ######################### Setup #######################################
     setupSelector(circuitSet, pageManager) {
         for (const [idx, circuit] of circuitSet.set.entries()) {
-            this._showFirstQuickCircuitAsSelected(idx, circuitSet);
             this.setupSpecificCircuitSelector(circuit, pageManager);
+            this._showFirstCircuitAsSelected(idx, circuitSet);
         }
         if (moreThanOneCircuitInSet(circuitSet)) {
             this.setupNextAndPrevButtons(circuitSet);
@@ -149,8 +149,8 @@ class SelectorBuilder {
         }
     }
 
-    _showFirstQuickCircuitAsSelected(idx, circuitSet) {
-        if ((idx === 0) && (circuitSet.identifier === circuitMapper.selectorIds.quick)) {
+    _showFirstCircuitAsSelected(idx, circuitSet) {
+        if ((idx === 0)) {
             this.showCircuitAsSelected(document.getElementById(circuitSet.set[0].circuitDivID),
                 document.getElementById(circuitSet.set[0].btnOverlay));
         }

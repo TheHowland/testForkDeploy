@@ -1,4 +1,0 @@
-const toggleSymbolDefinition = {
-    namesShown: "⮂",
-    valuesShown: "⮀",
-}
