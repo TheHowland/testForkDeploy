@@ -29,7 +29,13 @@ class SelectorBuilder {
             </h2>
             <div id="flush-collapse-${identifier}" class="accordion-collapse collapse" aria-labelledby="flush-heading-${identifier}" data-bs-parent="#selector-accordion" style="">
                 <div class="accordion-body">
-                    <!-- OVERVIEW BUTTON button onclick="document.getElementById('overviewBtnModal').blur()" id="overviewBtnModal" type="button" class="btn mt-1 mb-3 btn-primary" data-bs-toggle="modal" data-bs-target="#overviewModal">OVERVIEW</--button-->
+                    <div class="container" style="text-align: left; max-width: 350px; padding: 0; color:white;">
+                        <div class="form-check my-1">
+                            <input class="form-check-input" type="checkbox" value="" id="${identifier}-showVCData" checked>
+                            <label class="form-check-label" for="${identifier}-showVCData">Show U/I</label>
+                        </div>
+                        <!--button onclick="document.getElementById('overviewBtnModal').blur()" id="overviewBtnModal" type="button" class="disabled btn mt-1 mb-3 btn-primary" data-bs-toggle="modal" data-bs-target="#overviewModal">OVERVIEW</button-->
+                    </div>
                     ${this.createCarousel(identifier)}
                 </div>
             </div>`;

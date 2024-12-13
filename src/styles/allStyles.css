@@ -426,6 +426,19 @@ th, td {
 
 /* Selection page */
 
+#bootstrap-overrides .form-check-input {
+    border: 1px solid black;
+}
+
+#bootstrap-overrides .form-check-input:checked {
+    background-color: #FFC107;
+}
+
+#bootstrap-overrides .form-check-input:focus {
+    box-shadow: 0 0 0.25rem #ffc107 !important;
+}
+
+
 #bootstrap-overrides .accordion-button {
     background-color: #212529;
     color: #ffc107;
