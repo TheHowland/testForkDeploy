@@ -1,5 +1,6 @@
 function setupDarkModeSwitch() {
     const darkModeSwitch = document.getElementById("darkmode-switch");
+    darkModeSwitch.checked = true;
     darkModeSwitch.addEventListener("change", () => {
         if (darkModeSwitch.checked) {
             changeToDarkMode();
@@ -18,6 +19,7 @@ function changeToDarkMode() {
     updateNavigationColorsTo(colors.bootstrapDark, colors.languagesDarkBg);
     updateCheatSheetPageColorsTo(colors.bsColorSchemeDark);
     updateSelectorPageNote();
+    updateSelectorPageAccordion();
     if (circuitMapper !== null) {
         updateSelectorPageSvgStrokeColor(colors.lightModeSvgStrokeColor, colors.darkModeSvgStrokeColor);
     }
@@ -28,23 +30,22 @@ function changeToLightMode() {
     updateAvailableBsClassesTo(colors.bsColorSchemeLight);
     updateNavigationColorsTo(colors.bootstrapWhite, colors.languagesLightBg);
     updateCheatSheetPageColorsTo(colors.bsColorSchemeLight);
-    updateSimplifierPageColors();
     updateSelectorPageNote();
+    updateSelectorPageAccordion();
     if (circuitMapper !== null) {
         updateSelectorPageSvgStrokeColor(colors.darkModeSvgStrokeColor, colors.lightModeSvgStrokeColor);
     }
 }
 
-function updateSimplifierPageColors() {
-    const infoGifHeader = document.getElementById("info-gif-header");
-    infoGifHeader.style.color = colors.currentForeground;
-    infoGifHeader.style.backgroundColor = colors.currentBsBackground;
-    const infoGifBody = document.getElementById("info-gif-body");
-    infoGifBody.style.color = colors.currentForeground;
-    infoGifBody.style.backgroundColor = colors.currentBsBackground;
-    const infoGifFooter = document.getElementById("info-gif-footer");
-    infoGifFooter.style.color = colors.currentForeground;
-    infoGifFooter.style.backgroundColor = colors.currentBsBackground;
+function updateSelectorPageAccordion() {
+    const accordionButtons = document.getElementsByClassName("accordion-button");
+    for (const accordionButton of accordionButtons) {
+        accordionButton.style.backgroundColor = colors.currentBsBackground;
+    }
+    const accordionBodies = document.getElementsByClassName("accordion-body");
+    for (const accordionBody of accordionBodies) {
+        accordionBody.style.backgroundColor = colors.currentBsBackground;
+    }
 }
 
 function updateSelectorPageNote() {

@@ -427,14 +427,20 @@ th, td {
 /* Selection page */
 
 #bootstrap-overrides .accordion-button {
-    background-color: #c39303;
-    color: #222;
+    background-color: #212529;
+    color: #ffc107;
+    font-size: 24px;
+    font-family: 'Roboto Condensed', sans-serif;
 }
 
 #bootstrap-overrides .accordion-body {
-    background-color: #222;
+    background-color: #212529;
 }
 
+#bootstrap-overrides .accordion-button:focus {
+    z-index: 3;
+    box-shadow: 0 0 0.25rem #ffc107 !important;
+}
 
 #bootstrap-overrides .selector-container {
     max-width: 500px; /* to limit the distance of the next/prev buttons from the picture */
