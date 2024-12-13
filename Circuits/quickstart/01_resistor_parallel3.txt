@@ -8,4 +8,4 @@ R3 7 8 {150}; down
 W 8 6; left
 W 6 4; left
 W 4 9; left
-W 9 0; up
+W 9 0; left
