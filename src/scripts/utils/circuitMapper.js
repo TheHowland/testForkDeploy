@@ -65,11 +65,9 @@ class CircuitMapper {
     circuitSets = [];
 
     updateCircuitSets() {
+        // This is the order in which the circuits are displayed on the selector page
         if (this._quickstart.set.length !== 0) {
             this.circuitSets.push(this._quickstart);
-        }
-        if (this._mixed.set.length !== 0) {
-            this.circuitSets.push(this._mixed);
         }
         if (this._resistor.set.length !== 0) {
             this.circuitSets.push(this._resistor);
@@ -79,6 +77,9 @@ class CircuitMapper {
         }
         if (this._inductor.set.length !== 0) {
             this.circuitSets.push(this._inductor);
+        }
+        if (this._mixed.set.length !== 0) {
+            this.circuitSets.push(this._mixed);
         }
     }
 
