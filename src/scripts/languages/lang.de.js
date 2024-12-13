@@ -42,6 +42,8 @@ const german = {
             "ind": "SPULEN",
             "mixed": "GEMISCHTE SCHALTUNGEN",
         },
+    showVCCheckBox:
+        "Spannung und Strom anzeigen",
 
 
     // Simplifier page text

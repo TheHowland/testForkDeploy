@@ -59,6 +59,10 @@ function updateSelectorPageColors() {
     for (const accordionBody of accordionBodies) {
         accordionBody.style.backgroundColor = colors.currentBsBackground;
     }
+    const checkBoxes = document.getElementsByClassName("vcCheckBox");
+    for (const checkBox of checkBoxes) {
+        checkBox.style.color = colors.currentForeground;
+    }
 }
 
 function updateSimplifierPageColors() {

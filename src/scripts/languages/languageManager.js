@@ -32,6 +32,8 @@ class LanguageManager {
                 }
                 const titleBtn = document.getElementById(`${circuitSet.identifier}-acc-btn`);
                 titleBtn.innerHTML = this.currentLang.selectorHeadings[circuitSet.identifier];
+                const checkBoxLabel = document.getElementById(`${circuitSet.identifier}-checkBox-label`);
+                checkBoxLabel.innerHTML = this.currentLang.showVCCheckBox;
             }
         }
     }
