@@ -198,7 +198,7 @@ function addNameValueToggleBtn(svgDiv, stepDetails) {
     nameValueToggleBtn.style.color = colors.currentForeground;
     nameValueToggleBtn.style.border = `1px solid ${colors.currentForeground}`;
     nameValueToggleBtn.style.background = "none";
-    nameValueToggleBtn.innerText = "⮂";
+    nameValueToggleBtn.innerText = toggleSymbolDefinition.namesShown;
     nameValueToggleBtn.onclick = () => {toggleNameValue(nameValueToggleBtn, svgDiv, stepDetails)};
     svgDiv.insertAdjacentElement("afterbegin", nameValueToggleBtn);
 }
@@ -218,14 +218,18 @@ function toggleNameValue(nameValueToggleBtn, svgDiv, stepDetails) {
             value = value.replace("\\text{", "");
             value = value.replace("} ", "");
         }
-        if (nameValueToggleBtn.innerText === "⮂") {
+        if (nameValueToggleBtn.innerText === toggleSymbolDefinition.namesShown) {
             tspan.innerHTML = tspan.innerHTML.replace(key, `${value}`);
         } else {
             tspan.innerHTML = tspan.innerHTML.replace(`${value}`, key);
         }
     }
-
-    nameValueToggleBtn.innerText = nameValueToggleBtn.innerText === "⮂" ? "⮀" : "⮂";
+    // Toggle button icon
+    if (nameValueToggleBtn.innerText === toggleSymbolDefinition.namesShown) {
+        nameValueToggleBtn.innerText = toggleSymbolDefinition.valuesShown;
+    } else {
+        nameValueToggleBtn.innerText = toggleSymbolDefinition.namesShown;
+    }
 }
 
 function getElementsFromSvgContainer(svgContainer) {
@@ -582,9 +586,21 @@ function addSolutionsButton(pyodide, showVCData, vcData) {
     let table = generateSolutionsTable(showVCData);
 
     let originalStep0Svg = document.getElementById("svgDiv1");
-    let clonedSvgData = originalStep0Svg.cloneNode(true);
+    // check if in the original step the names are shown or the values
+    let clonedSvgData;
+    let valuesShown = originalStep0Svg.querySelector("#toggle-view-1").innerHTML === toggleSymbolDefinition.valuesShown;
+    if (valuesShown) {
+        // copy the svg with names shown
+        originalStep0Svg.querySelector("#toggle-view-1").click();
+        clonedSvgData = originalStep0Svg.cloneNode(true);
+        originalStep0Svg.querySelector("#toggle-view-1").click();
+    } else {
+        clonedSvgData = originalStep0Svg.cloneNode(true);
+    }
+
     clonedSvgData.id = "clonedOverviewSvg";
-    clonedSvgData.removeChild(clonedSvgData.querySelector("button"));  // remove info gif button
+    clonedSvgData.removeChild(clonedSvgData.querySelector("#open-info-gif-btn"));
+    clonedSvgData.removeChild(clonedSvgData.querySelector("#toggle-view-1"));
     clonedSvgData.appendChild(table);
     if (showVCData) {
         let arrows = clonedSvgData.getElementsByClassName("arrow");
