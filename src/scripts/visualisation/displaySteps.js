@@ -599,8 +599,11 @@ function addSolutionsButton(pyodide, showVCData, vcData) {
     }
 
     clonedSvgData.id = "clonedOverviewSvg";
+    // Adapt svg data
     clonedSvgData.removeChild(clonedSvgData.querySelector("#open-info-gif-btn"));
     clonedSvgData.removeChild(clonedSvgData.querySelector("#toggle-view-1"));
+    clonedSvgData.style.width = "";  // let the table adjust itself to the screensize
+
     clonedSvgData.appendChild(table);
     if (showVCData) {
         let arrows = clonedSvgData.getElementsByClassName("arrow");
