@@ -32,9 +32,7 @@ class Configurations {
     static async loadConf() {
         let projectPath = window.location.pathname;
         let test = await fetch(projectPath + "src/conf/conf.json");
-        let conf = await test.json()
-        console.log(conf);
-        return conf;
+        return await test.json();
     }
 
     get isGitHubPage(){
