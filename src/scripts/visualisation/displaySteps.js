@@ -496,6 +496,7 @@ function finishCircuit(contentCol, showVCData) {
 
 function setupStepButtonsFunctionality(pyodide, div, stepDetails) {
     document.getElementById("reset-btn").addEventListener('click', () => {
+        // Can only be after step 1 because the first step can't be reset, so no need to check
         pushCircuitEventMatomo(circuitActions.Reset, state.pictureCounter);
         resetSimplifierPage(pyodide, true);
     });
