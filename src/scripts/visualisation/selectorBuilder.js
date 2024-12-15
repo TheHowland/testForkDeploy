@@ -6,7 +6,7 @@ class SelectorBuilder {
 
     buildAccordionSelectors() {
         let accordion = document.createElement("div");
-        accordion.classList.add("accordion", "accordion-flush", "mt-5");
+        accordion.classList.add("accordion", "mt-5");
         accordion.id =  "selector-accordion";
 
         for (let circuitSet of circuitMapper.circuitSets) {
@@ -59,10 +59,13 @@ class SelectorBuilder {
         modal.innerHTML = `
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <div class="modal-body" style="background: #222; color: white;">
+                    <div class="modal-header" style="background: ${colors.currentBackground}; color: white;">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" style="background: ${colors.currentBackground}; color: white;">
                         ${this.generateOverviewGrid(circuitSet)}
                     </div>
-                    <div class="modal-footer justify-content-center" style="background: #222">
+                    <div class="modal-footer justify-content-center" style="background: ${colors.currentBackground}">
                         <button id="${id}-overviewCloseBtn" type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                             ${languageManager.currentLang.closeBtn}
                         </button>
@@ -81,7 +84,7 @@ class SelectorBuilder {
             col.classList.add("col-md-4", "col-sm-6",  "col-12",  "mb-4", "text-center", "justify-content-center");
             col.innerHTML = `
                 <div id="${circuit.circuitDivID}-overviewModal" class="svg-selector mx-auto"></div>
-                <button id="${circuit.btn}-modalBtn" class="btn btn-warning text-dark px-5 circuitStartBtnModal">start</button>
+                <button id="${circuit.btn}-modalBtn" onclick="document.getElementById('${circuit.btn}-modalBtn').blur()" class="btn btn-warning text-dark px-5 circuitStartBtnModal">start</button>
                 `;
             grid.appendChild(col);
         }

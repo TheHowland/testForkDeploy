@@ -1,7 +1,7 @@
 function setupLegalNoticePage() {
     const selectEnglish = document.getElementById("select-english");
     const selectGerman = document.getElementById("select-german");
-    let backBtn = document.getElementById("back-btn");
+    let backBtn = document.getElementById("back-btn-legal");
     let navLogo = document.getElementById("nav-logo");
     let navHome = document.getElementById("nav-home");
     let languageManager = new LanguageManager();
