@@ -165,12 +165,12 @@ function enableCheckBtn() {
 
 function resetSimplifierPage(calledFromResetBtn = false) {
     if (state.currentCircuitMap !== null) {
-        // If the back btn exists, the user has finished the simplification
-        // That means if the page is reset and the btn does not exist, the user aborted the simplification
+        // If the check btn is disabled, the user has finished the simplification
+        // That means if the page is reset, the user aborted the simplification
         // If calledFromResetBtn, then don't push the event because it's reset, and not aborted
         // Also don't push the event if the user is on the first picture, maybe it was just a missclick
-        let backBtnDoesNotExist = document.getElementById("back-btn") === null;
-        if (backBtnDoesNotExist && !calledFromResetBtn && state.pictureCounter > 1) {
+        let checkBtnDisabled = document.getElementById("check-btn").disabled;
+        if (checkBtnDisabled && !calledFromResetBtn && state.pictureCounter > 1) {
             pushCircuitEventMatomo(circuitActions.Aborted, state.pictureCounter);
         }
     }
