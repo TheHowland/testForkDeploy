@@ -169,7 +169,7 @@ function resetSimplifierPage(calledFromResetBtn = false) {
         // That means if the page is reset, the user aborted the simplification
         // If calledFromResetBtn, then don't push the event because it's reset, and not aborted
         // Also don't push the event if the user is on the first picture, maybe it was just a missclick
-        let checkBtnDisabled = document.getElementById("check-btn").disabled;
+        let checkBtnDisabled = document.getElementById("check-btn").classList.contains("disabled");
         if (!checkBtnDisabled && !calledFromResetBtn && state.pictureCounter > 1) {
             pushCircuitEventMatomo(circuitActions.Aborted, state.pictureCounter);
         }
