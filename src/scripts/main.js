@@ -21,12 +21,14 @@ let pageManager;
 async function main() {
     disableStartBtnAndSimplifierLink();
 
-    // set prefered colo scheme
+    /*
+    // set preferred color scheme
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-    document.getElementById("darkmode-switch").checked = prefersDark.matches;
+    document.getElementById("darkmode-switch").checked = prefersDark;
     if (!prefersDark){
         changeToLightMode();
     }
+    */
 
     conf = new Configurations();
     await conf.initialize();
