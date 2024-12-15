@@ -171,7 +171,7 @@ function resetSimplifierPage(calledFromResetBtn = false) {
         // Also don't push the event if the user is on the first picture, maybe it was just a missclick
         let backBtnDoesNotExist = document.getElementById("back-btn") === null;
         if (backBtnDoesNotExist && !calledFromResetBtn && state.pictureCounter > 1) {
-            pushCircuitEventMatomo(circuitActions.Aborted, state. state.pictureCounter);
+            pushCircuitEventMatomo(circuitActions.Aborted, state.pictureCounter);
         }
     }
     clearSimplifierPageContent();
