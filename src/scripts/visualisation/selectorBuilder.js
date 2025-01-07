@@ -36,10 +36,6 @@ class SelectorBuilder {
                             class="btn my-1 btn-primary modalOverviewBtn" data-bs-toggle="modal" data-bs-target="#${identifier}-overviewModal">
                                 ${languageManager.currentLang.overviewModalBtn}
                         </button>
-                        <div class="form-check mt-1 mb-3">
-                            <input class="form-check-input" type="checkbox" value="" id="${identifier}-showVCData" checked>
-                            <label class="form-check-label" id="${identifier}-checkBox-label" for="${identifier}-showVCData">${languageManager.currentLang.showVCCheckBox}</label>
-                        </div>
                     </div>
                     ${this.createCarousel(identifier)}
                 </div>
@@ -277,7 +273,7 @@ class SelectorBuilder {
         if (circuitMap.selectorGroup === circuitMapper.selectorIds.quick) {
             state.currentCircuitShowVC = showVCinQuickStart;
         } else {
-            state.currentCircuitShowVC = document.getElementById(`${circuitMap.selectorGroup}-showVCData`).checked;
+            state.currentCircuitShowVC = showVCDefault;
         }
         state.pictureCounter = 0;
         state.allValuesMap = new Map();
@@ -299,7 +295,6 @@ class SelectorBuilder {
             selectorPage.style.display = "none";
             scrollBodyToTop();
         }, 800);
-
     }
 
     showCircuitAsSelected(circuit, btnOverlay) {

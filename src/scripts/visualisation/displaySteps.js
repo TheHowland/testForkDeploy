@@ -80,14 +80,12 @@ function getFinishMsg(vcData, showVCData) {
         <p>${languageManager.currentLang.msgShowVoltage}<br>$$ ${languageManager.currentLang.voltageSymbol}_{${languageManager.currentLang.totalSuffix}}=${vcData.noFormat().oldValues[1]}$$</p>
         <button class="btn btn-secondary mx-1" id="reset-btn">reset</button>
         <button class="btn btn-primary mx-1 disabled" id="check-btn">check</button>
-        <button class="btn btn-secondary mx-1" id="back-btn">back</button>
     `;
     } else {
         // No msg, just the two buttons
         msg = `
         <button class="btn btn-secondary mx-1" id="reset-btn">reset</button>
         <button class="btn btn-primary mx-1 disabled" id="check-btn">check</button>
-        <button class="btn btn-secondary mx-1" id="back-btn">back</button>
     `;
     }
     return msg;
@@ -108,7 +106,6 @@ function setupNextElementsContainer(sanitizedSvgFilePath, filteredPaths, vcData,
         <ul class="px-0" id="next-elements-list-${sanitizedSvgFilePath}"></ul>
         <button class="btn btn-secondary mx-1 ${state.pictureCounter === 1 ? "disabled" : ""}" id="reset-btn">reset</button>
         <button class="btn btn-primary mx-1" id="check-btn">check</button>
-        <button class="btn btn-secondary mx-1" id="back-btn">back</button>
     `;
     }
     return nextElementsContainer;
@@ -503,12 +500,6 @@ function setupStepButtonsFunctionality(div, stepDetails) {
                 document.getElementById("check-btn").innerHTML = "check";
             }, 0);
         });
-    });
-    const backButton = document.getElementById("back-btn");
-    backButton.innerHTML = languageManager.currentLang.backBtn;
-    backButton.addEventListener("click", () => {
-        resetSimplifierPage();
-        pageManager.showSelectPage();
     });
 }
 

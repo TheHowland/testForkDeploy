@@ -347,10 +347,9 @@ function fillStepDetailsObject(circuitMap, circuitInfo) {
 function getCheckBoxValueOrQuickStartDef(circuitMap) {
     if (circuitMap.selectorGroup === circuitMapper.selectorIds.quick) {
         return showVCinQuickStart; // Definition of what the quickstart does show, make false if no VC wished here
+    } else {
+        return showVCDefault;
     }
-    // only check the checkbox corresponding to the current circuit group
-    const checkBox = document.getElementById(`${circuitMap.selectorGroup}-showVCData`);
-    return checkBox.checked;
 }
 
 

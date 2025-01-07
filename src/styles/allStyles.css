@@ -554,11 +554,6 @@ th, td {
     color: white;
 }
 
-#bootstrap-overrides #back-btn {
-    border: none;
-    color: white;
-}
-
 #bootstrap-overrides #solutionsTable {
     tbody {
         tr {

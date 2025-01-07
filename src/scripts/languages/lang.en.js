@@ -40,8 +40,6 @@ const english = {
             "ind": "INDUCTORS",
             "mixed": "MIXED CIRCUITS",
         },
-    showVCCheckBox:
-        "Show voltage and current",
     overviewModalBtn:
         "Overview",
 
