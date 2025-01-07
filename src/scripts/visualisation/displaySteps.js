@@ -159,13 +159,71 @@ function setupSvgDivContainerAndData(svgData, stepDetails) {
     svgDiv.style.position = "relative";
     // Svg manipulation - set width and color for dark mode
     svgData = setSvgColorMode(svgData);
+    // TODO REMOVE
+    svgData = addClasses(svgData);
+
     svgDiv.innerHTML = svgData;
     hideSvgArrows(svgDiv);
-
     if (state.pictureCounter === 1) {
         addInfoHelpButton(svgDiv);
     }
+    addNameValueToggleBtn(svgDiv, stepDetails);
     return svgDiv;
+}
+
+//TODO REMOVE
+function addClasses(svgData) {
+    svgData = svgData.replace(">R1</tspan>", " class='R1'>R1</tspan>");
+    svgData = svgData.replace(">R2</tspan>", " class='R2'>R2</tspan>");
+    svgData = svgData.replace(">R3</tspan>", " class='R3'>R3</tspan>");
+    svgData = svgData.replace(">R4</tspan>", " class='R4'>R4</tspan>");
+    return svgData;
+}
+
+function addNameValueToggleBtn(svgDiv, stepDetails) {
+    const nameValueToggleBtn = document.createElement("button");
+    nameValueToggleBtn.type = "button";
+    nameValueToggleBtn.id = `toggle-view-${state.pictureCounter}`;
+    nameValueToggleBtn.classList.add("btn", "btn-secondary", "toggle-view");
+    nameValueToggleBtn.style.position = "absolute";
+    nameValueToggleBtn.style.top = "5px";
+    nameValueToggleBtn.style.right = "5px";
+    nameValueToggleBtn.style.color = colors.currentForeground;
+    nameValueToggleBtn.style.border = `1px solid ${colors.currentForeground}`;
+    nameValueToggleBtn.style.background = "none";
+    nameValueToggleBtn.innerText = toggleSymbolDefinition.namesShown;
+    nameValueToggleBtn.onclick = () => {toggleNameValue(nameValueToggleBtn, svgDiv, stepDetails)};
+    svgDiv.insertAdjacentElement("afterbegin", nameValueToggleBtn);
+}
+
+function toggleNameValue(nameValueToggleBtn, svgDiv, stepDetails) {
+    console.log("Toggle name value");
+    let nameValueMap = stepDetails.getElementNamesAndValues();
+
+    // TODO Add all help values like Rs1, Rs2, Cs1, Cs2, Ls1, Ls2
+
+    for (let [key, value] of Object.entries(nameValueMap)) {
+        let tspan = svgDiv.querySelector(`.${key}`);
+        if (tspan === null) continue;
+        if (value.includes("\\Omega")) {
+            value = value.replace("\\Omega", "Ω");
+        }
+        if (value.includes("\\text{")) {
+            value = value.replace("\\text{", "");
+            value = value.replace("} ", "");
+        }
+        if (nameValueToggleBtn.innerText === toggleSymbolDefinition.namesShown) {
+            tspan.innerHTML = tspan.innerHTML.replace(key, `${value}`);
+        } else {
+            tspan.innerHTML = tspan.innerHTML.replace(`${value}`, key);
+        }
+    }
+    // Toggle button icon
+    if (nameValueToggleBtn.innerText === toggleSymbolDefinition.namesShown) {
+        nameValueToggleBtn.innerText = toggleSymbolDefinition.valuesShown;
+    } else {
+        nameValueToggleBtn.innerText = toggleSymbolDefinition.namesShown;
+    }
 }
 
 function getElementsFromSvgContainer(svgContainer) {
@@ -532,12 +590,22 @@ function addSolutionsButton(showVCData, vcData) {
 
     let originalStep0Svg = document.getElementById("svgDiv1");
     // check if in the original step the names are shown or the values
-    let clonedSvgData = originalStep0Svg.cloneNode(true);
-
+    let clonedSvgData;
+    let valuesShown = originalStep0Svg.querySelector("#toggle-view-1").innerHTML === toggleSymbolDefinition.valuesShown;
+    if (valuesShown) {
+        // copy the svg with names shown
+        originalStep0Svg.querySelector("#toggle-view-1").click();
+        clonedSvgData = originalStep0Svg.cloneNode(true);
+        originalStep0Svg.querySelector("#toggle-view-1").click();
+    } else {
+        clonedSvgData = originalStep0Svg.cloneNode(true);
+    }
     clonedSvgData.id = "clonedOverviewSvg";
     // Adapt svg data
     clonedSvgData.removeChild(clonedSvgData.querySelector("#open-info-gif-btn"));
+    clonedSvgData.removeChild(clonedSvgData.querySelector("#toggle-view-1"));
     clonedSvgData.style.width = "";  // let the table adjust itself to the screensize
+
     clonedSvgData.appendChild(table);
 
     if (showVCData) {

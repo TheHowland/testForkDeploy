@@ -6,7 +6,7 @@ class SelectorBuilder {
 
     buildAccordionSelectors() {
         let accordion = document.createElement("div");
-        accordion.classList.add("accordion", "mt-5");
+        accordion.classList.add("accordion", "accordion-flush", "mt-5");
         accordion.id =  "selector-accordion";
 
         for (let circuitSet of circuitMapper.circuitSets) {
