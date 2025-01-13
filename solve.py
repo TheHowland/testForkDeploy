@@ -1,11 +1,13 @@
-# for lcapy version: 1.24+inskale.0.24
+# for lcapy version: 1.24+inskale.0.26
 from lcapy import Circuit, FileToImpedance, DrawWithSchemdraw
 from lcapy.solution import Solution
 from lcapy.componentRelation import ComponentRelation
 from lcapy.solutionStep import SolutionStep
 import os
 from lcapy.langSymbols import LangSymbols
-from lcapy.jsonExportCircuitInfo import JsonExportCircuitInfo
+from lcapy.dictExportBase import DictExportBase
+from json import dump as jdump
+from lcapy.dictExportBase import ExportDict
 
 
 def solve_circuit(filename: str, filePath="Circuits/", savePath="Solutions/", langSymbols: dict = {}):
@@ -17,7 +19,7 @@ def solve_circuit(filename: str, filePath="Circuits/", savePath="Solutions/", la
     steps = cct.simplify_stepwise()
     sol = Solution(steps, langSymbols=langSym)
     sol.draw(path=savePath, filename=filename)
-    sol.export(path=savePath, filename=filename)
+    sol.exportAsJsonFiles(path=savePath, filename=filename)
 
 
 class SolveInUserOrder:
@@ -29,68 +31,80 @@ class SolveInUserOrder:
         """
         langSym = LangSymbols(langSymbols)
 
-        self.filename = filename
+        self.filename = os.path.splitext(filename)[0]
         self.filePath = filePath
         self.savePath = savePath
         self.langSymbols = langSym
         self.circuit = Circuit(FileToImpedance(os.path.join(filePath, filename)))
         self.steps: list[SolutionStep] = [
-            SolutionStep(self.circuit, None, None, None, None, None,
-                         None, None)
+            SolutionStep(self.circuit, [], None, None, None, None,
+                         None)
         ]
         self.circuit.namer.reset()
 
         return
 
-    def simplifyTwoCpts(self, cpts: list) -> tuple[bool, tuple[str, str], str]:
+    def dictToFiles(self, stepData: dict) -> tuple[bool, str, str]:
+        step = stepData["step"]
+        jsonFilePath = os.path.join(self.savePath, self.filename) + "_" + step + ".json"
+        with open(jsonFilePath, "w", encoding="utf-8") as f:
+            jdump(stepData, f, ensure_ascii=False, indent=4)
+
+        svgFilePath = os.path.join(self.savePath, self.filename) + "_" + step + ".svg"
+        svgFile = open(svgFilePath, "w", encoding="utf8")
+        svgFile.write(stepData["svgData"])
+        svgFile.close()
+
+        return True, jsonFilePath, svgFilePath
+
+    def simplifyNCpts(self, cpts: list) -> ExportDict:
         """
         :param cpts: list with two component name strings to simplify ["R1", "R2"]
         :return tuple with bool if simplification is possible, str with json filename, str with svg filename
         """
         # ToDo this only works as long as only simplifiable components are selected which are represented as a
         # impedance internally in the cirucuit
-        cpts[0] = "Z" + cpts[0][1::]
-        cpts[1] = "Z" + cpts[1][1::]
+        for idx in range(0, len(cpts)):
+            cpts[idx] = "Z" + cpts[idx][1::]
 
-        if cpts[1] in self.circuit.in_series(cpts[0]):
-            newNet, newCptName = self.circuit.simplify_two_cpts(self.circuit, cpts)
-            self.steps.append(SolutionStep(newNet, cpt1=cpts[0], cpt2=cpts[1], newCptName=newCptName,
+        if all(cpt in self.circuit.in_series(cpts[0]) for cpt in cpts[1::]):
+            newNet, newCptName = self.circuit.simplify_N_cpts(self.circuit, cpts)
+            self.steps.append(SolutionStep(newNet, cpts=cpts, newCptName=newCptName,
                                            relation=ComponentRelation.series.value,
                                            solutionText=None, lastStep=None, nextStep=None))
-        elif cpts[1] in self.circuit.in_parallel(cpts[0]):
-            newNet, newCptName = self.circuit.simplify_two_cpts(self.circuit, cpts)
-            self.steps.append(SolutionStep(newNet, cpt1=cpts[0], cpt2=cpts[1], newCptName=newCptName,
+        elif all(cpt in self.circuit.in_parallel(cpts[0]) for cpt in cpts[1::]):
+            newNet, newCptName = self.circuit.simplify_N_cpts(self.circuit, cpts)
+            self.steps.append(SolutionStep(newNet, cpts=cpts, newCptName=newCptName,
                                            relation=ComponentRelation.parallel.value,
                                            solutionText=None, lastStep=None, nextStep=None))
         else:
-            return False, ("", ""), ""
+            return DictExportBase.emptyExportDict
 
         sol = Solution(self.steps, langSymbols=self.langSymbols)
         newestStep = sol.available_steps[-1]
 
-        jsonName = sol.exportStepAsJson(newestStep, path=self.savePath, filename=os.path.splitext(self.filename)[0])
-        svgName = sol.drawStep(newestStep, path=self.savePath, filename=os.path.splitext(self.filename)[0])
-
+        stepData = sol.exportStepAsDict(newestStep)
+        print(stepData)
         self.circuit = newNet
-        return True, jsonName, svgName
+        return stepData
 
-    def createInitialStep(self) -> tuple[bool, tuple[str, str], str]:
+    def createInitialStep(self) -> ExportDict:
         """
         create the initial step or step0 of the circuit
         :return tuple with bool if simplification is possible, str with json filename, str with svg filename
         """
 
         sol = Solution(self.steps, langSymbols=self.langSymbols)
-        nameStep0Json = sol.exportStepAsJson("step0", path=self.savePath, filename=self.filename)
-        nameStep0Svg = sol.drawStep('step0', filename=self.filename, path=self.savePath)
+        stepData = sol.exportStepAsDict("step0")
+        stepData["step"] = "step0"
 
-        return True, nameStep0Json, nameStep0Svg
+        return stepData
 
     def createCircuitInfo(self) -> str:
         sol = Solution(self.steps)
         return sol.exportCircuitInfo("step0", path=self.savePath, filename=self.filename)
 
-    def createStep0(self) -> tuple[bool, tuple[str, str], str]:
+    def createStep0(self) -> dict:
         return self.createInitialStep()
 
     def getSolution(self):
