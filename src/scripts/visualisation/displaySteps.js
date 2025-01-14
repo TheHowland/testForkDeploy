@@ -10,7 +10,8 @@ function display_step(stepDetails) {
     state.pictureCounter++;  // increment before usage in the below functions
 
     // Create the new elements for the current step
-    const {circuitContainer, svgContainer} = setupCircuitContainer(svgData, stepDetails);
+    const {circuitContainer, svgContainer} = setupCircuitContainer(svgData);
+
     const {newCalcBtn, newVCBtn} = setupExplanationButtons(showVCData);
     const electricalElements = getElementsFromSvgContainer(svgContainer);
     const nextElementsContainer = setupNextElementsContainer(sanitizedSvgFilePath, electricalElements, vcData, showVCData);
@@ -37,6 +38,27 @@ function display_step(stepDetails) {
 // ############################################# Helper functions #####################################################
 // ####################################################################################################################
 
+function getNameValueMap(svgDiv) {
+    let nameValueMap = new Map();
+    let labels = svgDiv.getElementsByClassName("element-label");
+    for (let label of labels) {
+        let elementId = label.classList[0];
+        let element = svgDiv.querySelector(`#${elementId}`);
+        let value = element.classList[0];
+        let unit = element.classList[1];
+        // Mathjax can not be properly shown here, so do it manually
+        if (unit.includes("\\Omega")) {
+            unit = unit.replace("\\Omega", "Ω");
+        }
+        if (unit.includes("\\text{")) {
+            unit = unit.replace("\\text{", "");
+            unit = unit.replace("}", "");
+        }
+        nameValueMap.set(element.id, `${value} ${unit}`);
+    }
+    return nameValueMap;
+}
+
 function appendToAllValuesMap(showVCData, vcData, data) {
     if (showVCData) {
         // If voltage/current is shown, add all Z/R/C/L U and I values to the map from the two elements
@@ -47,6 +69,7 @@ function appendToAllValuesMap(showVCData, vcData, data) {
         state.allValuesMap.set(vcData.noFormat().names2[0], vcData.noFormat().values2[0]);  // Z
         state.allValuesMap.set(vcData.noFormat().names2[1], vcData.noFormat().values2[1]);  // U
         state.allValuesMap.set(vcData.noFormat().names2[2], vcData.noFormat().values2[2]);  // I
+        // TODO add last element also to the map
     } else {
         // If voltage/current is not shown, add only the Z values to the map
         // Only add the key if it is not already in the map (example Rs1 will be added with nemName and when used again as name1), we don't want to overwrite it
@@ -111,10 +134,10 @@ function setupNextElementsContainer(sanitizedSvgFilePath, filteredPaths, vcData,
     return nextElementsContainer;
 }
 
-function setupCircuitContainer(svgData, stepDetails) {
+function setupCircuitContainer(svgData) {
     const circuitContainer = document.createElement('div');
     circuitContainer.classList.add("circuit-container", "row", "justify-content-center", "my-2");
-    const svgContainer = setupSvgDivContainerAndData(svgData, stepDetails);
+    const svgContainer = setupSvgDivContainerAndData(svgData);
     circuitContainer.appendChild(svgContainer)
     return {circuitContainer, svgContainer};
 }
@@ -144,7 +167,7 @@ function addInfoHelpButton(svgDiv) {
     svgDiv.insertAdjacentElement("afterbegin", infoBtn);
 }
 
-function setupSvgDivContainerAndData(svgData, stepDetails) {
+function setupSvgDivContainerAndData(svgData) {
     const svgDiv = document.createElement('div');
     svgDiv.id = `svgDiv${state.pictureCounter}`;
     svgDiv.classList.add("svg-container", "p-2");
@@ -164,20 +187,23 @@ function setupSvgDivContainerAndData(svgData, stepDetails) {
     if (state.pictureCounter === 1) {
         addInfoHelpButton(svgDiv);
     }
-    addNameValueToggleBtn(svgDiv, stepDetails);
+    // Get the names and values map of all the elements in this step
+    let nameValueMap = getNameValueMap(svgDiv);
+    addNameValueToggleBtn(svgDiv, nameValueMap);
     return svgDiv;
 }
 
 //TODO REMOVE
 function addClasses(svgData) {
-    svgData = svgData.replace(">R1</tspan>", " class='R1'>R1</tspan>");
-    svgData = svgData.replace(">R2</tspan>", " class='R2'>R2</tspan>");
-    svgData = svgData.replace(">R3</tspan>", " class='R3'>R3</tspan>");
-    svgData = svgData.replace(">R4</tspan>", " class='R4'>R4</tspan>");
+    // Das müsste Yannick für mich machen, Klasse mit Name hinzufügen
+    svgData = svgData.replace(">R1</tspan>", " class='R1 element-label'>R1</tspan>");
+    svgData = svgData.replace(">R2</tspan>", " class='R2 element-label'>R2</tspan>");
+    svgData = svgData.replace(">R3</tspan>", " class='R3 element-label'>R3</tspan>");
+    svgData = svgData.replace(">R4</tspan>", " class='R4 element-label'>R4</tspan>");
     return svgData;
 }
 
-function addNameValueToggleBtn(svgDiv, stepDetails) {
+function addNameValueToggleBtn(svgDiv, nameValueMap) {
     const nameValueToggleBtn = document.createElement("button");
     nameValueToggleBtn.type = "button";
     nameValueToggleBtn.id = `toggle-view-${state.pictureCounter}`;
@@ -189,32 +215,55 @@ function addNameValueToggleBtn(svgDiv, stepDetails) {
     nameValueToggleBtn.style.border = `1px solid ${colors.currentForeground}`;
     nameValueToggleBtn.style.background = "none";
     nameValueToggleBtn.innerText = toggleSymbolDefinition.namesShown;
-    nameValueToggleBtn.onclick = () => {toggleNameValue(nameValueToggleBtn, svgDiv, stepDetails)};
+    nameValueToggleBtn.onclick = () => {toggleNameValue(nameValueToggleBtn, svgDiv, nameValueMap)};
     svgDiv.insertAdjacentElement("afterbegin", nameValueToggleBtn);
 }
 
-function toggleNameValue(nameValueToggleBtn, svgDiv, stepDetails) {
+function toggleNameValue(nameValueToggleBtn, svgDiv, nameValueMap) {
     console.log("Toggle name value");
-    let nameValueMap = stepDetails.getElementNamesAndValues();
-
-    // TODO Add all help values like Rs1, Rs2, Cs1, Cs2, Ls1, Ls2
-
-    for (let [key, value] of Object.entries(nameValueMap)) {
-        let tspan = svgDiv.querySelector(`.${key}`);
+    // Toggle elements name and value in the svg
+    for (let [symbol, value] of nameValueMap.entries()) {
+        let tspan = svgDiv.querySelector(`.${symbol}`);  // get the element label with the class name
         if (tspan === null) continue;
-        if (value.includes("\\Omega")) {
-            value = value.replace("\\Omega", "Ω");
-        }
-        if (value.includes("\\text{")) {
-            value = value.replace("\\text{", "");
-            value = value.replace("} ", "");
-        }
         if (nameValueToggleBtn.innerText === toggleSymbolDefinition.namesShown) {
-            tspan.innerHTML = tspan.innerHTML.replace(key, `${value}`);
+            tspan.innerHTML = tspan.innerHTML.replace(symbol, `${value}`);
         } else {
-            tspan.innerHTML = tspan.innerHTML.replace(`${value}`, key);
+            tspan.innerHTML = tspan.innerHTML.replace(`${value}`, symbol);
         }
     }
+
+    // Toggle voltage/current values in the svg
+    let voltageLabels = svgDiv.querySelectorAll(".voltage-label");
+    for (let voltageLabel of voltageLabels) {
+        let voltageName = voltageLabel.classList[0];
+        let voltageValue = state.allValuesMap.get(voltageName);
+        if (voltageValue.includes("\\text{")) {
+            voltageValue = voltageValue.replace("\\text{", "");
+            voltageValue = voltageValue.replace("}", "");
+        }
+        if (nameValueToggleBtn.innerText === toggleSymbolDefinition.namesShown) {
+            voltageLabel.innerHTML = voltageLabel.innerHTML.replace(voltageName, `${voltageValue}`);
+        } else {
+            voltageLabel.innerHTML = voltageLabel.innerHTML.replace(`${voltageValue}`, voltageName);
+        }
+    }
+
+    let currentLabels = svgDiv.querySelectorAll(".current-label");
+    if (currentLabels == null) return;
+    for (let currentLabel of currentLabels) {
+        let currentName = currentLabel.classList[0];
+        let currentValue = state.allValuesMap.get(currentName);
+        if (currentValue.includes("\\text{")) {
+            currentValue = currentValue.replace("\\text{", "");
+            currentValue = currentValue.replace("}", "");
+        }
+        if (nameValueToggleBtn.innerText === toggleSymbolDefinition.namesShown) {
+            currentLabel.innerHTML = currentLabel.innerHTML.replace(currentName, `${currentValue}`);
+        } else {
+            currentLabel.innerHTML = currentLabel.innerHTML.replace(`${currentValue}`, currentName);
+        }
+    }
+
     // Toggle button icon
     if (nameValueToggleBtn.innerText === toggleSymbolDefinition.namesShown) {
         nameValueToggleBtn.innerText = toggleSymbolDefinition.valuesShown;
