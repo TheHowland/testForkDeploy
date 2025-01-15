@@ -315,7 +315,9 @@ async function createAndShowStep0(circuitMap) {
 
     // Get information which components are used in this circuit
     // TODO hier bekomme ich eine datenstruktur mit step0 und allen komponenten
-    state.step0Data =  await stepSolve.createStep0().toJs({dict_converter: Object.fromEntries});
+    let objectest = await stepSolve.createStep0().toJs({dict_converter: Object.fromEntries});
+    // TODO Apply to stepObject
+    state.step0Data = objectest;
     state.currentStep = 0;
     state.currentCircuitShowVC = getCheckBoxValueOrQuickStartDef(circuitMap);
     let stepDetails = new StepDetails;

@@ -14,7 +14,8 @@ function display_step(stepDetails) {
 
     const {newCalcBtn, newVCBtn} = setupExplanationButtons(showVCData);
     const electricalElements = getElementsFromSvgContainer(svgContainer);
-    const nextElementsContainer = setupNextElementsContainer(electricalElements, showVCData, "10V"); // TODO
+    let source = getSource(stepObject);
+    const nextElementsContainer = setupNextElementsContainer(electricalElements, showVCData); // TODO
     const contentCol = document.getElementById("content-col");
     contentCol.append(circuitContainer);
 
@@ -32,20 +33,39 @@ function display_step(stepDetails) {
 
     setupStepButtonsFunctionality(div, stepDetails);
     appendToAllValuesMap(showVCData, stepObject);
-    congratsAndVCDisplayIfFinished(electricalElements, contentCol, showVCData, vcData);
+    congratsAndVCDisplayIfFinished(electricalElements, contentCol, showVCData, stepObject);
     MathJax.typeset();
 }
 
 // ####################################################################################################################
 // ############################################# Helper functions #####################################################
 // ####################################################################################################################
+function getSource() {
+    // TODO adapt for current sources or multiple sources
+    return state.step0Data.source.U.val;
+}
 
 function getNameValueMap(svgDiv) {
     let nameValueMap = new Map();
-    let labels = svgDiv.getElementsByClassName("EL");
-    // TODO and then get child, because its the parent with the EL class
+    let labels = svgDiv.querySelectorAll(".EL");
+    // Add Source
     for (let label of labels) {
-        let elementId = label.classList[0];
+        let elementId = label.classList[1];
+        if (elementId.substring(0, 1) === "V") {
+            let source = getSource();
+            if (source.includes("\\text{")) {
+                source = source.replace("\\text{", "");
+                source = source.replace("}", "");
+            }
+            nameValueMap.set(elementId, source);
+        }
+    }
+    // Add element values
+    labels = [].slice.call(labels, 1);
+    for (let label of labels) {
+        let elementId = label.classList[1];
+        // TODO Zs1 vs Rs1
+        elementId = elementId.replace("R", "Z");
         let element = svgDiv.querySelector(`#${elementId}`);
         let value = element.classList[0];
         let unit = element.classList[1];
@@ -111,13 +131,13 @@ function createExplanationBtnContainer(element) {
     return div;
 }
 
-function getFinishMsg(showVCData, spannung) {
+function getFinishMsg(showVCData) {
     let msg;
     if (showVCData) {
         // Give a note what voltage is used and that voltage/current is available
         msg = `
         <p>${languageManager.currentLang.msgVoltAndCurrentAvailable}.<br></p>
-        <p>${languageManager.currentLang.msgShowVoltage}<br>$$ ${languageManager.currentLang.voltageSymbol}_{${languageManager.currentLang.totalSuffix}}=${spannung}$$</p>
+        <p>${languageManager.currentLang.msgShowVoltage}<br>$$ ${languageManager.currentLang.voltageSymbol}_{${languageManager.currentLang.totalSuffix}}=${getSource()}$$</p>
         <button class="btn btn-secondary mx-1" id="reset-btn">reset</button>
         <button class="btn btn-primary mx-1 disabled" id="check-btn">check</button>
     `;
@@ -131,14 +151,14 @@ function getFinishMsg(showVCData, spannung) {
     return msg;
 }
 
-function setupNextElementsContainer(filteredPaths, showVCData, spannung) {
+function setupNextElementsContainer(filteredPaths, showVCData) {
     const nextElementsContainer = document.createElement('div');
     nextElementsContainer.className = 'next-elements-container';
     nextElementsContainer.id = "nextElementsContainer";
     nextElementsContainer.classList.add("text-center", "py-1", "mb-3");
     nextElementsContainer.style.color = colors.currentForeground;
     if (onlyOneElementLeft(filteredPaths)) {
-        nextElementsContainer.innerHTML = getFinishMsg(showVCData, spannung);
+        nextElementsContainer.innerHTML = getFinishMsg(showVCData);
     } else {
         // SanitizedSvgFilePath could be unnecessary here
         nextElementsContainer.innerHTML = `
@@ -202,8 +222,7 @@ function setupSvgDivContainerAndData(svgData) {
         addInfoHelpButton(svgDiv);
     }
     // Get the names and values map of all the elements in this step
-    // TODO let nameValueMap = getNameValueMap(svgDiv);
-    let nameValueMap = new Map();
+    let nameValueMap = getNameValueMap(svgDiv);
     addNameValueToggleBtn(svgDiv, nameValueMap);
     return svgDiv;
 }
@@ -406,23 +425,30 @@ async function checkAndSimplifyNext(div, stepDetails){
     const nextElementsContainer = document.getElementById("nextElementsContainer");
     const svgDiv = document.getElementById(`svgDiv${state.pictureCounter}`);
 
+
+    const stepObject = await stepSolve.simplifyNCpts(state.selectedElements).toJs({dict_converter: Object.fromEntries});
+    checkAndSimplify(stepObject, contentCol, div, stepDetails);
+
+    /* TODO OLD
     if (twoElementsChosen()) {
-        const simplifyObject = await stepSolve.simplifyTwoCpts(state.selectedElements).toJs();
-        checkAndSimplify(simplifyObject, contentCol, div, stepDetails);
+        const stepObject = await stepSolve.simplifyNCpts(state.selectedElements).toJs();
+        checkAndSimplify(stepObject, contentCol, div, stepDetails);
     } else {
         showMessage(contentCol, languageManager.currentLang.alertChooseTwoElements, "only2");
         pushCircuitEventMatomo(circuitActions.ErrOnly2, state.selectedElements.length)
-    }
+    }*/
+
     resetNextElements(svgDiv, nextElementsContainer);
     MathJax.typeset();
 }
 
-function checkAndSimplify(simplifyObject, contentCol, div, stepDetails) {
-    let elementsCanBeSimplified = simplifyObject[0];
+function checkAndSimplify(stepObject, contentCol, div, stepDetails) {
+    let elementsCanBeSimplified = stepObject.canBeSimplified;
     // Update paths, showVC and componentType are still the same
-    stepDetails.jsonZPath = simplifyObject[1][0];
-    stepDetails.jsonVCPath = simplifyObject[1][1];
-    stepDetails.svgPath = simplifyObject[2];
+    //stepDetails.jsonZPath = simplifyObject[1][0];
+    //stepDetails.jsonVCPath = simplifyObject[1][1];
+    //stepDetails.svgPath = simplifyObject[2];
+    stepDetails.stepObject = stepObject;
 
     if (elementsCanBeSimplified) {
         if (notLastPicture()) {
@@ -610,10 +636,10 @@ function checkIfStillNotFinishedAndMakeClickable(electricalElements, nextElement
     }
 }
 
-function congratsAndVCDisplayIfFinished(filteredPaths, contentCol, showVCData, vcData) {
+function congratsAndVCDisplayIfFinished(filteredPaths, contentCol, showVCData, stepObject) {
     if (onlyOneElementLeft(filteredPaths)) {
-        addFirstVCExplanation(showVCData, vcData);
-        addSolutionsButton(showVCData, vcData);
+        //addFirstVCExplanation(showVCData, vcData);
+        //addSolutionsButton(showVCData, vcData);
         finishCircuit(contentCol, showVCData);
     }
 }
