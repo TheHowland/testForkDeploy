@@ -5,31 +5,33 @@ function display_step(stepDetails) {
     // Load data
 
     let showVCData = state.currentCircuitShowVC;
-
-    let {data,vcData,svgData,sanitizedSvgFilePath} = loadData(stepDetails);
+    let stepObject = stepDetails.stepObject;
+    console.log(stepObject);
     state.pictureCounter++;  // increment before usage in the below functions
 
     // Create the new elements for the current step
-    const {circuitContainer, svgContainer} = setupCircuitContainer(svgData);
+    const {circuitContainer, svgContainer} = setupCircuitContainer(stepObject);
 
     const {newCalcBtn, newVCBtn} = setupExplanationButtons(showVCData);
     const electricalElements = getElementsFromSvgContainer(svgContainer);
-    const nextElementsContainer = setupNextElementsContainer(sanitizedSvgFilePath, electricalElements, vcData, showVCData);
+    const nextElementsContainer = setupNextElementsContainer(electricalElements, showVCData, "10V"); // TODO
     const contentCol = document.getElementById("content-col");
     contentCol.append(circuitContainer);
 
     // Create the texts and buttons for the detailed calculation explanation
-    let {stepCalculationText, stepVoltageCurrentText} = generateTexts(data, vcData, stepDetails.getComponentTypes());
+    // TODO let {stepCalculationText, stepVoltageCurrentText} = generateTexts(data, vcData, stepDetails.getComponentTypes());
+    let stepCalculationText = "Todo step calc text";
+    let stepVoltageCurrentText = "Todo step voltage current text";
     checkAndAddExplanationButtons(showVCData, stepCalculationText, contentCol, stepVoltageCurrentText);
 
     // The order of function-calls is important
-    checkIfStillNotFinishedAndMakeClickable(electricalElements, nextElementsContainer, sanitizedSvgFilePath);
+    checkIfStillNotFinishedAndMakeClickable(electricalElements, nextElementsContainer);
     prepareNextElementsContainer(contentCol, nextElementsContainer);
     const div = createExplanationBtnContainer(newCalcBtn);
     if (showVCData) div.appendChild(newVCBtn);
 
     setupStepButtonsFunctionality(div, stepDetails);
-    appendToAllValuesMap(showVCData, vcData, data);
+    appendToAllValuesMap(showVCData, stepObject);
     congratsAndVCDisplayIfFinished(electricalElements, contentCol, showVCData, vcData);
     MathJax.typeset();
 }
@@ -40,13 +42,15 @@ function display_step(stepDetails) {
 
 function getNameValueMap(svgDiv) {
     let nameValueMap = new Map();
-    let labels = svgDiv.getElementsByClassName("element-label");
+    let labels = svgDiv.getElementsByClassName("EL");
+    // TODO and then get child, because its the parent with the EL class
     for (let label of labels) {
         let elementId = label.classList[0];
         let element = svgDiv.querySelector(`#${elementId}`);
         let value = element.classList[0];
         let unit = element.classList[1];
         // Mathjax can not be properly shown here, so do it manually
+        // TODO this should be done with mathjax
         if (unit.includes("\\Omega")) {
             unit = unit.replace("\\Omega", "Ω");
         }
@@ -59,30 +63,43 @@ function getNameValueMap(svgDiv) {
     return nameValueMap;
 }
 
-function appendToAllValuesMap(showVCData, vcData, data) {
+function appendToAllValuesMap(showVCData, stepObject) {
     if (showVCData) {
         // If voltage/current is shown, add all Z/R/C/L U and I values to the map from the two elements
-        // TODO this needs to be adapted according to the new data structure
-        state.allValuesMap.set(vcData.noFormat().names1[0], vcData.noFormat().values1[0]);  // Z
-        state.allValuesMap.set(vcData.noFormat().names1[1], vcData.noFormat().values1[1]);  // U
-        state.allValuesMap.set(vcData.noFormat().names1[2], vcData.noFormat().values1[2]);  // I
-        state.allValuesMap.set(vcData.noFormat().names2[0], vcData.noFormat().values2[0]);  // Z
-        state.allValuesMap.set(vcData.noFormat().names2[1], vcData.noFormat().values2[1]);  // U
-        state.allValuesMap.set(vcData.noFormat().names2[2], vcData.noFormat().values2[2]);  // I
         // TODO add last element also to the map
+        // TODO das funktioniert erst wenn yannick mir alle komponenten im Step0 liefert
+        console.log(stepObject);
+        for (let component of stepObject.components) {
+            if (component.Z.name !== null) {
+                if (component.hasConversion) {
+                    state.allValuesMap.set(component.Z.name, component.Z.val);
+                } else {
+                    state.allValuesMap.set(component.Z.name, component.Z.complexVal);
+                }
+                state.allValuesMap.set(component.U.name, component.U.val);
+                state.allValuesMap.set(component.I.name, component.I.val);
+            }
+        }
+
     } else {
         // If voltage/current is not shown, add only the Z values to the map
         // Only add the key if it is not already in the map (example Rs1 will be added with nemName and when used again as name1), we don't want to overwrite it
-        if (!state.allValuesMap.has(data.noFormat().name1)) state.allValuesMap.set(data.noFormat().name1, data.noFormat().value1);
-        if (!state.allValuesMap.has(data.noFormat().name2)) state.allValuesMap.set(data.noFormat().name2, data.noFormat().value2);
+
+        for (let component of stepObject.components) {
+            if (!state.allValuesMap.has(component.Z.name)) state.allValuesMap.set(component.Z.name, component.Z.val);
+        }
+
+        // TODO das fehlt noch
         // Also explain the simplified component (now only in sub circuits because it needs too much space)
-        let explanation = data.noFormat().result;
+        /*let explanation = data.noFormat().result;
         if (data.noFormat().relation === "parallel") {
              explanation += "\\ (" + data.noFormat().name1 + "\\ || \\ " + data.noFormat().name2 + ")";
         } else {
             explanation += "\\ (" + data.noFormat().name1 + "+" + data.noFormat().name2 + ")";
         }
         state.allValuesMap.set(data.noFormat().newName, explanation);
+        */
+
     }
 }
 
@@ -94,13 +111,13 @@ function createExplanationBtnContainer(element) {
     return div;
 }
 
-function getFinishMsg(vcData, showVCData) {
+function getFinishMsg(showVCData, spannung) {
     let msg;
     if (showVCData) {
         // Give a note what voltage is used and that voltage/current is available
         msg = `
         <p>${languageManager.currentLang.msgVoltAndCurrentAvailable}.<br></p>
-        <p>${languageManager.currentLang.msgShowVoltage}<br>$$ ${languageManager.currentLang.voltageSymbol}_{${languageManager.currentLang.totalSuffix}}=${vcData.noFormat().oldValues[1]}$$</p>
+        <p>${languageManager.currentLang.msgShowVoltage}<br>$$ ${languageManager.currentLang.voltageSymbol}_{${languageManager.currentLang.totalSuffix}}=${spannung}$$</p>
         <button class="btn btn-secondary mx-1" id="reset-btn">reset</button>
         <button class="btn btn-primary mx-1 disabled" id="check-btn">check</button>
     `;
@@ -114,19 +131,19 @@ function getFinishMsg(vcData, showVCData) {
     return msg;
 }
 
-function setupNextElementsContainer(sanitizedSvgFilePath, filteredPaths, vcData, showVCData) {
+function setupNextElementsContainer(filteredPaths, showVCData, spannung) {
     const nextElementsContainer = document.createElement('div');
     nextElementsContainer.className = 'next-elements-container';
     nextElementsContainer.id = "nextElementsContainer";
     nextElementsContainer.classList.add("text-center", "py-1", "mb-3");
     nextElementsContainer.style.color = colors.currentForeground;
     if (onlyOneElementLeft(filteredPaths)) {
-        nextElementsContainer.innerHTML = getFinishMsg(vcData, showVCData);
+        nextElementsContainer.innerHTML = getFinishMsg(showVCData, spannung);
     } else {
         // SanitizedSvgFilePath could be unnecessary here
         nextElementsContainer.innerHTML = `
         <h3>${languageManager.currentLang.nextElementsHeading}</h3>
-        <ul class="px-0" id="next-elements-list-${sanitizedSvgFilePath}"></ul>
+        <ul class="px-0" id="next-elements-list"></ul>
         <button class="btn btn-secondary mx-1 ${state.pictureCounter === 1 ? "disabled" : ""}" id="reset-btn">reset</button>
         <button class="btn btn-primary mx-1" id="check-btn">check</button>
     `;
@@ -134,10 +151,10 @@ function setupNextElementsContainer(sanitizedSvgFilePath, filteredPaths, vcData,
     return nextElementsContainer;
 }
 
-function setupCircuitContainer(svgData) {
+function setupCircuitContainer(stepObject) {
     const circuitContainer = document.createElement('div');
     circuitContainer.classList.add("circuit-container", "row", "justify-content-center", "my-2");
-    const svgContainer = setupSvgDivContainerAndData(svgData);
+    const svgContainer = setupSvgDivContainerAndData(stepObject.svgData);
     circuitContainer.appendChild(svgContainer)
     return {circuitContainer, svgContainer};
 }
@@ -179,16 +196,14 @@ function setupSvgDivContainerAndData(svgData) {
     svgDiv.style.position = "relative";
     // Svg manipulation - set width and color for dark mode
     svgData = setSvgColorMode(svgData);
-    // TODO REMOVE
-    svgData = addClasses(svgData);
-
     svgDiv.innerHTML = svgData;
     hideSvgArrows(svgDiv);
     if (state.pictureCounter === 1) {
         addInfoHelpButton(svgDiv);
     }
     // Get the names and values map of all the elements in this step
-    let nameValueMap = getNameValueMap(svgDiv);
+    // TODO let nameValueMap = getNameValueMap(svgDiv);
+    let nameValueMap = new Map();
     addNameValueToggleBtn(svgDiv, nameValueMap);
     return svgDiv;
 }
@@ -564,8 +579,8 @@ function removeOldEventListeners() {
     }
 }
 
-function getAllElementsAndMakeClickable(nextElementsContainer, sanitizedSvgFilePath, electricalElements) {
-    const nextElementsList = nextElementsContainer.querySelector(`#next-elements-list-${sanitizedSvgFilePath}`);
+function getAllElementsAndMakeClickable(nextElementsContainer, electricalElements) {
+    const nextElementsList = nextElementsContainer.querySelector(`#next-elements-list`);
     electricalElements.forEach(element => setStyleAndEvent(element, nextElementsList));
 }
 
@@ -582,14 +597,16 @@ function setupExplanationButtons(showVoltageButton) {
 function loadData(stepDetails) {
     let data = getImpedanceData(stepDetails.jsonZPath);
     let vcData = getVoltageCurrentData(stepDetails.jsonVCPath);
-    let svgData = state.pyodide.FS.readFile(stepDetails.svgPath, {encoding: "utf8"});
+    // TODO OLD
+    // let svgData = state.pyodide.FS.readFile(stepDetails.svgPath, {encoding: "utf8"});
+    let svgData = stepDetails.stepObject.svgData;
     const sanitizedSvgFilePath = sanitizeSelector(stepDetails.svgPath);
     return {data, vcData, svgData, sanitizedSvgFilePath};
 }
 
-function checkIfStillNotFinishedAndMakeClickable(electricalElements, nextElementsContainer, sanitizedSvgFilePath) {
+function checkIfStillNotFinishedAndMakeClickable(electricalElements, nextElementsContainer) {
     if (elementsLeftToBeSimplified(electricalElements)) {
-        getAllElementsAndMakeClickable(nextElementsContainer, sanitizedSvgFilePath, electricalElements);
+        getAllElementsAndMakeClickable(nextElementsContainer, electricalElements);
     }
 }
 

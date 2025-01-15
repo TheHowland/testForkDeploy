@@ -208,6 +208,7 @@ async function getCircuitInfo() {
     let circuitInfoPath = await stepSolve.createCircuitInfo();
     let circuitInfoFile = await state.pyodide.FS.readFile(circuitInfoPath, {encoding: "utf8"});
     return JSON.parse(circuitInfoFile);
+
 }
 
 async function getJsonAndSvgStepFiles() {
@@ -300,7 +301,7 @@ function whenAvailable(name, callback) {
     }, interval);
 }
 
-async function solveCircuit(circuitMap) {
+async function createAndShowStep0(circuitMap) {
     await clearSolutionsDir();
 
     let paramMap = new Map();
@@ -310,22 +311,21 @@ async function solveCircuit(circuitMap) {
     stepSolve = state.solve.SolveInUserOrder(
         circuitMap.circuitFile,
         `${conf.pyodideCircuitPath}/${circuitMap.sourceDir}`,
-        `${conf.pyodideSolutionsPath}/`,
         paramMap);
-    await stepSolve.createStep0().toJs();
 
     // Get information which components are used in this circuit
-    const circuitInfo = await getCircuitInfo();
-
-    await getJsonAndSvgStepFiles();
+    // TODO hier bekomme ich eine datenstruktur mit step0 und allen komponenten
+    state.step0Data =  await stepSolve.createStep0().toJs({dict_converter: Object.fromEntries});
+    state.currentStep = 0;
     state.currentCircuitShowVC = getCheckBoxValueOrQuickStartDef(circuitMap);
-    let stepDetails = fillStepDetailsObject(circuitMap, circuitInfo);
+    let stepDetails = new StepDetails;
+    stepDetails.stepObject = state.step0Data;
 
     display_step(stepDetails);
 }
 
 function startSolving() {
-    solveCircuit(state.currentCircuitMap);
+    createAndShowStep0(state.currentCircuitMap);
     //The div element that contains the SVG representation of the circuit diagram.
     const svgDiv = document.querySelector('.svg-container');
     //The div element that contains the list of elements that have been clicked or selected in the circuit diagram.
@@ -336,6 +336,7 @@ function startSolving() {
 }
 
 function fillStepDetailsObject(circuitMap, circuitInfo) {
+    throw new Error("Not implemented");
     let stepDetails = new StepDetails;
     stepDetails.jsonZPath = `${conf.pyodideSolutionsPath}/${state.jsonFiles_Z[state.currentStep]}`;
     stepDetails.jsonZVCath = (state.jsonFiles_VC === null) ? null : `${conf.pyodideSolutionsPath}/${state.jsonFiles_VC[state.currentStep]}`;

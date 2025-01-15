@@ -1,10 +1,11 @@
 class StepDetails {
-    constructor(showVC, jsonZPath, jsonVCPath, svgPath, circuitInfo) {
+    constructor(showVC, jsonZPath, jsonVCPath, svgPath, circuitInfo, stepObject) {
         this.showVCData = showVC;
         this.jsonZPath = jsonZPath;
         this.jsonVCPath = jsonVCPath;
         this.svgPath = svgPath;
         this.circuitInfo = circuitInfo;
+        this.stepObject = stepObject;
     }
 
     getComponentTypes() {

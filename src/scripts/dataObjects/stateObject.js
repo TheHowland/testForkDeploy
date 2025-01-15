@@ -5,14 +5,15 @@ class StateObject {
     //Tracks the current step in the circuit simplification process.
     currentStep = 0;
 
+    // TODO OLD
     //Array to store JSON file paths for Z simplification steps.
-    jsonFiles_Z = [];
-
+    //jsonFiles_Z = [];
     // Array to store JSON file paths for VC simplification steps.
-    jsonFiles_VC = [];
-
+    //jsonFiles_VC = [];
     //Array to store SVG file paths for circuit diagrams.
-    svgFiles = [];
+    //svgFiles = [];
+
+    step0Data = {};
 
     //Array to store the names of the circuit files.
     circuitFiles = [];
