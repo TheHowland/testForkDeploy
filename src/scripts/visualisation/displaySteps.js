@@ -40,7 +40,8 @@ function display_step(stepObject) {
 // ####################################################################################################################
 function getSource() {
     // TODO adapt for current sources or multiple sources
-    return state.step0Data.source.U.val;
+    // TODO get frequenz
+    return state.step0Data.source[0].val;
 }
 
 function getNameValueMap(svgDiv) {
