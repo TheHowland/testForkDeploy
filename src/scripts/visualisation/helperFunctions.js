@@ -313,17 +313,12 @@ async function createAndShowStep0(circuitMap) {
         `${conf.pyodideCircuitPath}/${circuitMap.sourceDir}`,
         paramMap);
 
-    // Get information which components are used in this circuit
-    // TODO hier bekomme ich eine datenstruktur mit step0 und allen komponenten
-    let objectest = await stepSolve.createStep0().toJs({dict_converter: Object.fromEntries});
-    // TODO Apply to stepObject
-    state.step0Data = objectest;
+    let obj = await stepSolve.createStep0().toJs({dict_converter: Object.fromEntries});
+    obj.__proto__ = Step0Object.prototype;
+    state.step0Data = obj;
     state.currentStep = 0;
     state.currentCircuitShowVC = getCheckBoxValueOrQuickStartDef(circuitMap);
-    let stepDetails = new StepDetails;
-    stepDetails.stepObject = state.step0Data;
-
-    display_step(stepDetails);
+    display_step(state.step0Data);
 }
 
 function startSolving() {
@@ -337,16 +332,6 @@ function startSolving() {
     }
 }
 
-function fillStepDetailsObject(circuitMap, circuitInfo) {
-    throw new Error("Not implemented");
-    let stepDetails = new StepDetails;
-    stepDetails.jsonZPath = `${conf.pyodideSolutionsPath}/${state.jsonFiles_Z[state.currentStep]}`;
-    stepDetails.jsonZVCath = (state.jsonFiles_VC === null) ? null : `${conf.pyodideSolutionsPath}/${state.jsonFiles_VC[state.currentStep]}`;
-    stepDetails.svgPath = `${conf.pyodideSolutionsPath}/${state.svgFiles[state.currentStep]}`;
-    stepDetails.circuitInfo = circuitInfo;
-    return stepDetails;
-}
-
 function getCheckBoxValueOrQuickStartDef(circuitMap) {
     if (circuitMap.selectorGroup === circuitMapper.selectorIds.quick) {
         return showVCinQuickStart; // Definition of what the quickstart does show, make false if no VC wished here
@@ -355,6 +340,8 @@ function getCheckBoxValueOrQuickStartDef(circuitMap) {
     }
 }
 
-
+function inlineMJ(string) {
+    return `\\(${string}\\)`;
+}
 
 

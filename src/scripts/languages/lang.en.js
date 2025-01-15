@@ -77,6 +77,8 @@ const english = {
         "Please choose exactly 2 elements",
     alertCanNotSimplify:
         "Can not simplify those elements",
+    alertChooseAtLeastOneElement:
+        "Choose at least one element",
 
     // Calculation text
     relationTextParallel:

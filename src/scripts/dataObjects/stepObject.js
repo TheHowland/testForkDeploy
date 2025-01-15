@@ -1,29 +1,39 @@
-class stepObject {
-    constructor() {
-        this.step = ""
-        this.canBeSimplified = false
-        this.simplifiedTo = {}
-        this.componentsRelation = ""
-        this.components = []
-        this.svgData = ""
-    }
+class StepObject {
+    step = ""
+    canBeSimplified = false
+    simplifiedTo = {}
+    componentsRelation = ""
+    components = []  // Class component
+    svgData = ""
 }
 
 class component {
-    constructor() {
-        this.Z = {
-            name: "",
-            complexVal: "",
-            val: ""
-        }
-        this.U = {
-            name: "",
-            val: "",
-        }
-        this.I = {
-            name: "",
-            val: "",
-        }
-        this.hasConversion = false
+    Z = {
+        name: "",
+        complexVal: "",
+        val: ""
     }
+    U = {
+        name: "",
+        val: "",
+    }
+    I = {
+        name: "",
+        val: "",
+    }
+    hasConversion = false
+}
+
+class Step0Object {
+    step = ""
+    source = []  // Class Source
+    components = []
+    componentTypes = ""
+    svgData = ""
+}
+
+class Source {
+    type = ""
+    omega_0 = ""
+    val = ""
 }

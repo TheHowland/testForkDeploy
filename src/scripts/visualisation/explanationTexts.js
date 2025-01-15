@@ -1,72 +1,70 @@
 // Generates and appends a paragraph describing the resistance simplification step
-function generateTextForZ(data, componentTypes) {
-    let relation = data.noFormat().relation;
+function generateTextForZ(stepObject) {
+    let relation = stepObject.componentsRelation;//data.noFormat().relation;
     const paragraphElement = document.createElement('p');
     paragraphElement.classList.add("explText");
-    const firstPart = getElementsAndRelationDescription(data);
+    const firstPart = getElementsAndRelationDescription(stepObject);
 
     // Calculation descriptions are swapped for R/L and C
-    if (componentTypes === "R" || componentTypes === "L") {
+    if (stepObject.componentTypes === "R" || stepObject.componentTypes === "L") {
         if (relation === "series") {
-            paragraphElement.innerHTML = firstPart + getAdditionCalculation(data)
+            paragraphElement.innerHTML = firstPart + getAdditionCalculation(stepObject)
         } else if (relation === "parallel") {
-            paragraphElement.innerHTML = firstPart + getReciprocialCalculation(data)
+            paragraphElement.innerHTML = firstPart + getReciprocialCalculation(stepObject)
         }
-    } else if (componentTypes === "C") {
+    } else if (stepObject.componentTypes === "C") {
         if (relation === "parallel") {
-            paragraphElement.innerHTML = firstPart + getAdditionCalculation(data);
+            paragraphElement.innerHTML = firstPart + getAdditionCalculation(stepObject);
         } else if (relation === "series") {
-            paragraphElement.innerHTML = firstPart + getReciprocialCalculation(data);
+            paragraphElement.innerHTML = firstPart + getReciprocialCalculation(stepObject);
         }
     }
     return paragraphElement;
 }
 
-function generateTextForVoltageCurrent(data) {
-    let relation = data.noFormat().relation[0]
+function generateTextForVoltageCurrent(stepObject) {
+    let relation = stepObject.componentsRelation;
     const text = document.createElement('p');
     text.classList.add("explText");
 
     if (relation === "series") {
-        text.innerHTML = getSeriesVCDescription(data);
+        text.innerHTML = getSeriesVCDescription(stepObject);
     } else if (relation === "parallel") {
-        text.innerHTML = getParallelVCDescription(data);
+        text.innerHTML = getParallelVCDescription(stepObject);
     } else {
         text.innerHTML = languageManager.currentLang.relationTextNoRelation;
     }
     return text;
 }
 
-function generateTextForTotalCurrent(data) {
+function generateTextForTotalCurrent(stepObject) {
     // Todo, maybe this R needs to be changed to Z sometime
-    return `${languageManager.currentLang.currentCalcHeading} ${data.inline().oldNames[0]}<br>
+    return `TODO Total Current` /*${languageManager.currentLang.currentCalcHeading} ${data.inline().oldNames[0]}<br>
                         <br>  
                         $$I_{${languageManager.currentLang.totalSuffix}} = \\frac{${languageManager.currentLang.voltageSymbol}_{${languageManager.currentLang.totalSuffix}}}{R_{${languageManager.currentLang.totalSuffix}}}$$
                         $$I_{${languageManager.currentLang.totalSuffix}} = ${data.noFormat().oldNames[2]} = \\frac{${data.noFormat().oldNames[1]}}{${data.noFormat().oldNames[0]}}$$
                         $$= \\frac{${data.noFormat().oldValues[1]}}{${data.noFormat().oldValues[0]}}$$
                         $$= ${data.noFormat().oldValues[2]}$$
-                        <br>`;
+                        <br>`;*/
 }
 
-function getRelationText(data) {
+function getRelationText(stepObject) {
     let relationText = "";
-    if (!data.isNull()) {
-        if (data.noFormat().relation === "parallel") {
-            relationText = languageManager.currentLang.relationTextParallel;
-        } else if (data.noFormat().relation === "series") {
-            relationText = languageManager.currentLang.relationTextSeries;
-        } else if (data.noFormat().relation === null) {
-            relationText = languageManager.currentLang.relationTextNoRelation;
-        } else {
-            throw Error("Unknown relation type");
-        }
+    if (stepObject.componentsRelation === "parallel") {
+        relationText = languageManager.currentLang.relationTextParallel;
+    } else if (stepObject.componentsRelation === "series") {
+        relationText = languageManager.currentLang.relationTextSeries;
+    } else if (stepObject.componentsRelation === null) {
+        relationText = languageManager.currentLang.relationTextNoRelation;
+    } else {
+        console.log("No components relation found: ", stepObject.componentsRelation);
     }
     return relationText;
 }
 
-function getElementsAndRelationDescription(data) {
-    let relationText = getRelationText(data);
-    return `
+function getElementsAndRelationDescription(stepObject) {
+    let relationText = getRelationText(stepObject);
+    return `TODO`; /*
             ${languageManager.currentLang.calcBeforeFirstElement} ${data.inline().name1} ${languageManager.currentLang.calcBetweenElements} ${data.inline().name2}<br>
             ${languageManager.currentLang.calcAfterSecondElement} ${data.inline().newName} ${languageManager.currentLang.calcAfterSimplifiedElement}<br>
             <br>
@@ -74,29 +72,29 @@ function getElementsAndRelationDescription(data) {
             ${data.inline().name2}&nbsp= ${data.inline().value2}<br>
             <br>
             ${relationText}<br>
-            <br>`;
+            <br>`;*/
 }
 
 function getReciprocialCalculation(data) {
     // creates 1/X = 1/X1 + 1/X2
-    return `$$\\frac{1}{${data.noFormat().newName}} = \\frac{1}{${data.noFormat().name1}} + \\frac{1}{${data.noFormat().name2}}$$
+    return `TODO`; /*$$\\frac{1}{${data.noFormat().newName}} = \\frac{1}{${data.noFormat().name1}} + \\frac{1}{${data.noFormat().name2}}$$
              $$\\frac{1}{${data.noFormat().newName}} = \\frac{1}{${data.noFormat().value1}} + \\frac{1}{${data.noFormat().value2}}$$
              $$\\frac{1}{${data.noFormat().newName}} = \\frac{1}{${data.noFormat().result}}$$
              <br>
              $$${data.noFormat().newName} = ${data.noFormat().result}$$
-            `;
+            `;*/
 }
 
-function getAdditionCalculation(data) {
+function getAdditionCalculation(stepObject) {
     // creates X = X1 + X2
-    return `$$${data.noFormat().newName} = ${data.noFormat().name1} + ${data.noFormat().name2}$$
+    return `TODO`; /*$$${data.noFormat().newName} = ${data.noFormat().name1} + ${data.noFormat().name2}$$
              $$${data.noFormat().newName} = ${data.noFormat().value1} + ${data.noFormat().value2}$$
              $$${data.noFormat().newName} = ${data.noFormat().result}$$
-            `;
+            `;*/
 }
 
-function getSeriesVCDescription(data) {
-    return `${languageManager.currentLang.currentCalcHeading} ${data.inline().oldNames[0]}<br>
+function getSeriesVCDescription(stepObject) {
+    return `TODO` /*${languageManager.currentLang.currentCalcHeading} ${data.inline().oldNames[0]}<br>
             <br>
             $$${data.noFormat().oldNames[2]} = \\frac{${data.noFormat().oldNames[1]}}{${data.noFormat().oldNames[0]}}$$
             $$= \\frac{${data.noFormat().oldValues[1]}}{${data.noFormat().oldValues[0]}}$$
@@ -119,11 +117,11 @@ function getSeriesVCDescription(data) {
             $$= ${data.noFormat().values2[0]} \\cdot ${data.noFormat().values2[2]}$$
             $$= ${data.noFormat().values2[1]}$$
             <br>
-        `;
+        `;*/
 }
 
-function getParallelVCDescription(data) {
-    return `
+function getParallelVCDescription(stepObject) {
+    return `TODO` /*
             ${languageManager.currentLang.currentCalcHeading} ${data.inline().oldNames[0]}<br>
             <br>
             $$${data.noFormat().oldNames[2]} = \\frac{${data.noFormat().oldNames[1]}}{${data.noFormat().oldNames[0]}}$$
@@ -147,5 +145,5 @@ function getParallelVCDescription(data) {
             $$= \\frac{${data.noFormat().values2[1]}}{${data.noFormat().values2[0]}}$$
             $$= ${data.noFormat().values2[2]}$$
             <br>
-        `;
+        `;*/
 }

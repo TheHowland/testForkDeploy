@@ -1,11 +1,10 @@
 // ####################################################################################################################
 // #################################### Key function for displaying new svgs ##########################################
 // ####################################################################################################################
-function display_step(stepDetails) {
+function display_step(stepObject) {
     // Load data
 
     let showVCData = state.currentCircuitShowVC;
-    let stepObject = stepDetails.stepObject;
     console.log(stepObject);
     state.pictureCounter++;  // increment before usage in the below functions
 
@@ -14,15 +13,14 @@ function display_step(stepDetails) {
 
     const {newCalcBtn, newVCBtn} = setupExplanationButtons(showVCData);
     const electricalElements = getElementsFromSvgContainer(svgContainer);
-    let source = getSource(stepObject);
-    const nextElementsContainer = setupNextElementsContainer(electricalElements, showVCData); // TODO
+    const nextElementsContainer = setupNextElementsContainer(electricalElements, showVCData);
     const contentCol = document.getElementById("content-col");
     contentCol.append(circuitContainer);
 
     // Create the texts and buttons for the detailed calculation explanation
-    // TODO let {stepCalculationText, stepVoltageCurrentText} = generateTexts(data, vcData, stepDetails.getComponentTypes());
-    let stepCalculationText = "Todo step calc text";
-    let stepVoltageCurrentText = "Todo step voltage current text";
+    let {stepCalculationText, stepVoltageCurrentText} = generateTexts(stepObject);
+    //let stepCalculationText = "Todo step calc text";
+    //let stepVoltageCurrentText = "Todo step voltage current text";
     checkAndAddExplanationButtons(showVCData, stepCalculationText, contentCol, stepVoltageCurrentText);
 
     // The order of function-calls is important
@@ -31,8 +29,8 @@ function display_step(stepDetails) {
     const div = createExplanationBtnContainer(newCalcBtn);
     if (showVCData) div.appendChild(newVCBtn);
 
-    setupStepButtonsFunctionality(div, stepDetails);
-    appendToAllValuesMap(showVCData, stepObject);
+    setupStepButtonsFunctionality(div);
+    appendToAllValuesMap(showVCData, stepObject, electricalElements);
     congratsAndVCDisplayIfFinished(electricalElements, contentCol, showVCData, stepObject);
     MathJax.typeset();
 }
@@ -49,7 +47,7 @@ function getNameValueMap(svgDiv) {
     let nameValueMap = new Map();
     let labels = svgDiv.querySelectorAll(".EL");
     // Add Source
-    for (let label of labels) {
+    /*for (let label of labels) {
         let elementId = label.classList[1];
         if (elementId.substring(0, 1) === "V") {
             let source = getSource();
@@ -59,9 +57,9 @@ function getNameValueMap(svgDiv) {
             }
             nameValueMap.set(elementId, source);
         }
-    }
+    }*/
     // Add element values
-    labels = [].slice.call(labels, 1);
+    labels = [].slice.call(labels, 1);  // Remove source
     for (let label of labels) {
         let elementId = label.classList[1];
         // TODO Zs1 vs Rs1
@@ -83,12 +81,9 @@ function getNameValueMap(svgDiv) {
     return nameValueMap;
 }
 
-function appendToAllValuesMap(showVCData, stepObject) {
+function appendToAllValuesMap(showVCData, stepObject, electricalElements) {
     if (showVCData) {
         // If voltage/current is shown, add all Z/R/C/L U and I values to the map from the two elements
-        // TODO add last element also to the map
-        // TODO das funktioniert erst wenn yannick mir alle komponenten im Step0 liefert
-        console.log(stepObject);
         for (let component of stepObject.components) {
             if (component.Z.name !== null) {
                 if (component.hasConversion) {
@@ -100,8 +95,17 @@ function appendToAllValuesMap(showVCData, stepObject) {
                 state.allValuesMap.set(component.I.name, component.I.val);
             }
         }
-
+        if (onlyOneElementLeft(electricalElements)) {
+            if (stepObject.simplifiedTo.hasConversion) {
+                state.allValuesMap.set(stepObject.simplifiedTo.Z.name, stepObject.simplifiedTo.Z.val);
+            } else {
+                state.allValuesMap.set(stepObject.simplifiedTo.Z.name, stepObject.simplifiedTo.Z.complexVal);
+            }
+            state.allValuesMap.set(stepObject.simplifiedTo.U.name, stepObject.simplifiedTo.U.val);
+            state.allValuesMap.set(stepObject.simplifiedTo.I.name, stepObject.simplifiedTo.I.val);
+        }
     } else {
+        // TODO could be removed
         // If voltage/current is not shown, add only the Z values to the map
         // Only add the key if it is not already in the map (example Rs1 will be added with nemName and when used again as name1), we don't want to overwrite it
 
@@ -227,16 +231,6 @@ function setupSvgDivContainerAndData(svgData) {
     return svgDiv;
 }
 
-//TODO REMOVE
-function addClasses(svgData) {
-    // Das müsste Yannick für mich machen, Klasse mit Name hinzufügen
-    svgData = svgData.replace(">R1</tspan>", " class='R1 element-label'>R1</tspan>");
-    svgData = svgData.replace(">R2</tspan>", " class='R2 element-label'>R2</tspan>");
-    svgData = svgData.replace(">R3</tspan>", " class='R3 element-label'>R3</tspan>");
-    svgData = svgData.replace(">R4</tspan>", " class='R4 element-label'>R4</tspan>");
-    return svgData;
-}
-
 function addNameValueToggleBtn(svgDiv, nameValueMap) {
     const nameValueToggleBtn = document.createElement("button");
     nameValueToggleBtn.type = "button";
@@ -257,7 +251,9 @@ function toggleNameValue(nameValueToggleBtn, svgDiv, nameValueMap) {
     console.log("Toggle name value");
     // Toggle elements name and value in the svg
     for (let [symbol, value] of nameValueMap.entries()) {
-        let tspan = svgDiv.querySelector(`.${symbol}`);  // get the element label with the class name
+        // get the element label where the parent element has class symbol (e.g. V1/R1/...)
+        let childSelectorWithParentClassSymbol = `.${symbol} > *`;
+        let tspan = svgDiv.querySelector(childSelectorWithParentClassSymbol);
         if (tspan === null) continue;
         if (nameValueToggleBtn.innerText === toggleSymbolDefinition.namesShown) {
             tspan.innerHTML = tspan.innerHTML.replace(symbol, `${value}`);
@@ -378,7 +374,7 @@ function setupCalculationBtn() {
 
 function chooseElement(pathElement, nextElementsList) {
 
-    const bboxId = `bbox-${pathElement.getAttribute('id') || Math.random().toString(36).substr(2, 9)}`;
+    const bboxId = `bbox-${pathElement.getAttribute('id')}`;
     const existingBox = document.getElementById(bboxId);
 
     if (existingBox) {
@@ -391,66 +387,25 @@ function chooseElement(pathElement, nextElementsList) {
     MathJax.typeset();
 }
 
-function getImpedanceData(jsonFilePath_Z) {
-    let jsonDataString = state.pyodide.FS.readFile(jsonFilePath_Z, {encoding: "utf8"});
-    const jsonData = JSON.parse(jsonDataString);
-
-    let data = new SolutionObject(
-        jsonData.name1, jsonData.name2, jsonData.newName,
-        jsonData.value1, jsonData.value2, jsonData.result,
-        jsonData.relation, jsonData.latexEquation
-    );
-    return data;
-}
-
-function getVoltageCurrentData(jsonFilePath_VC) {
-    let vcData;
-    if (jsonFilePath_VC != null) {
-        let jsonDataString_VC = state.pyodide.FS.readFile(jsonFilePath_VC, {encoding: "utf8"});
-        let jsonData_VC = JSON.parse(jsonDataString_VC);
-        vcData = new SolutionObject_VC(
-            jsonData_VC.oldNames, jsonData_VC.names1, jsonData_VC.names2,
-            jsonData_VC.oldValues, jsonData_VC.values1, jsonData_VC.values2,
-            jsonData_VC.convOldValue, jsonData_VC.convValue1, jsonData_VC.convValue2,
-            jsonData_VC.relation, jsonData_VC.equation
-        );
-    } else {
-        vcData = new SolutionObject_VC();
-    }
-    return vcData;
-}
-
-async function checkAndSimplifyNext(div, stepDetails){
+async function checkAndSimplifyNext(div){
     const contentCol = document.getElementById("content-col");
     const nextElementsContainer = document.getElementById("nextElementsContainer");
     const svgDiv = document.getElementById(`svgDiv${state.pictureCounter}`);
 
-
-    const stepObject = await stepSolve.simplifyNCpts(state.selectedElements).toJs({dict_converter: Object.fromEntries});
-    checkAndSimplify(stepObject, contentCol, div, stepDetails);
-
-    /* TODO OLD
-    if (twoElementsChosen()) {
-        const stepObject = await stepSolve.simplifyNCpts(state.selectedElements).toJs();
-        checkAndSimplify(stepObject, contentCol, div, stepDetails);
+    if (state.selectedElements.length <= 1) {
+        showMessage(contentCol, languageManager.currentLang.alertChooseAtLeastOneElement);
     } else {
-        showMessage(contentCol, languageManager.currentLang.alertChooseTwoElements, "only2");
-        pushCircuitEventMatomo(circuitActions.ErrOnly2, state.selectedElements.length)
-    }*/
+        let obj = await stepSolve.simplifyNCpts(state.selectedElements).toJs({dict_converter: Object.fromEntries});
+        obj.__proto__ = StepObject.prototype;
+        checkAndSimplify(obj, contentCol, div);
+    }
 
     resetNextElements(svgDiv, nextElementsContainer);
     MathJax.typeset();
 }
 
-function checkAndSimplify(stepObject, contentCol, div, stepDetails) {
-    let elementsCanBeSimplified = stepObject.canBeSimplified;
-    // Update paths, showVC and componentType are still the same
-    //stepDetails.jsonZPath = simplifyObject[1][0];
-    //stepDetails.jsonVCPath = simplifyObject[1][1];
-    //stepDetails.svgPath = simplifyObject[2];
-    stepDetails.stepObject = stepObject;
-
-    if (elementsCanBeSimplified) {
+function checkAndSimplify(stepObject, contentCol, div) {
+    if (stepObject.canBeSimplified) {
         if (notLastPicture()) {
             contentCol.append(div);
             enableLastCalcButton();
@@ -458,7 +413,7 @@ function checkAndSimplify(stepObject, contentCol, div, stepDetails) {
         }
         // Remove event listeners from old picture elements
         removeOldEventListeners();
-        display_step(stepDetails);
+        display_step(stepObject);
     } else {
         showMessage(contentCol, languageManager.currentLang.alertCanNotSimplify, "warning");
         pushCircuitEventMatomo(circuitActions.ErrCanNotSimpl);
@@ -518,8 +473,8 @@ function setupCalcBtnFunctionality(showVoltageButton, stepCalculationText, conte
     })
 }
 
-function onlyOneElementLeft(filteredPaths) {
-    return filteredPaths.length === 1;
+function onlyOneElementLeft(electricalElements) {
+    return electricalElements.length === 1;
 }
 
 function enableVoltageCurrentBtns() {
@@ -550,11 +505,11 @@ function checkAndAddExplanationButtons(showVoltageButton, stepCalculationText, c
     }
 }
 
-function generateTexts(data, vcData, componentTypes) {
-    let stepCalculationText = generateTextForZ(data, componentTypes);
+function generateTexts(stepObject) {
+    let stepCalculationText = generateTextForZ(stepObject);
     stepCalculationText.style.color = colors.currentForeground;
 
-    let stepVoltageCurrentText = generateTextForVoltageCurrent(vcData);
+    let stepVoltageCurrentText = generateTextForVoltageCurrent(stepObject);
     stepVoltageCurrentText.style.color = colors.currentForeground;
     return {stepCalculationText, stepVoltageCurrentText};
 }
@@ -575,7 +530,7 @@ function finishCircuit(contentCol, showVCData) {
     pushCircuitEventMatomo(circuitActions.Finished);
 }
 
-function setupStepButtonsFunctionality(div, stepDetails) {
+function setupStepButtonsFunctionality(div) {
     document.getElementById("reset-btn").addEventListener('click', () => {
         // Can only be after step 1 because the first step can't be reset, so no need to check
         pushCircuitEventMatomo(circuitActions.Reset, state.pictureCounter);
@@ -586,7 +541,7 @@ function setupStepButtonsFunctionality(div, stepDetails) {
         document.getElementById("check-btn").innerHTML = "<span class='spinner-border spinner-border-sm'></span>";
         requestAnimationFrame(() => {
             setTimeout(() => {
-                checkAndSimplifyNext(div, stepDetails);
+                checkAndSimplifyNext(div);
                 document.getElementById("check-btn").innerHTML = "check";
             }, 0);
         });
@@ -620,55 +575,47 @@ function setupExplanationButtons(showVoltageButton) {
     return {newCalcBtn, empty};
 }
 
-function loadData(stepDetails) {
-    let data = getImpedanceData(stepDetails.jsonZPath);
-    let vcData = getVoltageCurrentData(stepDetails.jsonVCPath);
-    // TODO OLD
-    // let svgData = state.pyodide.FS.readFile(stepDetails.svgPath, {encoding: "utf8"});
-    let svgData = stepDetails.stepObject.svgData;
-    const sanitizedSvgFilePath = sanitizeSelector(stepDetails.svgPath);
-    return {data, vcData, svgData, sanitizedSvgFilePath};
-}
-
 function checkIfStillNotFinishedAndMakeClickable(electricalElements, nextElementsContainer) {
     if (elementsLeftToBeSimplified(electricalElements)) {
         getAllElementsAndMakeClickable(nextElementsContainer, electricalElements);
     }
 }
 
-function congratsAndVCDisplayIfFinished(filteredPaths, contentCol, showVCData, stepObject) {
-    if (onlyOneElementLeft(filteredPaths)) {
-        //addFirstVCExplanation(showVCData, vcData);
-        //addSolutionsButton(showVCData, vcData);
+function congratsAndVCDisplayIfFinished(electricalElements, contentCol, showVCData, stepObject) {
+    if (onlyOneElementLeft(electricalElements)) {
+        addFirstVCExplanation(showVCData, stepObject);
+        addSolutionsButton(showVCData, stepObject);
         finishCircuit(contentCol, showVCData);
     }
 }
 
-function prepareAllValuesMap(vcData, showVCData) {
-    let zWithTotal = vcData.noFormat().oldNames[0][0] + "_{" + languageManager.currentLang.totalSuffix + "}";  // Only first letter Z/R/L/C
+function prepareAllValuesMap(stepObject, showVCData) {
+   // TODO das brauche ich glaub nicht mehr
+    /*let zWithTotal = "TODO Something total old"; //vcData.noFormat().oldNames[0][0] + "_{" + languageManager.currentLang.totalSuffix + "}";  // Only first letter Z/R/L/C
     if (showVCData) {
-        let uWithTotal = vcData.noFormat().oldNames[1][0] + "_{" + languageManager.currentLang.totalSuffix + "}";  // Only first letter U/V
-        let iWithTotal = vcData.noFormat().oldNames[2][0] + "_{" + languageManager.currentLang.totalSuffix + "}";  // Only first letter I
-        state.allValuesMap.set(zWithTotal, vcData.noFormat().convOldValue[0]);  // total R/L/C (not complex), but maybe sometime
-        state.allValuesMap.set(uWithTotal, vcData.noFormat().oldValues[1]);  // total U
-        state.allValuesMap.set(iWithTotal, vcData.noFormat().oldValues[2]);  // total I
+        let uWithTotal = "";//vcData.noFormat().oldNames[1][0] + "_{" + languageManager.currentLang.totalSuffix + "}";  // Only first letter U/V
+        let iWithTotal = "";//vcData.noFormat().oldNames[2][0] + "_{" + languageManager.currentLang.totalSuffix + "}";  // Only first letter I
+        state.allValuesMap.set(zWithTotal, "TODO");//vcData.noFormat().convOldValue[0]);  // total R/L/C (not complex), but maybe sometime
+        state.allValuesMap.set(uWithTotal, "TODO");//vcData.noFormat().oldValues[1]);  // total U
+        state.allValuesMap.set(iWithTotal, "TODO");//vcData.noFormat().oldValues[2]);  // total I
     } else {
-        state.allValuesMap.set(zWithTotal, vcData.noFormat().convOldValue[0]);  // total R/L/C (not complex)
-    }
+        state.allValuesMap.set(zWithTotal, "TODO");//vcData.noFormat().convOldValue[0]);  // total R/L/C (not complex)
+    }*/
     // Remove null values
     for (let k of state.allValuesMap.keys()) {
-        if (k === null)
+        if (k === null || k === undefined || k === "")
             state.allValuesMap.delete(k);
     }
     // Sort by key names
     state.allValuesMap = new Map([...state.allValuesMap.entries()].sort());
 }
 
-function addSolutionsButton(showVCData, vcData) {
+function addSolutionsButton(showVCData, stepObject) {
+    // TODO Refactor
     const solBtnContainer = createSolutionsBtnContainer();
     const solBtn = createSolutionsBtn();
     addBtnToContainer(solBtnContainer, solBtn);
-    prepareAllValuesMap(vcData, showVCData);
+    prepareAllValuesMap(stepObject, showVCData);
     let table = generateSolutionsTable(showVCData);
 
     let originalStep0Svg = document.getElementById("svgDiv1");
@@ -687,6 +634,7 @@ function addSolutionsButton(showVCData, vcData) {
     // Adapt svg data
     clonedSvgData.removeChild(clonedSvgData.querySelector("#open-info-gif-btn"));
     clonedSvgData.removeChild(clonedSvgData.querySelector("#toggle-view-1"));
+    // TODO clonedSvgData.remove(clonedSvgData.querySelector(".bounding-box"));
     clonedSvgData.style.width = "";  // let the table adjust itself to the screensize
 
     clonedSvgData.appendChild(table);
@@ -717,12 +665,12 @@ function addSolutionsButton(showVCData, vcData) {
     })
 }
 
-function addFirstVCExplanation(showVCData, vcData) {
+function addFirstVCExplanation(showVCData, stepObject) {
     if (showVCData) {
         const totalCurrentContainer = createTotalCurrentContainer();
         const totalCurrentBtn = createTotalCurrentBtn();
         addBtnToContainer(totalCurrentContainer, totalCurrentBtn);
-        let text = generateTextElement(vcData);
+        let text = generateTextElement(stepObject);
 
         totalCurrentBtn.addEventListener("click", () => {
             if (totalCurrentBtn.textContent === languageManager.currentLang.firstVCStepBtn) {
@@ -745,9 +693,9 @@ function addBtnToContainer(container, element) {
     container.appendChild(element);
 }
 
-function generateTextElement(vcData) {
+function generateTextElement(stepObject) {
     let text = document.createElement("p");
-    text.innerHTML = generateTextForTotalCurrent(vcData);
+    text.innerHTML = generateTextForTotalCurrent(stepObject);
     return text;
 }
 
@@ -756,6 +704,8 @@ function generateZIUArrays() {
     let uMap = new Map();
     let zMap = new Map();
     for (let [key, value] of state.allValuesMap.entries()) {
+        if (key === null) continue;
+        if (key === undefined) continue;
         if (key.startsWith('U') || key.startsWith('V')) {
             uMap.set(key, value);
         } else if (key.startsWith('I')) {

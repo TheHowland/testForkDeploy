@@ -80,6 +80,8 @@ const german = {
         "Bitte w&aumlhle genau 2 Elemente",
     alertCanNotSimplify:
         "Diese Elemente k&oumlnnen nicht vereinfacht werden",
+    alertChooseAtLeastOneElement:
+        "W&aumlhle mindestens ein Element",
 
     // Calculation text
     relationTextParallel:
