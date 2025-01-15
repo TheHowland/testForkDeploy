@@ -1,4 +1,4 @@
-# for lcapy version: 1.24+inskale.0.26
+# for lcapy version: 1.24+inskale.0.27
 from lcapy import Circuit, FileToImpedance, DrawWithSchemdraw
 from lcapy.solution import Solution
 from lcapy.componentRelation import ComponentRelation
@@ -86,6 +86,7 @@ class SolveInUserOrder:
         stepData = sol.exportStepAsDict(newestStep)
         print(stepData)
         self.circuit = newNet
+
         return stepData
 
     def createInitialStep(self) -> ExportDict:
@@ -96,15 +97,13 @@ class SolveInUserOrder:
 
         sol = Solution(self.steps, langSymbols=self.langSymbols)
         stepData = sol.exportStepAsDict("step0")
-        stepData["step"] = "step0"
 
         return stepData
 
     def createCircuitInfo(self) -> str:
-        sol = Solution(self.steps)
-        return sol.exportCircuitInfo("step0", path=self.savePath, filename=self.filename)
+        raise NotImplementedError("Use createStep0() or createInitialStep()")
 
-    def createStep0(self) -> dict:
+    def createStep0(self) -> ExportDict:
         return self.createInitialStep()
 
     def getSolution(self):
