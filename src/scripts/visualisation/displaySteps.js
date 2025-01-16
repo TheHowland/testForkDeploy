@@ -49,17 +49,23 @@ function getNameValueMap(svgDiv) {
     for (let label of labels) {
         let elementId = label.classList[1];
         let element = svgDiv.querySelector(`#${elementId}`);
+        let mjString = element.classList.toString();
         let value = element.classList[0];
         let unit = element.classList[1];
         // Mathjax can not be properly shown here, so do it manually
         // TODO this should be done with mathjax
         if (unit.includes("\\Omega")) {
             unit = unit.replace("\\Omega", "Ω");
-        }
-        if (unit.includes("\\text{")) {
+        } else if (unit.includes("\\text{")) {
             unit = unit.replace("\\text{", "");
             unit = unit.replace("}", "");
+        } else {
+            // unit is prefix
+            let prefix = unit;
+            unit = element.classList[2];
+            unit = `${prefix}${unit}`;
         }
+        // TODO element mj string
         nameValueMap.set(element.id, `${value} ${unit}`);
     }
     return nameValueMap;
