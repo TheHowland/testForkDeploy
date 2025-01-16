@@ -1,23 +1,25 @@
-// Generates and appends a paragraph describing the resistance simplification step
+// Generates a paragraph describing the resistance simplification step
 function generateTextForZ(stepObject) {
-    let relation = stepObject.componentsRelation;//data.noFormat().relation;
+    let relation = stepObject.componentsRelation;
     const paragraphElement = document.createElement('p');
     paragraphElement.classList.add("explText");
     const firstPart = getElementsAndRelationDescription(stepObject);
 
     // Calculation descriptions are swapped for R/L and C
-    if (stepObject.componentTypes === "R" || stepObject.componentTypes === "L") {
+    if (state.step0Data.componentTypes === "R" || state.step0Data.componentTypes === "L") {
         if (relation === "series") {
             paragraphElement.innerHTML = firstPart + getAdditionCalculation(stepObject)
         } else if (relation === "parallel") {
             paragraphElement.innerHTML = firstPart + getReciprocialCalculation(stepObject)
         }
-    } else if (stepObject.componentTypes === "C") {
+    } else if (state.step0Data.componentTypes === "C") {
         if (relation === "parallel") {
             paragraphElement.innerHTML = firstPart + getAdditionCalculation(stepObject);
         } else if (relation === "series") {
             paragraphElement.innerHTML = firstPart + getReciprocialCalculation(stepObject);
         }
+    } else {
+        console.log("No component type found: ", state.step0Data.componentTypes);
     }
     return paragraphElement;
 }
@@ -64,33 +66,46 @@ function getRelationText(stepObject) {
 
 function getElementsAndRelationDescription(stepObject) {
     let relationText = getRelationText(stepObject);
-    return `TODO`; /*
-            ${languageManager.currentLang.calcBeforeFirstElement} ${data.inline().name1} ${languageManager.currentLang.calcBetweenElements} ${data.inline().name2}<br>
-            ${languageManager.currentLang.calcAfterSecondElement} ${data.inline().newName} ${languageManager.currentLang.calcAfterSimplifiedElement}<br>
-            <br>
-            ${data.inline().name1}&nbsp= ${data.inline().value1}<br>
-            ${data.inline().name2}&nbsp= ${data.inline().value2}<br>
-            <br>
-            ${relationText}<br>
-            <br>`;*/
+    let str = `${languageManager.currentLang.theElements}<br>`;
+    stepObject.components.forEach((component) => {str+= `\\(${component.Z.name}\\) `;});
+    str += `<br>${languageManager.currentLang.areSimplifiedTo} \\(${stepObject.simplifiedTo.Z.name}\\)<br><br>`;
+    stepObject.components.forEach((component) => {str+= `\\(${component.Z.name}\\)&nbsp= \\(${component.hasConversion ? component.Z.val : component.Z.complexVal}\\)<br>`;});
+    str += `<br>${relationText}<br>`;
+    return str;
 }
 
-function getReciprocialCalculation(data) {
+function getReciprocialCalculation(stepObject) {
     // creates 1/X = 1/X1 + 1/X2
-    return `TODO`; /*$$\\frac{1}{${data.noFormat().newName}} = \\frac{1}{${data.noFormat().name1}} + \\frac{1}{${data.noFormat().name2}}$$
-             $$\\frac{1}{${data.noFormat().newName}} = \\frac{1}{${data.noFormat().value1}} + \\frac{1}{${data.noFormat().value2}}$$
-             $$\\frac{1}{${data.noFormat().newName}} = \\frac{1}{${data.noFormat().result}}$$
-             <br>
-             $$${data.noFormat().newName} = ${data.noFormat().result}$$
-            `;*/
+    let str = "";
+    str += `$$\\frac{1}{${stepObject.simplifiedTo.Z.name}} = `;
+    stepObject.components.forEach((component) => {str+= `\\frac{1}{${component.Z.name}} + `});
+    str = str.slice(0, -3);  // remove last +
+    str += `$$`;
+    str += `$$\\frac{1}{${stepObject.simplifiedTo.Z.name}} = `;
+    stepObject.components.forEach((component) => {str+= `\\frac{1}{${component.hasConversion ? component.Z.val : component.Z.complexVal}} + `});
+    str = str.slice(0, -3);  // remove last +
+    str += `$$`;
+    str += `$$\\frac{1}{${stepObject.simplifiedTo.Z.name}} = \\frac{1}{${stepObject.simplifiedTo.hasConversion ? stepObject.simplifiedTo.Z.val : stepObject.simplifiedTo.Z.complexVal}}$$ <br>`;
+    // No need for '$$', inline is ok
+    str += `\\(${stepObject.simplifiedTo.Z.name} = ${stepObject.simplifiedTo.hasConversion ? stepObject.simplifiedTo.Z.val : stepObject.simplifiedTo.Z.complexVal}\\) <br>`;
+    return str;
 }
 
 function getAdditionCalculation(stepObject) {
     // creates X = X1 + X2
-    return `TODO`; /*$$${data.noFormat().newName} = ${data.noFormat().name1} + ${data.noFormat().name2}$$
-             $$${data.noFormat().newName} = ${data.noFormat().value1} + ${data.noFormat().value2}$$
-             $$${data.noFormat().newName} = ${data.noFormat().result}$$
-            `;*/
+    // Use block MJ ('$$') to make sure formulas are horizontally scrollable if too long
+    let str = "";
+    str += `$$${stepObject.simplifiedTo.Z.name} = `;
+    stepObject.components.forEach((component) => {str+= `${component.Z.name} + `});
+    str = str.slice(0, -3);  // remove last +
+    str += `$$`;
+    str += `$$${stepObject.simplifiedTo.Z.name} = `;
+    stepObject.components.forEach((component) => {str+= `${component.hasConversion ? component.Z.val : component.Z.complexVal} + `});
+    str = str.slice(0, -3);  // remove last +
+    str += `$$`;
+    // No need for '$$', inline is ok
+    str += `\\(${stepObject.simplifiedTo.Z.name} = ${stepObject.simplifiedTo.hasConversion ? stepObject.simplifiedTo.Z.val : stepObject.simplifiedTo.Z.complexVal}\\) <br>`;
+    return str;
 }
 
 function getSeriesVCDescription(stepObject) {

@@ -19,8 +19,6 @@ function display_step(stepObject) {
 
     // Create the texts and buttons for the detailed calculation explanation
     let {stepCalculationText, stepVoltageCurrentText} = generateTexts(stepObject);
-    //let stepCalculationText = "Todo step calc text";
-    //let stepVoltageCurrentText = "Todo step voltage current text";
     checkAndAddExplanationButtons(showVCData, stepCalculationText, contentCol, stepVoltageCurrentText);
 
     // The order of function-calls is important
@@ -47,19 +45,6 @@ function getSource() {
 function getNameValueMap(svgDiv) {
     let nameValueMap = new Map();
     let labels = svgDiv.querySelectorAll(".element-label");
-    // Add Source
-    /*for (let label of labels) {
-        let elementId = label.classList[1];
-        if (elementId.substring(0, 1) === "V") {
-            let source = getSource();
-            if (source.includes("\\text{")) {
-                source = source.replace("\\text{", "");
-                source = source.replace("}", "");
-            }
-            nameValueMap.set(elementId, source);
-        }
-    }*/
-    // Add element values
     labels = [].slice.call(labels, 1);  // Remove source
     for (let label of labels) {
         let elementId = label.classList[1];
@@ -110,7 +95,7 @@ function appendToAllValuesMap(showVCData, stepObject, electricalElements) {
             state.allValuesMap.set(`I${languageManager.currentLang.totalSuffix}`, stepObject.simplifiedTo.I.val);
         }
     } else {
-        // TODO could be removed
+        // TODO could be removed - we don't show substitute circuits alone anymore
         // If voltage/current is not shown, add only the Z values to the map
         // Only add the key if it is not already in the map (example Rs1 will be added with nemName and when used again as name1), we don't want to overwrite it
 
@@ -128,7 +113,6 @@ function appendToAllValuesMap(showVCData, stepObject, electricalElements) {
         }
         state.allValuesMap.set(data.noFormat().newName, explanation);
         */
-
     }
 }
 
@@ -539,6 +523,7 @@ function checkAndAddExplanationButtons(showVoltageButton, stepCalculationText, c
 }
 
 function generateTexts(stepObject) {
+    if (stepObject.step === "step0") return {stepCalculationText: "", stepVoltageCurrentText: ""};
     let stepCalculationText = generateTextForZ(stepObject);
     stepCalculationText.style.color = colors.currentForeground;
 
@@ -643,15 +628,7 @@ function prepareAllValuesMap(stepObject, showVCData) {
     state.allValuesMap = new Map([...state.allValuesMap.entries()].sort());
 }
 
-function addSolutionsButton(showVCData, stepObject) {
-    // TODO Refactor
-    // TODO Sort Uges anders da sonst falsch werte dastehen
-    const solBtnContainer = createSolutionsBtnContainer();
-    const solBtn = createSolutionsBtn();
-    addBtnToContainer(solBtnContainer, solBtn);
-    prepareAllValuesMap(stepObject, showVCData);
-    let table = generateSolutionsTable(showVCData);
-
+function cloneAndAdaptStep0Svg() {
     let originalStep0Svg = document.getElementById("svgDiv1");
     // check if in the original step the names are shown or the values
     let clonedSvgData;
@@ -673,7 +650,16 @@ function addSolutionsButton(showVCData, stepObject) {
         bbox.style.display = "none";
     }
     clonedSvgData.style.width = "";  // let the table adjust itself to the screensize
+    return clonedSvgData;
+}
 
+function addSolutionsButton(showVCData, stepObject) {
+    const solBtnContainer = createSolutionsBtnContainer();
+    const solBtn = createSolutionsBtn();
+    addBtnToContainer(solBtnContainer, solBtn);
+    prepareAllValuesMap(stepObject, showVCData);
+    let table = generateSolutionsTable(showVCData);
+    let clonedSvgData = cloneAndAdaptStep0Svg();
     clonedSvgData.appendChild(table);
 
     if (showVCData) {

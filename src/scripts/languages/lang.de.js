@@ -96,14 +96,10 @@ const german = {
         "U",
     totalSuffix:
         "ges",
-    calcBeforeFirstElement:
+    theElements:
         "Die Elemente",
-    calcBetweenElements:
-        "und",
-    calcAfterSecondElement:
-        "wurden zu",
-    calcAfterSimplifiedElement:
-        "vereinfacht",
+    areSimplifiedTo:
+        "wurden vereinfacht zu",
     calculationHeading:
         "Rechnung",
 

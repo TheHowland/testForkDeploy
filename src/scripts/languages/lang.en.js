@@ -93,14 +93,10 @@ const english = {
         "V",
     totalSuffix:
         "tot",
-    calcBeforeFirstElement:
+    theElements:
         "The elements",
-    calcBetweenElements:
-        "and",
-    calcAfterSecondElement:
+    areSimplifiedTo:
         "are simplified to",
-    calcAfterSimplifiedElement:
-        "",
     calculationHeading:
         "Calculation",
 
