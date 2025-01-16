@@ -46,7 +46,7 @@ function getSource() {
 
 function getNameValueMap(svgDiv) {
     let nameValueMap = new Map();
-    let labels = svgDiv.querySelectorAll(".EL");
+    let labels = svgDiv.querySelectorAll(".element-label");
     // Add Source
     /*for (let label of labels) {
         let elementId = label.classList[1];
@@ -63,8 +63,6 @@ function getNameValueMap(svgDiv) {
     labels = [].slice.call(labels, 1);  // Remove source
     for (let label of labels) {
         let elementId = label.classList[1];
-        // TODO Zs1 vs Rs1
-        elementId = elementId.replace("R", "Z");
         let element = svgDiv.querySelector(`#${elementId}`);
         let value = element.classList[0];
         let unit = element.classList[1];
@@ -86,7 +84,7 @@ function appendToAllValuesMap(showVCData, stepObject, electricalElements) {
     if (showVCData) {
         // If voltage/current is shown, add all Z/R/C/L U and I values to the map from the two elements
         for (let component of stepObject.components) {
-            if (component.Z.name !== null) {
+            if (component.Z.name !== null && component.Z.name !== undefined) {
                 if (component.hasConversion) {
                     state.allValuesMap.set(component.Z.name, component.Z.val);
                 } else {
@@ -99,11 +97,17 @@ function appendToAllValuesMap(showVCData, stepObject, electricalElements) {
         if (onlyOneElementLeft(electricalElements)) {
             if (stepObject.simplifiedTo.hasConversion) {
                 state.allValuesMap.set(stepObject.simplifiedTo.Z.name, stepObject.simplifiedTo.Z.val);
+                // Rges Lges Cges
+                state.allValuesMap.set(`${stepObject.simplifiedTo.Z.name[0]}${languageManager.currentLang.totalSuffix}`, stepObject.simplifiedTo.Z.val);
             } else {
                 state.allValuesMap.set(stepObject.simplifiedTo.Z.name, stepObject.simplifiedTo.Z.complexVal);
+                // Zges
+                state.allValuesMap.set(`Z${languageManager.currentLang.totalSuffix}`, stepObject.simplifiedTo.Z.complexVal);
             }
             state.allValuesMap.set(stepObject.simplifiedTo.U.name, stepObject.simplifiedTo.U.val);
             state.allValuesMap.set(stepObject.simplifiedTo.I.name, stepObject.simplifiedTo.I.val);
+            // Add total current
+            state.allValuesMap.set(`I${languageManager.currentLang.totalSuffix}`, stepObject.simplifiedTo.I.val);
         }
     } else {
         // TODO could be removed
@@ -248,9 +252,7 @@ function addNameValueToggleBtn(svgDiv, nameValueMap) {
     svgDiv.insertAdjacentElement("afterbegin", nameValueToggleBtn);
 }
 
-function toggleNameValue(nameValueToggleBtn, svgDiv, nameValueMap) {
-    console.log("Toggle name value");
-    // Toggle elements name and value in the svg
+function toggleElements(nameValueMap, svgDiv, nameValueToggleBtn) {
     for (let [symbol, value] of nameValueMap.entries()) {
         // get the element label where the parent element has class symbol (e.g. V1/R1/...)
         let childSelectorWithParentClassSymbol = `.${symbol} > *`;
@@ -262,39 +264,69 @@ function toggleNameValue(nameValueToggleBtn, svgDiv, nameValueMap) {
             tspan.innerHTML = tspan.innerHTML.replace(`${value}`, symbol);
         }
     }
+}
 
-    // Toggle voltage/current values in the svg
+function toggleVoltages(svgDiv, nameValueToggleBtn) {
     let voltageLabels = svgDiv.querySelectorAll(".voltage-label");
     for (let voltageLabel of voltageLabels) {
-        let voltageName = voltageLabel.classList[0];
+        let voltageName = voltageLabel.classList[2];
         let voltageValue = state.allValuesMap.get(voltageName);
+        if (voltageValue === null || voltageValue === undefined) continue;
         if (voltageValue.includes("\\text{")) {
             voltageValue = voltageValue.replace("\\text{", "");
             voltageValue = voltageValue.replace("}", "");
         }
-        if (nameValueToggleBtn.innerText === toggleSymbolDefinition.namesShown) {
-            voltageLabel.innerHTML = voltageLabel.innerHTML.replace(voltageName, `${voltageValue}`);
-        } else {
-            voltageLabel.innerHTML = voltageLabel.innerHTML.replace(`${voltageValue}`, voltageName);
-        }
-    }
 
+        let labelText = `${languageManager.currentLang.voltageSymbol}<tspan baseline-shift="sub" font-size="smaller">${languageManager.currentLang.totalSuffix}</tspan>`;
+        if (voltageName === `${languageManager.currentLang.voltageSymbol}${languageManager.currentLang.totalSuffix}`) {
+            if (nameValueToggleBtn.innerText === toggleSymbolDefinition.namesShown) {
+                voltageLabel.innerHTML = voltageLabel.innerHTML.replace(labelText, `${voltageValue}`);
+            } else {
+                voltageLabel.innerHTML = voltageLabel.innerHTML.replace(`${voltageValue}`, labelText);
+            }
+        } else {
+            if (nameValueToggleBtn.innerText === toggleSymbolDefinition.namesShown) {
+                voltageLabel.innerHTML = voltageLabel.innerHTML.replace(voltageName, `${voltageValue}`);
+            } else {
+                voltageLabel.innerHTML = voltageLabel.innerHTML.replace(`${voltageValue}`, voltageName);
+            }
+        }
+
+    }
+}
+
+function toggleCurrents(svgDiv, nameValueToggleBtn) {
     let currentLabels = svgDiv.querySelectorAll(".current-label");
-    if (currentLabels == null) return;
     for (let currentLabel of currentLabels) {
-        let currentName = currentLabel.classList[0];
+        let currentName = currentLabel.classList[2];
         let currentValue = state.allValuesMap.get(currentName);
+        if (currentValue === null || currentValue === undefined) continue;
         if (currentValue.includes("\\text{")) {
             currentValue = currentValue.replace("\\text{", "");
             currentValue = currentValue.replace("}", "");
         }
-        if (nameValueToggleBtn.innerText === toggleSymbolDefinition.namesShown) {
-            currentLabel.innerHTML = currentLabel.innerHTML.replace(currentName, `${currentValue}`);
+
+        let labelText = `I<tspan baseline-shift="sub" font-size="smaller">${languageManager.currentLang.totalSuffix}</tspan>`;
+        if (currentName === `I${languageManager.currentLang.totalSuffix}`) {
+            if (nameValueToggleBtn.innerText === toggleSymbolDefinition.namesShown) {
+                currentLabel.innerHTML = currentLabel.innerHTML.replace(labelText, `${currentValue}`);
+            } else {
+                currentLabel.innerHTML = currentLabel.innerHTML.replace(`${currentValue}`, labelText);
+            }
         } else {
-            currentLabel.innerHTML = currentLabel.innerHTML.replace(`${currentValue}`, currentName);
+            if (nameValueToggleBtn.innerText === toggleSymbolDefinition.namesShown) {
+                currentLabel.innerHTML = currentLabel.innerHTML.replace(currentName, `${currentValue}`);
+            } else {
+                currentLabel.innerHTML = currentLabel.innerHTML.replace(`${currentValue}`, currentName);
+            }
         }
     }
+}
 
+function toggleNameValue(nameValueToggleBtn, svgDiv, nameValueMap) {
+    toggleElements(nameValueMap, svgDiv, nameValueToggleBtn);
+    toggleVoltages(svgDiv, nameValueToggleBtn);
+    toggleCurrents(svgDiv, nameValueToggleBtn);
     // Toggle button icon
     if (nameValueToggleBtn.innerText === toggleSymbolDefinition.namesShown) {
         nameValueToggleBtn.innerText = toggleSymbolDefinition.valuesShown;
@@ -613,6 +645,7 @@ function prepareAllValuesMap(stepObject, showVCData) {
 
 function addSolutionsButton(showVCData, stepObject) {
     // TODO Refactor
+    // TODO Sort Uges anders da sonst falsch werte dastehen
     const solBtnContainer = createSolutionsBtnContainer();
     const solBtn = createSolutionsBtn();
     addBtnToContainer(solBtnContainer, solBtn);
@@ -635,7 +668,10 @@ function addSolutionsButton(showVCData, stepObject) {
     // Adapt svg data
     clonedSvgData.removeChild(clonedSvgData.querySelector("#open-info-gif-btn"));
     clonedSvgData.removeChild(clonedSvgData.querySelector("#toggle-view-1"));
-    // TODO clonedSvgData.remove(clonedSvgData.querySelector(".bounding-box"));
+    let bboxes = clonedSvgData.getElementsByClassName("bounding-box");
+    for (let bbox of bboxes) {
+        bbox.style.display = "none";
+    }
     clonedSvgData.style.width = "";  // let the table adjust itself to the screensize
 
     clonedSvgData.appendChild(table);

@@ -317,6 +317,7 @@ async function createAndShowStep0(circuitMap) {
     obj.__proto__ = Step0Object.prototype;
     state.step0Data = obj;
     state.currentStep = 0;
+    state.allValuesMap.set(`${languageManager.currentLang.voltageSymbol}${languageManager.currentLang.totalSuffix}`, getSource());
     state.currentCircuitShowVC = getCheckBoxValueOrQuickStartDef(circuitMap);
     display_step(state.step0Data);
 }

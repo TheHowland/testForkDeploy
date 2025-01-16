@@ -568,6 +568,22 @@ th, td {
     }
 }
 
+#bootstrap-overrides .current-label {
+    color: red !important;
+    stroke: red !important;
+    fill: red !important;
+    opacity: 0.8 !important;
+    stroke-width: 0;
+}
+
+#bootstrap-overrides .voltage-label {
+    color: #9898ff !important;
+    stroke: #9898ff !important;
+    fill: #9898ff !important;
+    opacity: 0.8 !important;
+    stroke-width: 0;
+}
+
 /* Data Privacy Page */
 #bootstrap-overrides #data-privacy-container {
     background-color: #212529;
