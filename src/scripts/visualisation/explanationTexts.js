@@ -40,14 +40,12 @@ function generateTextForVoltageCurrent(stepObject) {
 }
 
 function generateTextForTotalCurrent(stepObject) {
-    // Todo, maybe this R needs to be changed to Z sometime
-    return `TODO Total Current` /*${languageManager.currentLang.currentCalcHeading} ${data.inline().oldNames[0]}<br>
-                        <br>  
-                        $$I_{${languageManager.currentLang.totalSuffix}} = \\frac{${languageManager.currentLang.voltageSymbol}_{${languageManager.currentLang.totalSuffix}}}{R_{${languageManager.currentLang.totalSuffix}}}$$
-                        $$I_{${languageManager.currentLang.totalSuffix}} = ${data.noFormat().oldNames[2]} = \\frac{${data.noFormat().oldNames[1]}}{${data.noFormat().oldNames[0]}}$$
-                        $$= \\frac{${data.noFormat().oldValues[1]}}{${data.noFormat().oldValues[0]}}$$
-                        $$= ${data.noFormat().oldValues[2]}$$
-                        <br>`;*/
+    let str = "";
+    str += `${languageManager.currentLang.currentCalcHeading} \\(${stepObject.simplifiedTo.Z.name}\\)<br>`;
+    str += `$$I_{${languageManager.currentLang.totalSuffix}} = \\frac{${languageManager.currentLang.voltageSymbol}_{${languageManager.currentLang.totalSuffix}}}{${stepObject.simplifiedTo.Z.name}}$$`
+    str += `$$I_{${languageManager.currentLang.totalSuffix}} = \\frac{${stepObject.simplifiedTo.U.val}}{${stepObject.getZVal(stepObject.simplifiedTo)}}$$`;
+    str += `$$I_{${languageManager.currentLang.totalSuffix}} = ${stepObject.simplifiedTo.I.val}$$`;
+    return str;
 }
 
 function getRelationText(stepObject) {
@@ -69,25 +67,26 @@ function getElementsAndRelationDescription(stepObject) {
     let str = `${languageManager.currentLang.theElements}<br>`;
     stepObject.components.forEach((component) => {str+= `\\(${component.Z.name}\\) `;});
     str += `<br>${languageManager.currentLang.areSimplifiedTo} \\(${stepObject.simplifiedTo.Z.name}\\)<br><br>`;
-    stepObject.components.forEach((component) => {str+= `\\(${component.Z.name}\\)&nbsp= \\(${component.hasConversion ? component.Z.val : component.Z.complexVal}\\)<br>`;});
+    stepObject.components.forEach((component) => {str+= `\\(${component.Z.name}\\)&nbsp= \\(${stepObject.getZVal(component)}\\)<br>`;});
     str += `<br>${relationText}<br>`;
     return str;
 }
 
 function getReciprocialCalculation(stepObject) {
     // creates 1/X = 1/X1 + 1/X2
+    // Use block MJ ('$$') to make sure formulas are horizontally scrollable if too long
     let str = "";
     str += `$$\\frac{1}{${stepObject.simplifiedTo.Z.name}} = `;
     stepObject.components.forEach((component) => {str+= `\\frac{1}{${component.Z.name}} + `});
     str = str.slice(0, -3);  // remove last +
     str += `$$`;
     str += `$$\\frac{1}{${stepObject.simplifiedTo.Z.name}} = `;
-    stepObject.components.forEach((component) => {str+= `\\frac{1}{${component.hasConversion ? component.Z.val : component.Z.complexVal}} + `});
+    stepObject.components.forEach((component) => {str+= `\\frac{1}{${stepObject.getZVal(component)}} + `});
     str = str.slice(0, -3);  // remove last +
     str += `$$`;
-    str += `$$\\frac{1}{${stepObject.simplifiedTo.Z.name}} = \\frac{1}{${stepObject.simplifiedTo.hasConversion ? stepObject.simplifiedTo.Z.val : stepObject.simplifiedTo.Z.complexVal}}$$ <br>`;
+    str += `$$\\frac{1}{${stepObject.simplifiedTo.Z.name}} = \\frac{1}{${stepObject.getZVal(stepObject.simplifiedTo)}}$$ <br>`;
     // No need for '$$', inline is ok
-    str += `\\(${stepObject.simplifiedTo.Z.name} = ${stepObject.simplifiedTo.hasConversion ? stepObject.simplifiedTo.Z.val : stepObject.simplifiedTo.Z.complexVal}\\) <br>`;
+    str += `\\(${stepObject.simplifiedTo.Z.name} = ${stepObject.getZVal(stepObject.simplifiedTo)}\\) <br>`;
     return str;
 }
 
@@ -100,65 +99,70 @@ function getAdditionCalculation(stepObject) {
     str = str.slice(0, -3);  // remove last +
     str += `$$`;
     str += `$$${stepObject.simplifiedTo.Z.name} = `;
-    stepObject.components.forEach((component) => {str+= `${component.hasConversion ? component.Z.val : component.Z.complexVal} + `});
+    stepObject.components.forEach((component) => {str+= `${stepObject.getZVal(component)} + `});
     str = str.slice(0, -3);  // remove last +
     str += `$$`;
     // No need for '$$', inline is ok
-    str += `\\(${stepObject.simplifiedTo.Z.name} = ${stepObject.simplifiedTo.hasConversion ? stepObject.simplifiedTo.Z.val : stepObject.simplifiedTo.Z.complexVal}\\) <br>`;
+    str += `\\(${stepObject.simplifiedTo.Z.name} = ${stepObject.getZVal(stepObject.simplifiedTo)}\\) <br>`;
     return str;
 }
 
 function getSeriesVCDescription(stepObject) {
-    return `TODO` /*${languageManager.currentLang.currentCalcHeading} ${data.inline().oldNames[0]}<br>
-            <br>
-            $$${data.noFormat().oldNames[2]} = \\frac{${data.noFormat().oldNames[1]}}{${data.noFormat().oldNames[0]}}$$
-            $$= \\frac{${data.noFormat().oldValues[1]}}{${data.noFormat().oldValues[0]}}$$
-            $$= ${data.noFormat().oldValues[2]}$$
-            <br>
-            ${languageManager.currentLang.relationTextSeries}.<br>
-            ${languageManager.currentLang.currentStaysTheSame}.<br>
-            $$${data.noFormat().oldNames[2]} = ${data.noFormat().names1[2]} = ${data.noFormat().names2[2]}$$
-            $$= ${data.noFormat().oldValues[2]}$$
-            <br>
-            ${languageManager.currentLang.voltageSplits}.<br>
-            $$${data.noFormat().names1[1]} = ?$$
-            $$${data.noFormat().names2[1]} = ?$$
-            <br>
-            $$${data.noFormat().names1[1]} = ${data.noFormat().names1[0]} \\cdot  ${data.noFormat().names1[2]}$$
-            $$= ${data.noFormat().values1[0]} \\cdot ${data.noFormat().values1[2]}$$
-            $$= ${data.noFormat().values1[1]}$$
-            <br>
-            $$${data.noFormat().names2[1]} = ${data.noFormat().names2[0]} \\cdot  ${data.noFormat().names2[2]}$$
-            $$= ${data.noFormat().values2[0]} \\cdot ${data.noFormat().values2[2]}$$
-            $$= ${data.noFormat().values2[1]}$$
-            <br>
-        `;*/
+    let str = "";
+    // Calculate current
+    str += `${languageManager.currentLang.currentCalcHeading} \\(${stepObject.simplifiedTo.Z.name}\\)<br>`;
+    str += `$$${stepObject.simplifiedTo.I.name} = \\frac{${stepObject.simplifiedTo.U.name}}{${stepObject.simplifiedTo.Z.name}}$$`;
+    str += `$$${stepObject.simplifiedTo.I.name} = \\frac{${stepObject.simplifiedTo.U.val}}{${stepObject.getZVal(stepObject.simplifiedTo)}}$$`;
+    str += `$$${stepObject.simplifiedTo.I.name} = ${stepObject.simplifiedTo.I.val}$$<br>`;
+    // Text
+    str += `${languageManager.currentLang.relationTextSeries}.<br>`;
+    str += `${languageManager.currentLang.currentStaysTheSame}.<br>`;
+    str += `$$${stepObject.simplifiedTo.I.name} = `;
+    stepObject.components.forEach((component) => {str+= `${component.I.name} = `});
+    str = str.slice(0, -3);  // remove last =
+    str += `$$`;
+    str += `$$= ${stepObject.simplifiedTo.I.val}$$`;
+    // Voltage split
+    str += `<br>${languageManager.currentLang.voltageSplits}.<br>`;
+    stepObject.components.forEach((component) => {
+        str += `$$${component.U.name} = ?$$`;
+    });
+    str += `<br>`;
+    // Voltage calculation
+    stepObject.components.forEach((component) => {
+        str += `$$${component.U.name} = ${component.Z.name} \\cdot  ${component.I.name}$$`;
+        str += `$$= ${stepObject.getZVal(stepObject.simplifiedTo)} \\cdot ${component.I.val}$$`;
+        str += `$$= ${component.U.val}$$<br>`;
+    });
+    return str;
 }
 
 function getParallelVCDescription(stepObject) {
-    return `TODO` /*
-            ${languageManager.currentLang.currentCalcHeading} ${data.inline().oldNames[0]}<br>
-            <br>
-            $$${data.noFormat().oldNames[2]} = \\frac{${data.noFormat().oldNames[1]}}{${data.noFormat().oldNames[0]}}$$
-            $$= \\frac{${data.noFormat().oldValues[1]}}{${data.noFormat().oldValues[0]}}$$
-            $$= ${data.noFormat().oldValues[2]}$$
-            <br>
-            ${languageManager.currentLang.relationTextParallel}.<br>
-            ${languageManager.currentLang.voltageStaysTheSame}.<br>
-            $$${data.noFormat().oldNames[1]} = ${data.noFormat().names1[1]} = ${data.noFormat().names2[1]}$$
-            $$= ${data.noFormat().oldValues[1]}$$
-            <br>
-            ${languageManager.currentLang.currentSplits}.<br>
-            $$${data.noFormat().names1[2]} = ?$$
-            $$${data.noFormat().names2[2]} = ?$$
-            <br>
-            $$${data.noFormat().names1[2]} = \\frac{${data.noFormat().names1[1]}}{${data.noFormat().names1[0]}}$$
-            $$= \\frac{${data.noFormat().values1[1]}}{${data.noFormat().values1[0]}}$$
-            $$= ${data.noFormat().values1[2]}$$
-            <br>
-            $$${data.noFormat().names2[2]} = \\frac{${data.noFormat().names2[1]}}{${data.noFormat().names2[0]}}$$
-            $$= \\frac{${data.noFormat().values2[1]}}{${data.noFormat().values2[0]}}$$
-            $$= ${data.noFormat().values2[2]}$$
-            <br>
-        `;*/
+    let str = "";
+    // Calculate current
+    str += `${languageManager.currentLang.currentCalcHeading} \\(${stepObject.simplifiedTo.Z.name}\\)<br>`;
+    str += `$$${stepObject.simplifiedTo.I.name} = \\frac{${stepObject.simplifiedTo.U.name}}{${stepObject.simplifiedTo.Z.name}}$$`;
+    str += `$$${stepObject.simplifiedTo.I.name} = \\frac{${stepObject.simplifiedTo.U.val}}{${stepObject.getZVal(stepObject.simplifiedTo)}}$$`;
+    str += `$$${stepObject.simplifiedTo.I.name} = ${stepObject.simplifiedTo.I.val}$$<br>`;
+    // Text
+    str += `${languageManager.currentLang.relationTextParallel}.<br>`;
+    str += `${languageManager.currentLang.voltageStaysTheSame}.<br>`;
+    str += `$$${stepObject.simplifiedTo.U.name} = `;
+    stepObject.components.forEach((component) => {str+= `${component.U.name} = `});
+    str = str.slice(0, -3);  // remove last =
+    str += `$$`;
+    str += `$$= ${stepObject.simplifiedTo.U.val}$$`;
+    // Current split
+    str += `<br>${languageManager.currentLang.currentSplits}.<br>`;
+    stepObject.components.forEach((component) => {
+        str += `$$${component.I.name} = ?$$`;
+    });
+    str += `<br>`;
+    // Current calculation
+    stepObject.components.forEach((component) => {
+        str += `$$${component.I.name} = \\frac{${component.U.name}}{${component.Z.name}}$$`;
+        str += `$$= \\frac{${component.U.val}}{${stepObject.getZVal(component)}}$$`;
+        str += `$$= ${component.I.val}$$<br>`;
+    });
+    return str;
 }

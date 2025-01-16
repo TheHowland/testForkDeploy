@@ -5,6 +5,10 @@ class StepObject {
     componentsRelation = ""
     components = []  // Class component
     svgData = ""
+
+    getZVal(component) {
+        return component.hasConversion ? component.Z.val : component.Z.complexVal
+    }
 }
 
 class component {
