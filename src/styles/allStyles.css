@@ -240,9 +240,10 @@ img {
 }
 
 mjx-container mjx-c::before {
-    will-change: opacity;
-    padding-top: 20px !important;
-    padding-bottom: 5px !important;
+    /* MathJax Display Bug, maybe try 4.0 or newer versions */
+    /* will-change: opacity; */
+  /*  padding-top: 20px !important;*/
+  /*  padding-bottom: 5px !important;*/
 }
 
 foreignObject {

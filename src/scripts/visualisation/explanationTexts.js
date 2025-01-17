@@ -6,7 +6,7 @@ function generateTextForZ(stepObject) {
     const firstPart = getElementsAndRelationDescription(stepObject);
 
     // Calculation descriptions are swapped for R/L and C
-    if (state.step0Data.componentTypes === "R" || state.step0Data.componentTypes === "L") {
+    /*if (state.step0Data.componentTypes === "R" || state.step0Data.componentTypes === "L") {
         if (relation === "series") {
             paragraphElement.innerHTML = firstPart + getAdditionCalculation(stepObject)
         } else if (relation === "parallel") {
@@ -18,7 +18,7 @@ function generateTextForZ(stepObject) {
         } else if (relation === "series") {
             paragraphElement.innerHTML = firstPart + getReciprocialCalculation(stepObject);
         }
-    } else if (state.step0Data.componentTypes === "RLC") {
+    } else if (state.step0Data.componentTypes === "RLC") */ if (true) {
         // This can still be R, L, C, RC, RL, LC, RLC, needs to be checked
         if (relation === "series") {
             paragraphElement.innerHTML = firstPart + getComplexSeriesCalculation(stepObject)
@@ -51,11 +51,11 @@ function getComplexSeriesCalculation(stepObject) {
         // Für Rs muss nichts mehr gemacht werden, weiter gehts
         // Darstellung Z
         str += `Komplexer Widerstand<br>`;
-        str += `$$Z_{cplx} = R - j \\cdot X_{C}$$`;
-        str += `$$Z_{cplx} = ${stepObject.components[0].Z.val} - j \\cdot ${stepObject.components[1].Z.complexVal}$$<br>`;
+        str += `$$\\underline{Z} = R - j \\cdot X_{C}$$`;
+        str += `$$\\underline{Z} = ${stepObject.components[0].Z.val} - j \\cdot ${stepObject.components[1].Z.complexVal}$$<br>`;
         // Betrag
         str += `Betrag des komplexen Widerstands<br>`;
-        str += `$$|Z_{cplx}| = Z = \\sqrt{R^2 + Xc^2}$$`;
+        str += `$$|\\underline{Z}| = Z = \\sqrt{R^2 + Xc^2}$$`;
         str += `$$Z = \\sqrt{${stepObject.components[0].Z.val}^2 + ${stepObject.components[1].Z.complexVal}^2}$$`;
         str += `$$Z = ${Math.sqrt((stepObject.components[0].Z.val)^2 + (stepObject.components[1].Z.complexVal)^2)}$$<br>`;
     }
