@@ -18,10 +18,53 @@ function generateTextForZ(stepObject) {
         } else if (relation === "series") {
             paragraphElement.innerHTML = firstPart + getReciprocialCalculation(stepObject);
         }
+    } else if (state.step0Data.componentTypes === "RLC") {
+        // This can still be R, L, C, RC, RL, LC, RLC, needs to be checked
+        if (relation === "series") {
+            paragraphElement.innerHTML = firstPart + getComplexSeriesCalculation(stepObject)
+        } else if (relation === "parallel") {
+            paragraphElement.innerHTML = firstPart + getComplexParallelCalculation(stepObject)
+        }
     } else {
         console.log("No component type found: ", state.step0Data.componentTypes);
     }
     return paragraphElement;
+}
+
+function getComplexSeriesCalculation(stepObject) {
+    let str = "";
+    let stepComponentTypes = stepObject.getComponentTypes();
+    if (stepComponentTypes === "R") return getAdditionCalculation(stepObject);
+    if (stepComponentTypes === "L") return getAdditionCalculation(stepObject);
+    if (stepComponentTypes === "C") return getReciprocialCalculation(stepObject);
+    if (stepComponentTypes === "RC") {
+        // Komponenten wurden bereits benannt und mit Werten dargestellt.
+        // Für Cs muss man jetzt die komplexen werte ausrechnen
+        str += `Blindwiderstand für Kondensator<br>`;
+        for (let component of stepObject.components) {
+            if (component.Z.name.includes("C")) {
+                str += `$$X_{${component.Z.name}} = \\frac{1}{2\\pi f C}$$`;
+                str += `$$X_{${component.Z.name}} = \\frac{1}{2\\pi \\cdot 50Hz \\cdot ${component.Z.val}}$$`;  // Z.val because we know it's only a C
+                str += `$$X_{${component.Z.name}} = ${component.Z.complexVal}$$<br>`;  // TODO this needs to be the correct value without j
+            }
+        }
+        // Für Rs muss nichts mehr gemacht werden, weiter gehts
+        // Darstellung Z
+        str += `Komplexer Widerstand<br>`;
+        str += `$$Z_{cplx} = R - j \\cdot X_{C}$$`;
+        str += `$$Z_{cplx} = ${stepObject.components[0].Z.val} - j \\cdot ${stepObject.components[1].Z.complexVal}$$<br>`;
+        // Betrag
+        str += `Betrag des komplexen Widerstands<br>`;
+        str += `$$|Z_{cplx}| = Z = \\sqrt{R^2 + Xc^2}$$`;
+        str += `$$Z = \\sqrt{${stepObject.components[0].Z.val}^2 + ${stepObject.components[1].Z.complexVal}^2}$$`;
+        str += `$$Z = ${Math.sqrt((stepObject.components[0].Z.val)^2 + (stepObject.components[1].Z.complexVal)^2)}$$<br>`;
+    }
+    return str;
+}
+
+function getComplexParallelCalculation(stepObject) {
+    console.error("Complex parallel calculation not implemented yet");
+    return "TODO";
 }
 
 function generateTextForVoltageCurrent(stepObject) {
