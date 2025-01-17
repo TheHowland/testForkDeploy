@@ -27,14 +27,20 @@ async function main() {
     });
     disableStartBtnAndSimplifierLink();
 
-    /*
     // set preferred color scheme
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
     document.getElementById("darkmode-switch").checked = prefersDark;
     if (!prefersDark){
         changeToLightMode();
     }
-    */
+
+    var userLang = navigator.language;
+    console.log(userLang);
+    if (userLang === "de-DE" || userLang === "de-AT" || userLang === "de-CH" || userLang === "de"){
+        languageManager.currentLang = german;
+    } else {
+        languageManager.currentLang = english;
+    }
 
     conf = new Configurations();
     await conf.initialize();
