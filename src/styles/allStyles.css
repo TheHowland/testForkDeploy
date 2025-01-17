@@ -245,6 +245,16 @@ mjx-container mjx-c::before {
     padding-bottom: 5px !important;
 }
 
+foreignObject {
+    span {
+        mjx-container {
+            font-size: 95% !important;
+            margin-top: 0 !important;
+            padding-top: 0 !important;
+        }
+    }
+}
+
 mjx-container {
     overflow-x: auto;
     overflow-y: hidden;

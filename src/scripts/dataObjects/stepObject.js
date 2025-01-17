@@ -4,6 +4,7 @@ class StepObject {
     simplifiedTo = {}
     componentsRelation = ""
     components = []  // Class component
+    allComponents = []  // Class component
     svgData = ""
 
     getZVal(component) {

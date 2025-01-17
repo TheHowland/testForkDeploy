@@ -31,6 +31,7 @@ function display_step(stepObject) {
     appendToAllValuesMap(showVCData, stepObject, electricalElements);
     congratsAndVCDisplayIfFinished(electricalElements, contentCol, showVCData, stepObject);
     MathJax.typeset();
+    // ##############################
 }
 
 // ####################################################################################################################
@@ -42,33 +43,17 @@ function getSource() {
     return state.step0Data.source[0].val;
 }
 
-function getNameValueMap(svgDiv) {
-    let nameValueMap = new Map();
+function getElementNameValueMap(svgDiv) {
+    let elementNameValueMap = new Map();
     let labels = svgDiv.querySelectorAll(".element-label");
     labels = [].slice.call(labels, 1);  // Remove source
     for (let label of labels) {
         let elementId = label.classList[1];
         let element = svgDiv.querySelector(`#${elementId}`);
         let mjString = element.classList.toString();
-        let value = element.classList[0];
-        let unit = element.classList[1];
-        // Mathjax can not be properly shown here, so do it manually
-        // TODO this should be done with mathjax
-        if (unit.includes("\\Omega")) {
-            unit = unit.replace("\\Omega", "Ω");
-        } else if (unit.includes("\\text{")) {
-            unit = unit.replace("\\text{", "");
-            unit = unit.replace("}", "");
-        } else {
-            // unit is prefix
-            let prefix = unit;
-            unit = element.classList[2];
-            unit = `${prefix}${unit}`;
-        }
-        // TODO element mj string
-        nameValueMap.set(element.id, `${value} ${unit}`);
+        elementNameValueMap.set(element.id, `${mjString}`);
     }
-    return nameValueMap;
+    return elementNameValueMap;
 }
 
 function appendToAllValuesMap(showVCData, stepObject, electricalElements) {
@@ -213,20 +198,70 @@ function setupSvgDivContainerAndData(svgData) {
     svgDiv.style.width = "350px";
     svgDiv.style.maxWidth = "350px;";
     svgDiv.style.position = "relative";
+
     // Svg manipulation - set width and color for dark mode
     svgData = setSvgColorMode(svgData);
     svgDiv.innerHTML = svgData;
+
+    let elementNameValueMap = getElementNameValueMap(svgDiv);
     hideSvgArrows(svgDiv);
-    if (state.pictureCounter === 1) {
-        addInfoHelpButton(svgDiv);
-    }
-    // Get the names and values map of all the elements in this step
-    let nameValueMap = getNameValueMap(svgDiv);
-    addNameValueToggleBtn(svgDiv, nameValueMap);
+    hideSourceLabel(svgDiv);
+    createMathJaxLabels(svgDiv, elementNameValueMap);
+
+    // SVG Data written, now add eventListeners, only afterward because they would be removed on rewrite of svgData
+    if (state.pictureCounter === 1) addInfoHelpButton(svgDiv);
+    addNameValueToggleBtn(svgDiv, elementNameValueMap);
+
     return svgDiv;
 }
 
-function addNameValueToggleBtn(svgDiv, nameValueMap) {
+function createMathJaxLabels(svgDiv, elementNameValueMap) {
+    // TODO für alle Werte, nicht nur für element-labels
+    // TODO dazu kann ich vielleicht eine ALLVALUESMAP übergeben und das durchgehen
+
+    // TODO bei all values map dann unterschiedung zwischen V und I und R/L/C
+    // für spannung und strom adde ich dann class voltage und current
+
+
+    for (let [symbol, value] of elementNameValueMap) {
+        let text = svgDiv.querySelector(`.${symbol}`);
+        if (text === null) continue;
+
+        // TODO vielleicht kann ich die elemente zu beginn erstellen, muss ich mit Yannick abklären,
+        // TODO dazu brauch ich ganz zu beginn alle werte. Aber nur so macht es Sinn
+        var svgNS = "http://www.w3.org/2000/svg";
+        let foreignObject = document.createElementNS(svgNS,"foreignObject");
+        foreignObject.id = `${symbol}-foreignObject`;
+        foreignObject.classList.add("mathjax-value-label");
+        foreignObject.style.textAlign = "right";
+        foreignObject.style.display = "none";
+        // Make object as small as needed and just show the overflow -> Doesn't block bounding boxes
+        foreignObject.style.direction = "rtl"; // align right formula border to right side = position by top right corner
+        foreignObject.style.overflow = "visible";
+        let width = 1;
+        let height = 1;
+
+        foreignObject.setAttribute("width", `${width}`);
+        foreignObject.setAttribute("height", `${height}`);
+        foreignObject.setAttribute("x", `${parseFloat(text.getAttribute("x")) - 1}`);
+        foreignObject.setAttribute("y", `${parseFloat(text.getAttribute("y")) - 5}`);
+        foreignObject.innerHTML = `<span style="color: white; display: inline-block;">$$${value}$$</span>`;
+
+        // Serialize it this way to ensure that the foreignObject is correctly written as foreignObject and not foreignobject
+        // because if we don't use the XMLSerializer it gets parsed by HTML Parser and the foreignobject is not recognized
+        var serializer = new XMLSerializer();
+        var svgString = serializer.serializeToString(foreignObject);
+        svgDiv.querySelector("svg").innerHTML += svgString;
+    }
+    MathJax.typeset();
+}
+
+function hideSourceLabel(svgDiv) {
+    let sourceLabel = svgDiv.querySelector(".element-label.V1");
+    sourceLabel.style.display = "none";
+}
+
+function addNameValueToggleBtn(svgDiv, elementNameValueMap) {
     const nameValueToggleBtn = document.createElement("button");
     nameValueToggleBtn.type = "button";
     nameValueToggleBtn.id = `toggle-view-${state.pictureCounter}`;
@@ -238,20 +273,35 @@ function addNameValueToggleBtn(svgDiv, nameValueMap) {
     nameValueToggleBtn.style.border = `1px solid ${colors.currentForeground}`;
     nameValueToggleBtn.style.background = "none";
     nameValueToggleBtn.innerText = toggleSymbolDefinition.namesShown;
-    nameValueToggleBtn.onclick = () => {toggleNameValue(nameValueToggleBtn, svgDiv, nameValueMap)};
+    nameValueToggleBtn.onclick = () => {toggleNameValue(nameValueToggleBtn, svgDiv, elementNameValueMap)};
     svgDiv.insertAdjacentElement("afterbegin", nameValueToggleBtn);
 }
 
-function toggleElements(nameValueMap, svgDiv, nameValueToggleBtn) {
-    for (let [symbol, value] of nameValueMap.entries()) {
-        // get the element label where the parent element has class symbol (e.g. V1/R1/...)
-        let childSelectorWithParentClassSymbol = `.${symbol} > *`;
-        let tspan = svgDiv.querySelector(childSelectorWithParentClassSymbol);
-        if (tspan === null) continue;
+function toggleElements(elementNameValueMap, svgDiv, nameValueToggleBtn) {
+    // Toggle all mathjax-value-labels, voltages and currents only if circuit is finished
+    let mathjaxValueLabels = svgDiv.querySelectorAll(".mathjax-value-label");
+    for (let mathjaxValueLabel of mathjaxValueLabels) {
+        if (mathjaxValueLabel.classList.contains("V1")) continue;  // Source label stays hidden
+        // if arrow hidden
+        if (onlyOneElementLeft(getElementsFromSvgContainer(svgDiv))) {
+            if (mathjaxValueLabel.classList.contains("current") || mathjaxValueLabel.classList.contains("voltage")) continue;
+        }
+        // Toggle
         if (nameValueToggleBtn.innerText === toggleSymbolDefinition.namesShown) {
-            tspan.innerHTML = tspan.innerHTML.replace(symbol, `${value}`);
+            mathjaxValueLabel.style.setProperty("display", "block");
         } else {
-            tspan.innerHTML = tspan.innerHTML.replace(`${value}`, symbol);
+            mathjaxValueLabel.style.setProperty("display", "none");
+        }
+    }
+
+    // Toggle all element labels
+    let elementLabels = svgDiv.querySelectorAll(".element-label");
+    for (let elementLabel of elementLabels) {
+        if (elementLabel.classList.contains("V1")) continue;  // Source label stays hidden
+        if (nameValueToggleBtn.innerText === toggleSymbolDefinition.namesShown) {
+            elementLabel.style.setProperty("display", "none");
+        } else {
+            elementLabel.style.setProperty("display", "block");
         }
     }
 }
@@ -313,10 +363,13 @@ function toggleCurrents(svgDiv, nameValueToggleBtn) {
     }
 }
 
-function toggleNameValue(nameValueToggleBtn, svgDiv, nameValueMap) {
-    toggleElements(nameValueMap, svgDiv, nameValueToggleBtn);
-    toggleVoltages(svgDiv, nameValueToggleBtn);
-    toggleCurrents(svgDiv, nameValueToggleBtn);
+function toggleNameValue(nameValueToggleBtn, svgDiv, elementNameValueMap) {
+    toggleElements(elementNameValueMap, svgDiv, nameValueToggleBtn);
+    // TODO Remove this
+    if (onlyOneElementLeft(getElementsFromSvgContainer(svgDiv))) {
+        toggleVoltages(svgDiv, nameValueToggleBtn);
+        toggleCurrents(svgDiv, nameValueToggleBtn);
+    }
     // Toggle button icon
     if (nameValueToggleBtn.innerText === toggleSymbolDefinition.namesShown) {
         nameValueToggleBtn.innerText = toggleSymbolDefinition.valuesShown;
