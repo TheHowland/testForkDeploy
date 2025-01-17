@@ -341,8 +341,29 @@ function getCheckBoxValueOrQuickStartDef(circuitMap) {
     }
 }
 
-function inlineMJ(string) {
-    return `\\(${string}\\)`;
+function setLanguageAndScheme() {
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+    document.getElementById("darkmode-switch").checked = prefersDark;
+    if (!prefersDark) {
+        changeToLightMode();
+    }
+
+    var userLang = navigator.language;
+    console.log(userLang);
+    if (userLang === "de-DE" || userLang === "de-AT" || userLang === "de-CH" || userLang === "de") {
+        languageManager.currentLang = german;
+    } else {
+        languageManager.currentLang = english;
+    }
+}
+
+function modalConfig() {
+    // This is to prevent the focus from staying on the modal when it is closed
+    document.addEventListener('hide.bs.modal', function (event) {
+        if (document.activeElement) {
+            document.activeElement.blur();
+        }
+    });
 }
 
 

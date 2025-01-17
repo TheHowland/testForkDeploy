@@ -17,30 +17,10 @@ let pageManager;
 // The navigation for this website is not via different html files, but by showing and not
 // showing different containers that act as pages
 // #####################################################################################################################
-
 async function main() {
-    // This is to prevent the focus from staying on the modal when it is closed
-    document.addEventListener('hide.bs.modal', function (event) {
-        if (document.activeElement) {
-            document.activeElement.blur();
-        }
-    });
+    modalConfig();
     disableStartBtnAndSimplifierLink();
-
-    // set preferred color scheme
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-    document.getElementById("darkmode-switch").checked = prefersDark;
-    if (!prefersDark){
-        changeToLightMode();
-    }
-
-    var userLang = navigator.language;
-    console.log(userLang);
-    if (userLang === "de-DE" || userLang === "de-AT" || userLang === "de-CH" || userLang === "de"){
-        languageManager.currentLang = german;
-    } else {
-        languageManager.currentLang = english;
-    }
+    setLanguageAndScheme();
 
     conf = new Configurations();
     await conf.initialize();

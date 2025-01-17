@@ -216,6 +216,7 @@ function setupSvgDivContainerAndData(svgData) {
 }
 
 function setTogglesDependingOnState(svgDiv) {
+    // TODO refactor wenn ich alle ströme und spannungslabel auch habe
     if (!state.valuesShown) {
         let mathjaxValueLabels = svgDiv.querySelectorAll(".mathjax-value-label");
         for (let mathjaxValueLabel of mathjaxValueLabels) {
@@ -232,8 +233,25 @@ function setTogglesDependingOnState(svgDiv) {
             if (elementLabel.classList.contains("V1")) continue;  // Source label stays hidden
                 elementLabel.style.setProperty("display", "block");
         }
+        // toggler text already correct
+    } else {
+        let mathjaxValueLabels = svgDiv.querySelectorAll(".mathjax-value-label");
+        for (let mathjaxValueLabel of mathjaxValueLabels) {
+            if (mathjaxValueLabel.classList.contains("V1")) continue;  // Source label stays hidden
+            // if arrow hidden
+            if (onlyOneElementLeft(getElementsFromSvgContainer(svgDiv))) {
+                if (mathjaxValueLabel.classList.contains("current") || mathjaxValueLabel.classList.contains("voltage")) continue;
+            }
+            mathjaxValueLabel.style.setProperty("display", "block");
+        }
+        // Toggle all element labels
+        let elementLabels = svgDiv.querySelectorAll(".element-label");
+        for (let elementLabel of elementLabels) {
+            if (elementLabel.classList.contains("V1")) continue;  // Source label stays hidden
+            elementLabel.style.setProperty("display", "none");
+        }
         let toggler = svgDiv.querySelector(".toggle-view");
-        toggler.innerText = toggleSymbolDefinition.namesShown;
+        toggler.innerText = toggleSymbolDefinition.valuesShown;
     }
 }
 
@@ -267,7 +285,7 @@ function createMathJaxLabels(svgDiv, elementNameValueMap) {
         foreignObject.setAttribute("height", `${height}`);
         foreignObject.setAttribute("x", `${parseFloat(text.getAttribute("x")) - 1}`);
         foreignObject.setAttribute("y", `${parseFloat(text.getAttribute("y")) - 5}`);
-        foreignObject.innerHTML = `<span style="color: white; display: inline-block;">$$${value}$$</span>`;
+        foreignObject.innerHTML = `<span style="color: ${colors.currentForeground}; display: inline-block;">$$${value}$$</span>`;
 
         // Serialize it this way to ensure that the foreignObject is correctly written as foreignObject and not foreignobject
         // because if we don't use the XMLSerializer it gets parsed by HTML Parser and the foreignobject is not recognized
