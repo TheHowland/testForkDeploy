@@ -211,8 +211,30 @@ function setupSvgDivContainerAndData(svgData) {
     // SVG Data written, now add eventListeners, only afterward because they would be removed on rewrite of svgData
     if (state.pictureCounter === 1) addInfoHelpButton(svgDiv);
     addNameValueToggleBtn(svgDiv, elementNameValueMap);
-
+    setTogglesDependingOnState(svgDiv);  // only after toggler was added
     return svgDiv;
+}
+
+function setTogglesDependingOnState(svgDiv) {
+    if (!state.valuesShown) {
+        let mathjaxValueLabels = svgDiv.querySelectorAll(".mathjax-value-label");
+        for (let mathjaxValueLabel of mathjaxValueLabels) {
+            if (mathjaxValueLabel.classList.contains("V1")) continue;  // Source label stays hidden
+            // if arrow hidden
+            if (onlyOneElementLeft(getElementsFromSvgContainer(svgDiv))) {
+                if (mathjaxValueLabel.classList.contains("current") || mathjaxValueLabel.classList.contains("voltage")) continue;
+            }
+            mathjaxValueLabel.style.setProperty("display", "none");
+        }
+        // Toggle all element labels
+        let elementLabels = svgDiv.querySelectorAll(".element-label");
+        for (let elementLabel of elementLabels) {
+            if (elementLabel.classList.contains("V1")) continue;  // Source label stays hidden
+                elementLabel.style.setProperty("display", "block");
+        }
+        let toggler = svgDiv.querySelector(".toggle-view");
+        toggler.innerText = toggleSymbolDefinition.namesShown;
+    }
 }
 
 function createMathJaxLabels(svgDiv, elementNameValueMap) {
@@ -273,11 +295,12 @@ function addNameValueToggleBtn(svgDiv, elementNameValueMap) {
     nameValueToggleBtn.style.border = `1px solid ${colors.currentForeground}`;
     nameValueToggleBtn.style.background = "none";
     nameValueToggleBtn.innerText = toggleSymbolDefinition.namesShown;
-    nameValueToggleBtn.onclick = () => {toggleNameValue(nameValueToggleBtn, svgDiv, elementNameValueMap)};
+    nameValueToggleBtn.onclick = () => {toggleNameValue(nameValueToggleBtn, svgDiv)};
     svgDiv.insertAdjacentElement("afterbegin", nameValueToggleBtn);
 }
 
-function toggleElements(elementNameValueMap, svgDiv, nameValueToggleBtn) {
+function toggleElements() {
+    let svgDiv = document.getElementById("content-col");
     // Toggle all mathjax-value-labels, voltages and currents only if circuit is finished
     let mathjaxValueLabels = svgDiv.querySelectorAll(".mathjax-value-label");
     for (let mathjaxValueLabel of mathjaxValueLabels) {
@@ -287,10 +310,10 @@ function toggleElements(elementNameValueMap, svgDiv, nameValueToggleBtn) {
             if (mathjaxValueLabel.classList.contains("current") || mathjaxValueLabel.classList.contains("voltage")) continue;
         }
         // Toggle
-        if (nameValueToggleBtn.innerText === toggleSymbolDefinition.namesShown) {
-            mathjaxValueLabel.style.setProperty("display", "block");
-        } else {
+        if (state.valuesShown) {
             mathjaxValueLabel.style.setProperty("display", "none");
+        } else {
+            mathjaxValueLabel.style.setProperty("display", "block");
         }
     }
 
@@ -298,10 +321,10 @@ function toggleElements(elementNameValueMap, svgDiv, nameValueToggleBtn) {
     let elementLabels = svgDiv.querySelectorAll(".element-label");
     for (let elementLabel of elementLabels) {
         if (elementLabel.classList.contains("V1")) continue;  // Source label stays hidden
-        if (nameValueToggleBtn.innerText === toggleSymbolDefinition.namesShown) {
-            elementLabel.style.setProperty("display", "none");
-        } else {
+        if (state.valuesShown) {
             elementLabel.style.setProperty("display", "block");
+        } else {
+            elementLabel.style.setProperty("display", "none");
         }
     }
 }
@@ -363,19 +386,27 @@ function toggleCurrents(svgDiv, nameValueToggleBtn) {
     }
 }
 
-function toggleNameValue(nameValueToggleBtn, svgDiv, elementNameValueMap) {
-    toggleElements(elementNameValueMap, svgDiv, nameValueToggleBtn);
+function toggleNameValue(nameValueToggleBtn, svgDiv) {
+    // TODO delete parameter svgDiv
+    toggleElements();
+
+
     // TODO Remove this
-    if (onlyOneElementLeft(getElementsFromSvgContainer(svgDiv))) {
-        toggleVoltages(svgDiv, nameValueToggleBtn);
-        toggleCurrents(svgDiv, nameValueToggleBtn);
+    toggleVoltages(svgDiv, nameValueToggleBtn);
+    toggleCurrents(svgDiv, nameValueToggleBtn);
+
+
+    // Toggle button icons
+    let togglers = document.querySelectorAll(".toggle-view");
+    for (let toggler of togglers) {
+        if (state.valuesShown) {
+            toggler.innerText = toggleSymbolDefinition.namesShown;
+        } else {
+            toggler.innerText = toggleSymbolDefinition.valuesShown;
+        }
     }
-    // Toggle button icon
-    if (nameValueToggleBtn.innerText === toggleSymbolDefinition.namesShown) {
-        nameValueToggleBtn.innerText = toggleSymbolDefinition.valuesShown;
-    } else {
-        nameValueToggleBtn.innerText = toggleSymbolDefinition.namesShown;
-    }
+
+    state.valuesShown = !state.valuesShown;
 }
 
 function getElementsFromSvgContainer(svgContainer) {
@@ -807,7 +838,6 @@ function generateSolutionsTable(showVCData) {
     table.classList.add("table-responsive");
     let isDarkMode = document.getElementById("darkmode-switch").checked;
     let tableData, color;
-    let regex = /[A-Z]s\d*/;  // To differentiate between X1 and Xs1
     if (isDarkMode) {
         tableData = `<table id="solutionsTable" class="table table-dark"><tbody>`;
     } else {
@@ -816,9 +846,11 @@ function generateSolutionsTable(showVCData) {
 
     if (showVCData) {
         let {iArray, uArray, zArray} = generateZIUArrays();
+        let regex = /[A-Z]s\d*/;  // To differentiate between X1 and Xs1 (helper values)
         for (let i = 0; i < zArray.length; i++) {
             if (regex.test(zArray[i][0])) {
-                color = colors.keyGreyedOut;
+                continue; // Remove if you want to show helper values in this table
+                //color = colors.keyGreyedOut;
             } else {
                 color = ((isDarkMode) ? colors.keyLight : colors.keyDark);
             }
@@ -829,6 +861,7 @@ function generateSolutionsTable(showVCData) {
             </tr>`;
         }
     } else {
+        // TODO this could be removed if we always show voltage and current
         for (let [key, value] of state.allValuesMap.entries()) {
             if (regex.test(key)) {
                 color = colors.keyGreyedOut;
