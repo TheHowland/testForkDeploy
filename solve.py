@@ -1,4 +1,4 @@
-# for lcapy version: 1.24+inskale.0.28
+# for lcapy version: 1.24+inskale.0.29
 from lcapy import Circuit, FileToImpedance, DrawWithSchemdraw
 from lcapy.solution import Solution
 from lcapy.componentRelation import ComponentRelation
@@ -37,8 +37,7 @@ class SolveInUserOrder:
         self.langSymbols = langSym
         self.circuit = Circuit(FileToImpedance(os.path.join(filePath, filename)))
         self.steps: list[SolutionStep] = [
-            SolutionStep(self.circuit, [], None, None, None, None,
-                         None)
+            SolutionStep(self.circuit, [], None, None, None, None)
         ]
         self.circuit.namer.reset()
 
@@ -71,12 +70,12 @@ class SolveInUserOrder:
             newNet, newCptName = self.circuit.simplify_N_cpts(self.circuit, cpts)
             self.steps.append(SolutionStep(newNet, cpts=cpts, newCptName=newCptName,
                                            relation=ComponentRelation.series.value,
-                                           solutionText=None, lastStep=None, nextStep=None))
+                                           lastStep=None, nextStep=None))
         elif all(cpt in self.circuit.in_parallel(cpts[0]) for cpt in cpts[1::]):
             newNet, newCptName = self.circuit.simplify_N_cpts(self.circuit, cpts)
             self.steps.append(SolutionStep(newNet, cpts=cpts, newCptName=newCptName,
                                            relation=ComponentRelation.parallel.value,
-                                           solutionText=None, lastStep=None, nextStep=None))
+                                           lastStep=None, nextStep=None))
         else:
             return DictExportBase.emptyExportDict
 
@@ -84,7 +83,7 @@ class SolveInUserOrder:
         newestStep = sol.available_steps[-1]
 
         stepData = sol.exportStepAsDict(newestStep)
-        print(stepData)
+
         self.circuit = newNet
 
         return stepData
@@ -107,5 +106,5 @@ class SolveInUserOrder:
         return self.createInitialStep()
 
     def getSolution(self):
-        return Solution(self.steps)
+        return Solution(self.steps, self.langSymbols)
 
