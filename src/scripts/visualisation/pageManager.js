@@ -24,6 +24,7 @@ class PageManager {
     }
 
     showSelectPage() {
+        state.valuesShown = false; // by default symbols shown
         this.landingPage.style.display = "none";
         this.selectPage.style.display = "block";
         this.simplifierPage.style.display = "none";
