@@ -39,18 +39,17 @@ function display_step(stepObject) {
 // ####################################################################################################################
 
 function getSourceVoltage() {
-    return state.step0Data.source[0].val;
+    return state.step0Data.source.sources.U.val;
 }
 
 function getSourceCurrent() {
-    // TODO adapt
-    // TODO mal minus eins, da in quelle andersrum
-    return state.step0Data.source[0].val;
+    // only to display the value as mathjax, not for calculations (consider the sign "-")
+    return (state.step0Data.source.sources.I.val).replace("-", "");
 }
 
 
 function getAllLabelsMap(stepObject) {
-    // TODO Step0
+    stepObject.__proto__ = StepObject.prototype;
     let elementNameValueMap = new Map();
     if (stepObject.allComponents === null || stepObject.allComponents === undefined) {
         console.error("No components found in stepObject");
@@ -63,7 +62,6 @@ function getAllLabelsMap(stepObject) {
             elementNameValueMap.set(component.I.name, component.I.val);
         }
     }
-    // TODO Add total voltage and total current von Step0 Source
     elementNameValueMap.set(`${languageManager.currentLang.voltageSymbol}${languageManager.currentLang.totalSuffix}`, getSourceVoltage());
     elementNameValueMap.set(`I${languageManager.currentLang.totalSuffix}`, getSourceCurrent());
 
@@ -99,8 +97,10 @@ function addTotalValues(stepObject) {
 }
 
 function appendToAllValuesMap(showVCData, stepObject, electricalElements) {
-    for (let component of stepObject.components) {
-        addComponentValues(component);
+    if (stepObject.step !== "step0") {
+        for (let component of stepObject.components) {
+            addComponentValues(component);
+        }
     }
     if (onlyOneElementLeft(electricalElements)) {
         addTotalValues(stepObject);
@@ -247,7 +247,7 @@ function setTogglesDependingOnState(svgDiv) {
     }
 }
 
-function createForeignObject(symbol, value, labelproperties) {
+function createForeignObject(symbol, value, svgDiv, labelproperties) {
     var svgNS = "http://www.w3.org/2000/svg";
     let foreignObject = document.createElementNS(svgNS, "foreignObject");
     foreignObject.id = `${symbol}-foreignObject`;
@@ -258,7 +258,7 @@ function createForeignObject(symbol, value, labelproperties) {
     }
     foreignObject.style.textAlign = "right";
     let disp;
-    if (state.valuesShown) {
+    if (state.valuesShown && arrowsShown(svgDiv)) {
         disp = "block";
     } else {
         disp = "none";
@@ -280,8 +280,8 @@ function createForeignObject(symbol, value, labelproperties) {
 
 function getVLabelInfo(label) {
     let labelclass = "voltage";
-    let x = parseFloat(label.getAttribute("x")) + 5;
-    let y = parseFloat(label.getAttribute("y")) + 7;
+    let x = parseFloat(label.getAttribute("x"));
+    let y = parseFloat(label.getAttribute("y")) - 2;
     let direction = "ltr";
     let color = "#9898ff";
     let fontSize = "90%";
@@ -291,8 +291,8 @@ function getVLabelInfo(label) {
 
 function getILabelInfo(label) {
     let labelclass = "current";
-    let x = parseFloat(label.getAttribute("x")) + 5;
-    let y = parseFloat(label.getAttribute("y")) + 7;
+    let x = parseFloat(label.getAttribute("x"));
+    let y = parseFloat(label.getAttribute("y")) - 7 ;
     let direction = "rtl";
     let color = "red";
     let fontSize = "90%";
@@ -303,7 +303,7 @@ function getILabelInfo(label) {
 function getElementLabelInfo(label) {
     let labelclass = "";
     let x = parseFloat(label.getAttribute("x")) - 3;
-    let y = parseFloat(label.getAttribute("y")) + 7;
+    let y = parseFloat(label.getAttribute("y")) - 5;
     let direction = "rtl";
     let color = colors.currentForeground;
     let fontSize = "95%";
@@ -328,7 +328,7 @@ function createMathJaxLabels(svgDiv, allLabelsMap) {
             if (label === null) continue;
             labelProperties = getElementLabelInfo(label);
         }
-        const foreignObject = createForeignObject(symbol, value, labelProperties);
+        const foreignObject = createForeignObject(symbol, value, svgDiv, labelProperties);
         // Serialize it this way to ensure that the foreignObject is correctly written as foreignObject and not foreignobject
         // because if we don't use the XMLSerializer it gets parsed by HTML Parser and the foreignobject is not recognized
         var serializer = new XMLSerializer();

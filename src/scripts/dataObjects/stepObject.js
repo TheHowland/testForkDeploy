@@ -8,7 +8,7 @@ class StepObject {
     svgData = ""
 
     getZVal(component) {
-        return component.hasConversion ? component.Z.val : component.Z.complexVal
+        return component.hasConversion ? component.Z.val : component.Z.complexVal;
     }
 
     getComponentTypes() {
@@ -59,8 +59,8 @@ class component {
 
 class Step0Object {
     step = ""
-    source = []  // Class Source
-    components = []  // TODO allComponents
+    source = {}  // Class Source
+    allComponents = []  // Class component
     componentTypes = ""
     svgData = ""
 }
@@ -68,5 +68,5 @@ class Step0Object {
 class Source {
     type = ""
     omega_0 = ""
-    val = ""
+    sources = {} // Class components
 }
