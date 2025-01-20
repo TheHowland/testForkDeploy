@@ -239,28 +239,42 @@ img {
     max-height: 375px;
 }
 
-mjx-container mjx-c::before {
-    /* MathJax Display Bug, maybe try 4.0 or newer versions */
-    /* will-change: opacity; */
-  /*  padding-top: 20px !important;*/
-  /*  padding-bottom: 5px !important;*/
-}
-
-foreignObject {
-    span {
-        mjx-container {
-            font-size: 95% !important;
-            margin-top: 0 !important;
-            padding-top: 0 !important;
-        }
-    }
-}
-
 mjx-container {
     overflow-x: auto;
     overflow-y: hidden;
     padding-top: 5px;
     padding-bottom: 5px;
+}
+
+mjx-container mjx-c::before {
+    /*will-change: opacity;*/
+    /*padding-top: 20px !important;
+    padding-bottom: 5px !important;*/
+}
+
+foreignObject {
+    span {
+        mjx-container {
+            margin-top: 0 !important;
+            /*padding-top: 0 !important;*/
+        }
+    }
+}
+
+#bootstrap-overrides .current-label {
+    color: red !important;
+    stroke: red !important;
+    fill: red !important;
+    opacity: 0.8 !important;
+    stroke-width: 0;
+}
+
+#bootstrap-overrides .voltage-label {
+    color: #9898ff !important;
+    stroke: #9898ff !important;
+    fill: #9898ff !important;
+    opacity: 0.8 !important;
+    stroke-width: 0;
 }
 
 th, td {
@@ -577,22 +591,6 @@ th, td {
             }
         }
     }
-}
-
-#bootstrap-overrides .current-label {
-    color: red !important;
-    stroke: red !important;
-    fill: red !important;
-    opacity: 0.8 !important;
-    stroke-width: 0;
-}
-
-#bootstrap-overrides .voltage-label {
-    color: #9898ff !important;
-    stroke: #9898ff !important;
-    fill: #9898ff !important;
-    opacity: 0.8 !important;
-    stroke-width: 0;
 }
 
 /* Data Privacy Page */

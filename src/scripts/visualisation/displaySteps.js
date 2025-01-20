@@ -37,73 +37,73 @@ function display_step(stepObject) {
 // ####################################################################################################################
 // ############################################# Helper functions #####################################################
 // ####################################################################################################################
-function getSource() {
-    // TODO adapt for current sources or multiple sources
-    // TODO get frequenz
+
+function getSourceVoltage() {
     return state.step0Data.source[0].val;
 }
 
-function getElementNameValueMap(svgDiv) {
+function getSourceCurrent() {
+    // TODO adapt
+    // TODO mal minus eins, da in quelle andersrum
+    return state.step0Data.source[0].val;
+}
+
+
+function getAllLabelsMap(stepObject) {
+    // TODO Step0
     let elementNameValueMap = new Map();
-    let labels = svgDiv.querySelectorAll(".element-label");
-    labels = [].slice.call(labels, 1);  // Remove source
-    for (let label of labels) {
-        let elementId = label.classList[1];
-        let element = svgDiv.querySelector(`#${elementId}`);
-        let mjString = element.classList.toString();
-        elementNameValueMap.set(element.id, `${mjString}`);
+    if (stepObject.allComponents === null || stepObject.allComponents === undefined) {
+        console.error("No components found in stepObject");
+        return elementNameValueMap;
     }
+    for (let component of stepObject.allComponents) {
+        if (component.Z.name !== null && component.Z.name !== undefined) {
+            elementNameValueMap.set(component.Z.name, stepObject.getZVal(component));
+            elementNameValueMap.set(component.U.name, component.U.val);
+            elementNameValueMap.set(component.I.name, component.I.val);
+        }
+    }
+    // TODO Add total voltage and total current von Step0 Source
+    elementNameValueMap.set(`${languageManager.currentLang.voltageSymbol}${languageManager.currentLang.totalSuffix}`, getSourceVoltage());
+    elementNameValueMap.set(`I${languageManager.currentLang.totalSuffix}`, getSourceCurrent());
+
     return elementNameValueMap;
 }
 
-function appendToAllValuesMap(showVCData, stepObject, electricalElements) {
-    if (showVCData) {
-        // If voltage/current is shown, add all Z/R/C/L U and I values to the map from the two elements
-        for (let component of stepObject.components) {
-            if (component.Z.name !== null && component.Z.name !== undefined) {
-                if (component.hasConversion) {
-                    state.allValuesMap.set(component.Z.name, component.Z.val);
-                } else {
-                    state.allValuesMap.set(component.Z.name, component.Z.complexVal);
-                }
-                state.allValuesMap.set(component.U.name, component.U.val);
-                state.allValuesMap.set(component.I.name, component.I.val);
-            }
-        }
-        if (onlyOneElementLeft(electricalElements)) {
-            if (stepObject.simplifiedTo.hasConversion) {
-                state.allValuesMap.set(stepObject.simplifiedTo.Z.name, stepObject.simplifiedTo.Z.val);
-                // Rges Lges Cges
-                state.allValuesMap.set(`${stepObject.simplifiedTo.Z.name[0]}${languageManager.currentLang.totalSuffix}`, stepObject.simplifiedTo.Z.val);
-            } else {
-                state.allValuesMap.set(stepObject.simplifiedTo.Z.name, stepObject.simplifiedTo.Z.complexVal);
-                // Zges
-                state.allValuesMap.set(`Z${languageManager.currentLang.totalSuffix}`, stepObject.simplifiedTo.Z.complexVal);
-            }
-            state.allValuesMap.set(stepObject.simplifiedTo.U.name, stepObject.simplifiedTo.U.val);
-            state.allValuesMap.set(stepObject.simplifiedTo.I.name, stepObject.simplifiedTo.I.val);
-            // Add total current
-            state.allValuesMap.set(`I${languageManager.currentLang.totalSuffix}`, stepObject.simplifiedTo.I.val);
-        }
-    } else {
-        // TODO could be removed - we don't show substitute circuits alone anymore
-        // If voltage/current is not shown, add only the Z values to the map
-        // Only add the key if it is not already in the map (example Rs1 will be added with nemName and when used again as name1), we don't want to overwrite it
-
-        for (let component of stepObject.components) {
-            if (!state.allValuesMap.has(component.Z.name)) state.allValuesMap.set(component.Z.name, component.Z.val);
-        }
-
-        // TODO das fehlt noch
-        // Also explain the simplified component (now only in sub circuits because it needs too much space)
-        /*let explanation = data.noFormat().result;
-        if (data.noFormat().relation === "parallel") {
-             explanation += "\\ (" + data.noFormat().name1 + "\\ || \\ " + data.noFormat().name2 + ")";
+function addComponentValues(component) {
+    if (component.Z.name !== null && component.Z.name !== undefined) {
+        if (component.hasConversion) {
+            state.allValuesMap.set(component.Z.name, component.Z.val);
         } else {
-            explanation += "\\ (" + data.noFormat().name1 + "+" + data.noFormat().name2 + ")";
+            state.allValuesMap.set(component.Z.name, component.Z.complexVal);
         }
-        state.allValuesMap.set(data.noFormat().newName, explanation);
-        */
+        state.allValuesMap.set(component.U.name, component.U.val);
+        state.allValuesMap.set(component.I.name, component.I.val);
+    }
+}
+
+function addTotalValues(stepObject) {
+    if (stepObject.simplifiedTo.hasConversion) {
+        state.allValuesMap.set(stepObject.simplifiedTo.Z.name, stepObject.simplifiedTo.Z.val);
+        // Rges Lges Cges
+        state.allValuesMap.set(`${stepObject.simplifiedTo.Z.name[0]}${languageManager.currentLang.totalSuffix}`, stepObject.simplifiedTo.Z.val);
+    } else {
+        state.allValuesMap.set(stepObject.simplifiedTo.Z.name, stepObject.simplifiedTo.Z.complexVal);
+        // Zges
+        state.allValuesMap.set(`Z${languageManager.currentLang.totalSuffix}`, stepObject.simplifiedTo.Z.complexVal);
+    }
+    state.allValuesMap.set(stepObject.simplifiedTo.U.name, stepObject.simplifiedTo.U.val);
+    state.allValuesMap.set(stepObject.simplifiedTo.I.name, stepObject.simplifiedTo.I.val);
+    // Add total current
+    state.allValuesMap.set(`I${languageManager.currentLang.totalSuffix}`, stepObject.simplifiedTo.I.val);
+}
+
+function appendToAllValuesMap(showVCData, stepObject, electricalElements) {
+    for (let component of stepObject.components) {
+        addComponentValues(component);
+    }
+    if (onlyOneElementLeft(electricalElements)) {
+        addTotalValues(stepObject);
     }
 }
 
@@ -121,7 +121,7 @@ function getFinishMsg(showVCData) {
         // Give a note what voltage is used and that voltage/current is available
         msg = `
         <p>${languageManager.currentLang.msgVoltAndCurrentAvailable}.<br></p>
-        <p>${languageManager.currentLang.msgShowVoltage}<br>$$ ${languageManager.currentLang.voltageSymbol}_{${languageManager.currentLang.totalSuffix}}=${getSource()}$$</p>
+        <p>${languageManager.currentLang.msgShowVoltage}<br>$$ ${languageManager.currentLang.voltageSymbol}_{${languageManager.currentLang.totalSuffix}}=${getSourceVoltage()}$$</p>
         <button class="btn btn-secondary mx-1" id="reset-btn">reset</button>
         <button class="btn btn-primary mx-1 disabled" id="check-btn">check</button>
     `;
@@ -158,7 +158,7 @@ function setupNextElementsContainer(filteredPaths, showVCData) {
 function setupCircuitContainer(stepObject) {
     const circuitContainer = document.createElement('div');
     circuitContainer.classList.add("circuit-container", "row", "justify-content-center", "my-2");
-    const svgContainer = setupSvgDivContainerAndData(stepObject.svgData);
+    const svgContainer = setupSvgDivContainerAndData(stepObject);
     circuitContainer.appendChild(svgContainer)
     return {circuitContainer, svgContainer};
 }
@@ -188,7 +188,8 @@ function addInfoHelpButton(svgDiv) {
     svgDiv.insertAdjacentElement("afterbegin", infoBtn);
 }
 
-function setupSvgDivContainerAndData(svgData) {
+function setupSvgDivContainerAndData(stepObject) {
+    let svgData = stepObject.svgData;
     const svgDiv = document.createElement('div');
     svgDiv.id = `svgDiv${state.pictureCounter}`;
     svgDiv.classList.add("svg-container", "p-2");
@@ -203,90 +204,131 @@ function setupSvgDivContainerAndData(svgData) {
     svgData = setSvgColorMode(svgData);
     svgDiv.innerHTML = svgData;
 
-    let elementNameValueMap = getElementNameValueMap(svgDiv);
-    hideSvgArrows(svgDiv);
+    let allLabelsMap = getAllLabelsMap(stepObject);
     hideSourceLabel(svgDiv);
-    createMathJaxLabels(svgDiv, elementNameValueMap);
+    hideSvgArrows(svgDiv);
+    createMathJaxLabels(svgDiv, allLabelsMap);
 
     // SVG Data written, now add eventListeners, only afterward because they would be removed on rewrite of svgData
     if (state.pictureCounter === 1) addInfoHelpButton(svgDiv);
-    addNameValueToggleBtn(svgDiv, elementNameValueMap);
+    addNameValueToggleBtn(svgDiv, allLabelsMap);
     setTogglesDependingOnState(svgDiv);  // only after toggler was added
     return svgDiv;
 }
 
+function toggleLabelsFromTo(svgDiv, from, to) {
+    let mathjaxValueLabels = svgDiv.querySelectorAll(".mathjax-value-label");
+    for (let mathjaxValueLabel of mathjaxValueLabels) {
+        if (mathjaxValueLabel.classList.contains("V1")) continue;  // Source label stays hidden
+        // if arrow hidden, don't toggle voltage and current labels
+        if (!arrowsShown(svgDiv)) {
+            if (mathjaxValueLabel.classList.contains("current") || mathjaxValueLabel.classList.contains("voltage"))
+                continue;
+        }
+        mathjaxValueLabel.style.setProperty("display", from);
+    }
+    // Toggle all element labels
+    let elementLabels = svgDiv.querySelectorAll(".element-label");
+    for (let elementLabel of elementLabels) {
+        if (elementLabel.classList.contains("V1")) continue;  // Source label stays hidden
+        elementLabel.style.setProperty("display", to);
+    }
+}
+
 function setTogglesDependingOnState(svgDiv) {
-    // TODO refactor wenn ich alle ströme und spannungslabel auch habe
     if (!state.valuesShown) {
-        let mathjaxValueLabels = svgDiv.querySelectorAll(".mathjax-value-label");
-        for (let mathjaxValueLabel of mathjaxValueLabels) {
-            if (mathjaxValueLabel.classList.contains("V1")) continue;  // Source label stays hidden
-            // if arrow hidden
-            if (onlyOneElementLeft(getElementsFromSvgContainer(svgDiv))) {
-                if (mathjaxValueLabel.classList.contains("current") || mathjaxValueLabel.classList.contains("voltage")) continue;
-            }
-            mathjaxValueLabel.style.setProperty("display", "none");
-        }
-        // Toggle all element labels
-        let elementLabels = svgDiv.querySelectorAll(".element-label");
-        for (let elementLabel of elementLabels) {
-            if (elementLabel.classList.contains("V1")) continue;  // Source label stays hidden
-                elementLabel.style.setProperty("display", "block");
-        }
-        // toggler text already correct
+        toggleLabelsFromTo(svgDiv, "none", "block");
+        // Toggle button text already correct
     } else {
-        let mathjaxValueLabels = svgDiv.querySelectorAll(".mathjax-value-label");
-        for (let mathjaxValueLabel of mathjaxValueLabels) {
-            if (mathjaxValueLabel.classList.contains("V1")) continue;  // Source label stays hidden
-            // if arrow hidden
-            if (onlyOneElementLeft(getElementsFromSvgContainer(svgDiv))) {
-                if (mathjaxValueLabel.classList.contains("current") || mathjaxValueLabel.classList.contains("voltage")) continue;
-            }
-            mathjaxValueLabel.style.setProperty("display", "block");
-        }
-        // Toggle all element labels
-        let elementLabels = svgDiv.querySelectorAll(".element-label");
-        for (let elementLabel of elementLabels) {
-            if (elementLabel.classList.contains("V1")) continue;  // Source label stays hidden
-            elementLabel.style.setProperty("display", "none");
-        }
+        toggleLabelsFromTo(svgDiv, "block", "none");
+        // Toggle toggle-button
         let toggler = svgDiv.querySelector(".toggle-view");
         toggler.innerText = toggleSymbolDefinition.valuesShown;
     }
 }
 
-function createMathJaxLabels(svgDiv, elementNameValueMap) {
-    // TODO für alle Werte, nicht nur für element-labels
-    // TODO dazu kann ich vielleicht eine ALLVALUESMAP übergeben und das durchgehen
-
-    // TODO bei all values map dann unterschiedung zwischen V und I und R/L/C
-    // für spannung und strom adde ich dann class voltage und current
-
-
-    for (let [symbol, value] of elementNameValueMap) {
-        let text = svgDiv.querySelector(`.${symbol}`);
-        if (text === null) continue;
-
-        // TODO vielleicht kann ich die elemente zu beginn erstellen, muss ich mit Yannick abklären,
-        // TODO dazu brauch ich ganz zu beginn alle werte. Aber nur so macht es Sinn
-        var svgNS = "http://www.w3.org/2000/svg";
-        let foreignObject = document.createElementNS(svgNS,"foreignObject");
-        foreignObject.id = `${symbol}-foreignObject`;
+function createForeignObject(symbol, value, labelproperties) {
+    var svgNS = "http://www.w3.org/2000/svg";
+    let foreignObject = document.createElementNS(svgNS, "foreignObject");
+    foreignObject.id = `${symbol}-foreignObject`;
+    if (labelproperties.labelclass === "") {
         foreignObject.classList.add("mathjax-value-label");
-        foreignObject.style.textAlign = "right";
-        foreignObject.style.display = "none";
-        // Make object as small as needed and just show the overflow -> Doesn't block bounding boxes
-        foreignObject.style.direction = "rtl"; // align right formula border to right side = position by top right corner
-        foreignObject.style.overflow = "visible";
-        let width = 1;
-        let height = 1;
+    } else {
+        foreignObject.classList.add("mathjax-value-label", labelproperties.labelclass);
+    }
+    foreignObject.style.textAlign = "right";
+    let disp;
+    if (state.valuesShown) {
+        disp = "block";
+    } else {
+        disp = "none";
+    }
+    foreignObject.style.display = disp;
+    // Make object as small as needed and just show the overflow -> Doesn't block bounding boxes
+    foreignObject.style.direction = labelproperties.direction;
+    foreignObject.style.color = labelproperties.color;
+    foreignObject.style.fontSize = labelproperties.fontSize;
+    foreignObject.style.opacity = labelproperties.opacity;
+    foreignObject.style.overflow = "visible";
+    foreignObject.setAttribute("width", "1");
+    foreignObject.setAttribute("height", "1");
+    foreignObject.setAttribute("x", labelproperties.x);
+    foreignObject.setAttribute("y", labelproperties.y);
+    foreignObject.innerHTML = `<span style="display: inline-block;">$$${value}$$</span>`;
+    return foreignObject;
+}
 
-        foreignObject.setAttribute("width", `${width}`);
-        foreignObject.setAttribute("height", `${height}`);
-        foreignObject.setAttribute("x", `${parseFloat(text.getAttribute("x")) - 1}`);
-        foreignObject.setAttribute("y", `${parseFloat(text.getAttribute("y")) - 5}`);
-        foreignObject.innerHTML = `<span style="color: ${colors.currentForeground}; display: inline-block;">$$${value}$$</span>`;
+function getVLabelInfo(label) {
+    let labelclass = "voltage";
+    let x = parseFloat(label.getAttribute("x")) + 5;
+    let y = parseFloat(label.getAttribute("y")) + 7;
+    let direction = "ltr";
+    let color = "#9898ff";
+    let fontSize = "90%";
+    let opacity = "0.8";
+    return {labelclass, x, y, direction, color, fontSize, opacity};
+}
 
+function getILabelInfo(label) {
+    let labelclass = "current";
+    let x = parseFloat(label.getAttribute("x")) + 5;
+    let y = parseFloat(label.getAttribute("y")) + 7;
+    let direction = "rtl";
+    let color = "red";
+    let fontSize = "90%";
+    let opacity = "0.8";
+    return {labelclass, x, y, direction, color, fontSize, opacity};
+}
+
+function getElementLabelInfo(label) {
+    let labelclass = "";
+    let x = parseFloat(label.getAttribute("x")) - 3;
+    let y = parseFloat(label.getAttribute("y")) + 7;
+    let direction = "rtl";
+    let color = colors.currentForeground;
+    let fontSize = "95%";
+    let opacity = "0.8";
+    return {labelclass, x, y, direction, color, fontSize, opacity};
+}
+
+function createMathJaxLabels(svgDiv, allLabelsMap) {
+    for (let [symbol, value] of allLabelsMap) {
+        let label;
+        let labelProperties;
+        if (symbol.includes("V") || symbol.includes("U")) {
+            label = svgDiv.querySelector(`text.voltage-label.${symbol}`);
+            if (label === null) continue;
+            labelProperties = getVLabelInfo(label);
+        } else if (symbol.includes("I")) {
+            label = svgDiv.querySelector(`text.current-label.${symbol}`);
+            if (label === null) continue;
+            labelProperties = getILabelInfo(label);
+        } else {
+            label = svgDiv.querySelector(`.${symbol}`);
+            if (label === null) continue;
+            labelProperties = getElementLabelInfo(label);
+        }
+        const foreignObject = createForeignObject(symbol, value, labelProperties);
         // Serialize it this way to ensure that the foreignObject is correctly written as foreignObject and not foreignobject
         // because if we don't use the XMLSerializer it gets parsed by HTML Parser and the foreignobject is not recognized
         var serializer = new XMLSerializer();
@@ -313,19 +355,18 @@ function addNameValueToggleBtn(svgDiv, elementNameValueMap) {
     nameValueToggleBtn.style.border = `1px solid ${colors.currentForeground}`;
     nameValueToggleBtn.style.background = "none";
     nameValueToggleBtn.innerText = toggleSymbolDefinition.namesShown;
-    nameValueToggleBtn.onclick = () => {toggleNameValue(nameValueToggleBtn, svgDiv)};
+    nameValueToggleBtn.onclick = () => {toggleNameValue()};
     svgDiv.insertAdjacentElement("afterbegin", nameValueToggleBtn);
 }
 
-function toggleElements() {
-    let svgDiv = document.getElementById("content-col");
-    // Toggle all mathjax-value-labels, voltages and currents only if circuit is finished
+function toggleMathJaxFormulas(svgDiv) {
     let mathjaxValueLabels = svgDiv.querySelectorAll(".mathjax-value-label");
     for (let mathjaxValueLabel of mathjaxValueLabels) {
         if (mathjaxValueLabel.classList.contains("V1")) continue;  // Source label stays hidden
-        // if arrow hidden
-        if (onlyOneElementLeft(getElementsFromSvgContainer(svgDiv))) {
-            if (mathjaxValueLabel.classList.contains("current") || mathjaxValueLabel.classList.contains("voltage")) continue;
+        // If arrows are not shown, skip voltage and current labels
+        if (!arrowsShown(svgDiv)) {
+            if (mathjaxValueLabel.classList.contains("current") || mathjaxValueLabel.classList.contains("voltage"))
+                continue;
         }
         // Toggle
         if (state.valuesShown) {
@@ -334,11 +375,13 @@ function toggleElements() {
             mathjaxValueLabel.style.setProperty("display", "block");
         }
     }
+}
 
-    // Toggle all element labels
+function toggleElementLabels(svgDiv) {
     let elementLabels = svgDiv.querySelectorAll(".element-label");
     for (let elementLabel of elementLabels) {
         if (elementLabel.classList.contains("V1")) continue;  // Source label stays hidden
+        // Toggle
         if (state.valuesShown) {
             elementLabel.style.setProperty("display", "block");
         } else {
@@ -347,73 +390,37 @@ function toggleElements() {
     }
 }
 
-function toggleVoltages(svgDiv, nameValueToggleBtn) {
-    let voltageLabels = svgDiv.querySelectorAll(".voltage-label");
-    for (let voltageLabel of voltageLabels) {
-        let voltageName = voltageLabel.classList[2];
-        let voltageValue = state.allValuesMap.get(voltageName);
-        if (voltageValue === null || voltageValue === undefined) continue;
-        if (voltageValue.includes("\\text{")) {
-            voltageValue = voltageValue.replace("\\text{", "");
-            voltageValue = voltageValue.replace("}", "");
-        }
-
-        let labelText = `${languageManager.currentLang.voltageSymbol}<tspan baseline-shift="sub" font-size="smaller">${languageManager.currentLang.totalSuffix}</tspan>`;
-        if (voltageName === `${languageManager.currentLang.voltageSymbol}${languageManager.currentLang.totalSuffix}`) {
-            if (nameValueToggleBtn.innerText === toggleSymbolDefinition.namesShown) {
-                voltageLabel.innerHTML = voltageLabel.innerHTML.replace(labelText, `${voltageValue}`);
+function toggleVandISymbolLabels(svgDiv) {
+    if (arrowsShown(svgDiv)) {
+        // only text elements with class voltage-label or current-label (not path elements (arrows))
+        let VIelementLabels = svgDiv.querySelectorAll("text.voltage-label, text.current-label");
+        for (let elementLabel of VIelementLabels) {
+            if (elementLabel.classList.contains("V1")) continue;  // Source label stays hidden
+            // Toggle
+            if (state.valuesShown) {
+                elementLabel.style.setProperty("display", "block");
             } else {
-                voltageLabel.innerHTML = voltageLabel.innerHTML.replace(`${voltageValue}`, labelText);
-            }
-        } else {
-            if (nameValueToggleBtn.innerText === toggleSymbolDefinition.namesShown) {
-                voltageLabel.innerHTML = voltageLabel.innerHTML.replace(voltageName, `${voltageValue}`);
-            } else {
-                voltageLabel.innerHTML = voltageLabel.innerHTML.replace(`${voltageValue}`, voltageName);
-            }
-        }
-
-    }
-}
-
-function toggleCurrents(svgDiv, nameValueToggleBtn) {
-    let currentLabels = svgDiv.querySelectorAll(".current-label");
-    for (let currentLabel of currentLabels) {
-        let currentName = currentLabel.classList[2];
-        let currentValue = state.allValuesMap.get(currentName);
-        if (currentValue === null || currentValue === undefined) continue;
-        if (currentValue.includes("\\text{")) {
-            currentValue = currentValue.replace("\\text{", "");
-            currentValue = currentValue.replace("}", "");
-        }
-
-        let labelText = `I<tspan baseline-shift="sub" font-size="smaller">${languageManager.currentLang.totalSuffix}</tspan>`;
-        if (currentName === `I${languageManager.currentLang.totalSuffix}`) {
-            if (nameValueToggleBtn.innerText === toggleSymbolDefinition.namesShown) {
-                currentLabel.innerHTML = currentLabel.innerHTML.replace(labelText, `${currentValue}`);
-            } else {
-                currentLabel.innerHTML = currentLabel.innerHTML.replace(`${currentValue}`, labelText);
-            }
-        } else {
-            if (nameValueToggleBtn.innerText === toggleSymbolDefinition.namesShown) {
-                currentLabel.innerHTML = currentLabel.innerHTML.replace(currentName, `${currentValue}`);
-            } else {
-                currentLabel.innerHTML = currentLabel.innerHTML.replace(`${currentValue}`, currentName);
+                elementLabel.style.setProperty("display", "none");
             }
         }
     }
 }
 
-function toggleNameValue(nameValueToggleBtn, svgDiv) {
-    // TODO delete parameter svgDiv
+function toggleElements() {
+    let svgDiv = document.getElementById("content-col");
+    toggleMathJaxFormulas(svgDiv);    // toggles values, 10V, 1A, ...
+    toggleVandISymbolLabels(svgDiv);  // toggles symbols, U1, I1, ...
+    toggleElementLabels(svgDiv);      // toggles Elements, R1, C1, ...
+}
+
+function arrowsShown(svgDiv) {
+    let arrows = svgDiv.getElementsByClassName("arrow");
+    if (arrows.length === 0) return false;
+    return arrows[0].style.display !== "none";
+}
+
+function toggleNameValue() {
     toggleElements();
-
-
-    // TODO Remove this
-    toggleVoltages(svgDiv, nameValueToggleBtn);
-    toggleCurrents(svgDiv, nameValueToggleBtn);
-
-
     // Toggle button icons
     let togglers = document.querySelectorAll(".toggle-view");
     for (let toggler of togglers) {
@@ -423,7 +430,6 @@ function toggleNameValue(nameValueToggleBtn, svgDiv) {
             toggler.innerText = toggleSymbolDefinition.valuesShown;
         }
     }
-
     state.valuesShown = !state.valuesShown;
 }
 
@@ -766,7 +772,7 @@ function addSolutionsButton(showVCData, stepObject) {
     const solBtn = createSolutionsBtn();
     addBtnToContainer(solBtnContainer, solBtn);
     prepareAllValuesMap(stepObject, showVCData);
-    let table = generateSolutionsTable(showVCData);
+    let table = generateSolutionsTable();
     let clonedSvgData = cloneAndAdaptStep0Svg();
     clonedSvgData.appendChild(table);
 
@@ -851,7 +857,7 @@ function generateZIUArrays() {
     return {iArray, uArray, zArray};
 }
 
-function generateSolutionsTable(showVCData) {
+function generateSolutionsTable() {
     let table = document.createElement("div");
     table.classList.add("table-responsive");
     let isDarkMode = document.getElementById("darkmode-switch").checked;
@@ -862,33 +868,22 @@ function generateSolutionsTable(showVCData) {
         tableData = `<table id="solutionsTable" class="table table-light"><tbody>`;
     }
 
-    if (showVCData) {
-        let {iArray, uArray, zArray} = generateZIUArrays();
-        let regex = /[A-Z]s\d*/;  // To differentiate between X1 and Xs1 (helper values)
-        for (let i = 0; i < zArray.length; i++) {
-            if (regex.test(zArray[i][0])) {
-                continue; // Remove if you want to show helper values in this table
-                //color = colors.keyGreyedOut;
-            } else {
-                color = ((isDarkMode) ? colors.keyLight : colors.keyDark);
-            }
-            tableData += `<tr>
-                <td style="color: ${color}">$$${zArray[i][0]} = ${zArray[i][1]}$$</td>
-                <td style="color: ${color}">$$${uArray[i][0]} = ${uArray[i][1]}$$</td>
-                <td style="color: ${color}">$$${iArray[i][0]} = ${iArray[i][1]}$$</td>
-            </tr>`;
+    let {iArray, uArray, zArray} = generateZIUArrays();
+    let regex = /[A-Z]s\d*/;  // To differentiate between X1 and Xs1 (helper values)
+    for (let i = 0; i < zArray.length; i++) {
+        if (regex.test(zArray[i][0])) {
+            continue; // Remove if you want to show helper values in this table
+            //color = colors.keyGreyedOut;
+        } else {
+            color = ((isDarkMode) ? colors.keyLight : colors.keyDark);
         }
-    } else {
-        // TODO this could be removed if we always show voltage and current
-        for (let [key, value] of state.allValuesMap.entries()) {
-            if (regex.test(key)) {
-                color = colors.keyGreyedOut;
-            } else {
-                color = ((isDarkMode) ? colors.keyLight : colors.keyDark);
-            }
-            tableData += `<tr><td style="color: ${color}">$$${key} = ${value}$$</td></tr>`;
-        }
+        tableData += `<tr>
+            <td style="color: ${color}">$$${zArray[i][0]} = ${zArray[i][1]}$$</td>
+            <td style="color: ${color}">$$${uArray[i][0]} = ${uArray[i][1]}$$</td>
+            <td style="color: ${color}">$$${iArray[i][0]} = ${iArray[i][1]}$$</td>
+        </tr>`;
     }
+
     tableData += `</tbody></table></div>`;
     table.innerHTML = tableData;
     return table;

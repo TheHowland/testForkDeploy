@@ -283,10 +283,24 @@ function resetNextElements(svgDiv, nextElementsContainer) {
 
 
 function showArrows(contentCol) {
-    let arrows = contentCol.getElementsByClassName("arrow");
+    // Show arrows and symbol labels
+    let arrows = contentCol.querySelectorAll(".arrow");
     for (let arrow of arrows) {
         arrow.style.display = "block";
         arrow.style.opacity = "0.5";
+    }
+    if (state.valuesShown) {
+        // Hide labels
+        let arrows = contentCol.querySelectorAll("text.arrow");
+        for (let arrow of arrows) {
+            arrow.style.display = "none";
+        }
+        // Show mathjax formulas
+        let mathjax = contentCol.querySelectorAll(".mathjax-value-label");
+        for (let mj of mathjax) {
+            mj.style.display = "block";
+        }
+
     }
 }
 
@@ -317,7 +331,7 @@ async function createAndShowStep0(circuitMap) {
     obj.__proto__ = Step0Object.prototype;
     state.step0Data = obj;
     state.currentStep = 0;
-    state.allValuesMap.set(`${languageManager.currentLang.voltageSymbol}${languageManager.currentLang.totalSuffix}`, getSource());
+    state.allValuesMap.set(`${languageManager.currentLang.voltageSymbol}${languageManager.currentLang.totalSuffix}`, getSourceVoltage());
     state.currentCircuitShowVC = getCheckBoxValueOrQuickStartDef(circuitMap);
     display_step(state.step0Data);
 }

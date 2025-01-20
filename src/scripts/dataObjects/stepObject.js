@@ -60,7 +60,7 @@ class component {
 class Step0Object {
     step = ""
     source = []  // Class Source
-    components = []
+    components = []  // TODO allComponents
     componentTypes = ""
     svgData = ""
 }
