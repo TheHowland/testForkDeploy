@@ -723,18 +723,7 @@ function congratsAndVCDisplayIfFinished(electricalElements, contentCol, showVCDa
     }
 }
 
-function prepareAllValuesMap(stepObject, showVCData) {
-   // TODO das brauche ich glaub nicht mehr
-    /*let zWithTotal = "TODO Something total old"; //vcData.noFormat().oldNames[0][0] + "_{" + languageManager.currentLang.totalSuffix + "}";  // Only first letter Z/R/L/C
-    if (showVCData) {
-        let uWithTotal = "";//vcData.noFormat().oldNames[1][0] + "_{" + languageManager.currentLang.totalSuffix + "}";  // Only first letter U/V
-        let iWithTotal = "";//vcData.noFormat().oldNames[2][0] + "_{" + languageManager.currentLang.totalSuffix + "}";  // Only first letter I
-        state.allValuesMap.set(zWithTotal, "TODO");//vcData.noFormat().convOldValue[0]);  // total R/L/C (not complex), but maybe sometime
-        state.allValuesMap.set(uWithTotal, "TODO");//vcData.noFormat().oldValues[1]);  // total U
-        state.allValuesMap.set(iWithTotal, "TODO");//vcData.noFormat().oldValues[2]);  // total I
-    } else {
-        state.allValuesMap.set(zWithTotal, "TODO");//vcData.noFormat().convOldValue[0]);  // total R/L/C (not complex)
-    }*/
+function prepareAllValuesMap() {
     // Remove null values
     for (let k of state.allValuesMap.keys()) {
         if (k === null || k === undefined || k === "")
@@ -748,19 +737,30 @@ function cloneAndAdaptStep0Svg() {
     let originalStep0Svg = document.getElementById("svgDiv1");
     // check if in the original step the names are shown or the values
     let clonedSvgData;
-    let valuesShown = originalStep0Svg.querySelector("#toggle-view-1").innerHTML === toggleSymbolDefinition.valuesShown;
-    if (valuesShown) {
-        // copy the svg with names shown
-        originalStep0Svg.querySelector("#toggle-view-1").click();
-        clonedSvgData = originalStep0Svg.cloneNode(true);
-        originalStep0Svg.querySelector("#toggle-view-1").click();
+    let toggleBtn = originalStep0Svg.querySelector("#toggle-view-1");
+    if (toggleBtn !== null) {
+        // We have a toggle btn so check which state it is in
+        let valuesShown = originalStep0Svg.querySelector("#toggle-view-1").innerHTML === toggleSymbolDefinition.valuesShown;
+        if (valuesShown) {
+            // copy the svg with names shown
+            originalStep0Svg.querySelector("#toggle-view-1").click();
+            clonedSvgData = originalStep0Svg.cloneNode(true);
+            // And click again so the original state is shown again
+            originalStep0Svg.querySelector("#toggle-view-1").click();
+        } else {
+            clonedSvgData = originalStep0Svg.cloneNode(true);
+        }
     } else {
         clonedSvgData = originalStep0Svg.cloneNode(true);
     }
     clonedSvgData.id = "clonedOverviewSvg";
     // Adapt svg data
     clonedSvgData.removeChild(clonedSvgData.querySelector("#open-info-gif-btn"));
-    clonedSvgData.removeChild(clonedSvgData.querySelector("#toggle-view-1"));
+    let toggleBtnClone = clonedSvgData.querySelector("#toggle-view-1");
+    if (toggleBtnClone !== null) {
+        // Can be null for symbolic circuits
+        clonedSvgData.removeChild(toggleBtnClone);
+    }
     let bboxes = clonedSvgData.getElementsByClassName("bounding-box");
     for (let bbox of bboxes) {
         bbox.style.display = "none";
@@ -773,7 +773,7 @@ function addSolutionsButton(showVCData, stepObject) {
     const solBtnContainer = createSolutionsBtnContainer();
     const solBtn = createSolutionsBtn();
     addBtnToContainer(solBtnContainer, solBtn);
-    prepareAllValuesMap(stepObject, showVCData);
+    prepareAllValuesMap();
     let table = generateSolutionsTable();
     let clonedSvgData = cloneAndAdaptStep0Svg();
     clonedSvgData.appendChild(table);
