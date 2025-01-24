@@ -1,7 +1,12 @@
+# for lcapy version: 1.24+inskale.0.31
 import os
 import shutil
 import sys
-sys.path.extend('./')
+
+if os.path.isfile(os.path.join(os.path.dirname(os.getcwd()), "solve.py")):
+    os.chdir('../')
+
+sys.path.append(os.getcwd())
 import solve
 
 
@@ -33,7 +38,7 @@ try:
             if not os.path.isfile(os.path.join(folder, file)):
                 continue
             solver = solve.SolveInUserOrder(file, filePath=folder, savePath=savePath)
-            solver.createInitialStep()
+            solver.createInitialStep().toSVG(fileName=file, savePath=savePath)
 
         for file in os.listdir(savePath):
             if not file[-4::] == ".svg":
