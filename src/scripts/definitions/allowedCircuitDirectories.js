@@ -7,4 +7,5 @@ const allowedDirNames = {
     capacitor: "capacitor",
     inductor: "inductor",
     mixed: "mixed",
+    symbolic: "symbolic",
 }

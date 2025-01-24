@@ -15,7 +15,7 @@ class ColorDefinitions {
     currentBackground = this.keyDark;
     currentBsBackground = this.bootstrapDark;
 
-    prevNextBtnBackgroundColor = "#808080";
+    prevNextBtnBackgroundColor = this.keyYellow;
 
     bsColorSchemeLight = "light";
     bsColorSchemeDark = "dark";

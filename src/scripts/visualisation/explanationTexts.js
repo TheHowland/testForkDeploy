@@ -6,7 +6,7 @@ function generateTextForZ(stepObject) {
     const firstPart = getElementsAndRelationDescription(stepObject);
 
     // Calculation descriptions are swapped for R/L and C
-    /*if (state.step0Data.componentTypes === "R" || state.step0Data.componentTypes === "L") {
+    if (state.step0Data.componentTypes === "R" || state.step0Data.componentTypes === "L") {
         if (relation === "series") {
             paragraphElement.innerHTML = firstPart + getAdditionCalculation(stepObject)
         } else if (relation === "parallel") {
@@ -18,7 +18,7 @@ function generateTextForZ(stepObject) {
         } else if (relation === "series") {
             paragraphElement.innerHTML = firstPart + getReciprocialCalculation(stepObject);
         }
-    } else if (state.step0Data.componentTypes === "RLC") */ if (true) {
+    } else if (state.step0Data.componentTypes === "RLC") {
         // This can still be R, L, C, RC, RL, LC, RLC, needs to be checked
         if (relation === "series") {
             paragraphElement.innerHTML = firstPart + getComplexSeriesCalculation(stepObject)

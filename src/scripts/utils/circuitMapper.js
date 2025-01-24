@@ -20,6 +20,8 @@ class CircuitMapper {
                 this.addCircuitMaps(dir, this._inductor, this.selectorIds.ind);
             } else if (dir === allowedDirNames.mixed) {
                 this.addCircuitMaps(dir, this._mixed, this.selectorIds.mixedId);
+            } else if (dir === allowedDirNames.symbolic) {
+                this.addCircuitMaps(dir, this._symbolic, this.selectorIds.symbolic);
             } else {
                 console.error("Unknown directory: " + dir);
                 console.error("Allowed Names: " + Object.values(allowedDirNames));
@@ -40,7 +42,8 @@ class CircuitMapper {
         res: "res",
         cap: "cap",
         ind: "ind",
-        mixedId: "mixed"
+        mixedId: "mixed",
+        symbolic: "sym",
     }
 
     _quickstart = {
@@ -63,6 +66,10 @@ class CircuitMapper {
         identifier: this.selectorIds.ind,
         set: []
     }
+    _symbolic = {
+        identifier: this.selectorIds.symbolic,
+        set: []
+    }
 
     circuitSets = [];
 
@@ -70,6 +77,9 @@ class CircuitMapper {
         // This is the order in which the circuits are displayed on the selector page
         if (this._quickstart.set.length !== 0) {
             this.circuitSets.push(this._quickstart);
+        }
+        if (this._symbolic.set.length !== 0) {
+            this.circuitSets.push(this._symbolic);
         }
         if (this._resistor.set.length !== 0) {
             this.circuitSets.push(this._resistor);

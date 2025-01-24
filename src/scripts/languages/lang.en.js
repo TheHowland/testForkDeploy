@@ -39,6 +39,7 @@ const english = {
             "cap": "CAPACITORS",
             "ind": "INDUCTORS",
             "mixed": "MIXED CIRCUITS",
+            "sym": "SYMBOLIC CALCULATION",
         },
     overviewModalBtn:
         "Overview",

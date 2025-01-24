@@ -144,7 +144,6 @@ function setupNextElementsContainer(filteredPaths, showVCData) {
     if (onlyOneElementLeft(filteredPaths)) {
         nextElementsContainer.innerHTML = getFinishMsg(showVCData);
     } else {
-        // SanitizedSvgFilePath could be unnecessary here
         nextElementsContainer.innerHTML = `
         <h3>${languageManager.currentLang.nextElementsHeading}</h3>
         <ul class="px-0" id="next-elements-list"></ul>
@@ -211,8 +210,11 @@ function setupSvgDivContainerAndData(stepObject) {
 
     // SVG Data written, now add eventListeners, only afterward because they would be removed on rewrite of svgData
     if (state.pictureCounter === 1) addInfoHelpButton(svgDiv);
-    addNameValueToggleBtn(svgDiv, allLabelsMap);
-    setTogglesDependingOnState(svgDiv);  // only after toggler was added
+    if (state.currentCircuitMap.selectorGroup !== circuitMapper.selectorIds.symbolic) {
+        // Add name value toggle only for non-symbolic circuits (no need to toggle between R1 and R1...:) )
+        addNameValueToggleBtn(svgDiv, allLabelsMap);
+        setTogglesDependingOnState(svgDiv);  // only after toggler was added
+    }
     return svgDiv;
 }
 

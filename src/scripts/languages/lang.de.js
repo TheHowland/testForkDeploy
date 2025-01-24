@@ -41,6 +41,7 @@ const german = {
             "cap": "KONDENSATOREN",
             "ind": "SPULEN",
             "mixed": "GEMISCHTE SCHALTUNGEN",
+            "sym": "SYMBOLISCHE RECHNUNG",
         },
     overviewModalBtn:
         "Übersicht",
