@@ -16,9 +16,11 @@ const eventCategories = {
     Capacitor: "Kondensatoren",
     Inductor: "Spulen",
     Mixed: "Gemischte Schaltungen",
+    Symbolic: "Symbolische Rechnung",
     Configurations: "Konfigurationen",
     _SubIdx: " - sub",
     _AcDcIdx: " - acdc",
+    _SymIdx: " - sym",
 
     /* DEPRECATED
     Sub: "Ersatzschaltungen",
@@ -64,6 +66,7 @@ function pushCircuitEventMatomo(action, value=-1) {
     // Add a suffix to the circuit name in order to be able to see if voltage was shown or not
     if (!showVC) circuitName += eventCategories._SubIdx;
     if (showVC) circuitName += eventCategories._AcDcIdx;
+    if (category === circuitMapper.selectorIds.symbolic) circuitName += eventCategories._SymIdx;
 
     if (!allowedCircuitAction(action)) return;
 
@@ -90,6 +93,7 @@ function mapCategory(category) {
     if (["cap"].includes(category)) return eventCategories.Capacitor;
     if (["ind"].includes(category)) return eventCategories.Inductor;
     if (["mixed"].includes(category)) return eventCategories.Mixed;
+    if (["sym"].includes(category)) return eventCategories.Symbolic;
     console.log("Category not possible, check: " + category);
     return null;
 }

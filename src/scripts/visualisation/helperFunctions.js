@@ -363,7 +363,6 @@ function setLanguageAndScheme() {
     }
 
     var userLang = navigator.language;
-    console.log(userLang);
     if (userLang === "de-DE" || userLang === "de-AT" || userLang === "de-CH" || userLang === "de") {
         languageManager.currentLang = german;
     } else {

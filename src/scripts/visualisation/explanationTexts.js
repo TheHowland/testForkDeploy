@@ -174,7 +174,7 @@ function getSeriesVCDescription(stepObject) {
     // Voltage calculation
     stepObject.components.forEach((component) => {
         str += `$$${component.U.name} = ${component.Z.name} \\cdot  ${component.I.name}$$`;
-        str += `$$= ${stepObject.getZVal(component)} \\cdot ${component.I.val}$$`;
+        str += `$$= ${stepObject.getZVal(component)} \\cdot ${stepObject.simplifiedTo.I.val}$$`;  // use simplifiedTo val to make it more explanatory in symbolic circuits
         str += `$$= ${component.U.val}$$<br>`;
     });
     return str;
