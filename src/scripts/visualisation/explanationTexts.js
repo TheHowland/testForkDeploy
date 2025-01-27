@@ -37,34 +37,37 @@ function getComplexSeriesCalculation(stepObject) {
     if (stepComponentTypes === "R") return getAdditionCalculation(stepObject);
     if (stepComponentTypes === "L") return getAdditionCalculation(stepObject);
     if (stepComponentTypes === "C") return getReciprocialCalculation(stepObject);
-    if (stepComponentTypes === "RC") {
-        // Komponenten wurden bereits benannt und mit Werten dargestellt.
-        // Für Cs muss man jetzt die komplexen werte ausrechnen
-        str += `Blindwiderstand für Kondensator<br>`;
-        for (let component of stepObject.components) {
-            if (component.Z.name.includes("C")) {
-                str += `$$X_{${component.Z.name}} = \\frac{1}{2\\pi f C}$$`;
-                str += `$$X_{${component.Z.name}} = \\frac{1}{2\\pi \\cdot 50Hz \\cdot ${component.Z.val}}$$`;  // Z.val because we know it's only a C
-                str += `$$X_{${component.Z.name}} = ${component.Z.complexVal}$$<br>`;  // TODO this needs to be the correct value without j
-            }
-        }
-        // Für Rs muss nichts mehr gemacht werden, weiter gehts
-        // Darstellung Z
-        str += `Komplexer Widerstand<br>`;
-        str += `$$\\underline{Z} = R - j \\cdot X_{C}$$`;
-        str += `$$\\underline{Z} = ${stepObject.components[0].Z.val} - j \\cdot ${stepObject.components[1].Z.complexVal}$$<br>`;
-        // Betrag
-        str += `Betrag des komplexen Widerstands<br>`;
-        str += `$$|\\underline{Z}| = Z = \\sqrt{R^2 + Xc^2}$$`;
-        str += `$$Z = \\sqrt{${stepObject.components[0].Z.val}^2 + ${stepObject.components[1].Z.complexVal}^2}$$`;
-        str += `$$Z = ${Math.sqrt((stepObject.components[0].Z.val)^2 + (stepObject.components[1].Z.complexVal)^2)}$$<br>`;
-    }
+    if (stepComponentTypes === "RC") return getRCSeriesCalculation(str, stepObject);
+
+
     return str;
 }
 
 function getComplexParallelCalculation(stepObject) {
     console.error("Complex parallel calculation not implemented yet");
     return "TODO";
+}
+
+function getRCSeriesCalculation(str, stepObject) {
+    // Calculate Xc
+    str += `Blindwiderstand für Kondensator<br>`;
+    for (let component of stepObject.components) {
+        if (component.Z.name.includes("C")) {
+            str += `$$X_{${component.Z.name}} = \\frac{1}{2\\pi f ${component.Z.name}}$$`;
+            str += `$$X_{${component.Z.name}} = \\frac{1}{2\\pi \\cdot 50Hz \\cdot ${component.Z.val}}$$`;  // Z.val because we know it's only a C
+            str += `$$X_{${component.Z.name}} = ${component.Z.complexVal}$$<br>`;  // TODO this needs to be the correct value without j
+        }
+    }
+    // Calculate Z
+    str += `Komplexer Widerstand<br>`;
+    str += `$$\\underline{Z} = R + jX$$`;
+    str += `$$\\underline{Z} = ${stepObject.components[0].Z.val} + j \\cdot ${stepObject.components[1].Z.complexVal}$$<br>`;
+
+    str += `Betrag des komplexen Widerstands<br>`;
+    str += `$$|\\underline{Z}| = Z = \\sqrt{R^2 + Xc^2}$$`;
+    str += `$$Z = \\sqrt{${stepObject.components[0].Z.val}^2 + ${stepObject.components[1].Z.complexVal}^2}$$`;
+    str += `$$Z = ${Math.sqrt((stepObject.components[0].Z.val) ^ 2 + (stepObject.components[1].Z.complexVal) ^ 2)}$$<br>`;
+    return str;
 }
 
 function generateTextForVoltageCurrent(stepObject) {
@@ -150,7 +153,13 @@ function getAdditionCalculation(stepObject) {
     return str;
 }
 
-function getSeriesVCDescription(stepObject) {
+
+function getSymbolicSeriesVCDescription(stepObject) {
+    let str = "";
+    return "TODO";
+}
+
+function getNonSymbolicSeriesVCDescription(stepObject) {
     let str = "";
     // Calculate current
     str += `${languageManager.currentLang.currentCalcHeading} \\(${stepObject.simplifiedTo.Z.name}\\)<br>`;
@@ -161,7 +170,9 @@ function getSeriesVCDescription(stepObject) {
     str += `${languageManager.currentLang.relationTextSeries}.<br>`;
     str += `${languageManager.currentLang.currentStaysTheSame}.<br>`;
     str += `$$${stepObject.simplifiedTo.I.name} = `;
-    stepObject.components.forEach((component) => {str+= `${component.I.name} = `});
+    stepObject.components.forEach((component) => {
+        str += `${component.I.name} = `
+    });
     str = str.slice(0, -3);  // remove last =
     str += `$$`;
     str += `$$= ${stepObject.simplifiedTo.I.val}$$`;
@@ -178,6 +189,15 @@ function getSeriesVCDescription(stepObject) {
         str += `$$= ${component.U.val}$$<br>`;
     });
     return str;
+}
+
+function getSeriesVCDescription(stepObject) {
+    let str = "";
+    if (state.currentCircuitMap.selectorGroup === circuitMapper.selectorIds.symbolic) {
+        return getSymbolicSeriesVCDescription(stepObject);
+    } else {
+        return getNonSymbolicSeriesVCDescription(stepObject);
+    }
 }
 
 function getParallelVCDescription(stepObject) {

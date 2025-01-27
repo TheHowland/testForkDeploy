@@ -2,8 +2,6 @@
 // #################################### Key function for displaying new svgs ##########################################
 // ####################################################################################################################
 function display_step(stepObject) {
-    // Load data
-
     let showVCData = state.currentCircuitShowVC;
     console.log(stepObject);
     state.pictureCounter++;  // increment before usage in the below functions
