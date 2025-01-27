@@ -1,8 +1,7 @@
-V1 0 2 ac {10} {0} {2*pi*30}; up
+V1 2 0 ac {10} {0} {2*pi*30}; up
 W 2 3; up
 W 3 4; right
 R1 4 5 {100}; down
 C2 5 6 {0.000000100}; down
 W 6 7; left
-W 7 8; up
-W 8 0; up
+W 7 0; up

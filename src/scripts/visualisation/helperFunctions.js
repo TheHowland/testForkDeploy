@@ -381,7 +381,9 @@ function modalConfig() {
 
 function hideSourceLabel(svgDiv) {
     let sourceLabel = svgDiv.querySelector(".element-label.V1");
-    sourceLabel.style.display = "none";
+    if (sourceLabel !== null) {
+        sourceLabel.style.display = "none";
+    }
 }
 
 
