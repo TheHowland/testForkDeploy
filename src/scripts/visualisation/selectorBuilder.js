@@ -210,7 +210,9 @@ class SelectorBuilder {
         svgData = setSvgWidthTo(svgData, "100%");
         svgData = setSvgColorMode(svgData);
         circuitDiv.innerHTML = svgData;
+
         this.hideSvgArrows(circuitDiv);
+        hideSourceLabel(circuitDiv);
 
         // Setup specific circuit in overview modal
         this.setupOverviewModalCircuit(circuitMap, circuitDiv, pageManager);

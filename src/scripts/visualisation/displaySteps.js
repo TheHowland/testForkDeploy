@@ -340,11 +340,6 @@ function createMathJaxLabels(svgDiv, allLabelsMap) {
     MathJax.typeset();
 }
 
-function hideSourceLabel(svgDiv) {
-    let sourceLabel = svgDiv.querySelector(".element-label.V1");
-    sourceLabel.style.display = "none";
-}
-
 function addNameValueToggleBtn(svgDiv, elementNameValueMap) {
     const nameValueToggleBtn = document.createElement("button");
     nameValueToggleBtn.type = "button";

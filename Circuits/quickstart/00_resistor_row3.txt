@@ -1,0 +1,8 @@
+V1 2 0 dc {10}; up
+W 2 3; up
+W 3 4; right
+R1 4 5 {100}; down
+R2 5 6 {100}; down
+R3 6 7 {100}; down
+W 7 8; left
+W 8 0; up
