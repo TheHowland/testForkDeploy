@@ -386,4 +386,14 @@ function hideSourceLabel(svgDiv) {
     }
 }
 
+function hideLabels(svgDiv) {
+    let labels = svgDiv.querySelectorAll(".element-label");
+    labels.forEach(label => label.style.display = "none");
+}
+
+function hideSvgArrows(circuitDiv) {
+    let arrows = circuitDiv.getElementsByClassName("arrow");
+    for (let arrow of arrows) arrow.style.display = "none";
+}
+
 

@@ -55,18 +55,18 @@ function getRCSeriesCalculation(str, stepObject) {
         if (component.Z.name.includes("C")) {
             str += `$$X_{${component.Z.name}} = \\frac{1}{2\\pi f ${component.Z.name}}$$`;
             str += `$$X_{${component.Z.name}} = \\frac{1}{2\\pi \\cdot 50Hz \\cdot ${component.Z.val}}$$`;  // Z.val because we know it's only a C
-            str += `$$X_{${component.Z.name}} = ${component.Z.complexVal}$$<br>`;  // TODO this needs to be the correct value without j
+            str += `$$X_{${component.Z.name}} = ${component.Z.impedance}$$<br>`;  // TODO this needs to be the correct value without j
         }
     }
     // Calculate Z
     str += `Komplexer Widerstand<br>`;
     str += `$$\\underline{Z} = R + jX$$`;
-    str += `$$\\underline{Z} = ${stepObject.components[0].Z.val} + j \\cdot ${stepObject.components[1].Z.complexVal}$$<br>`;
+    str += `$$\\underline{Z} = ${stepObject.components[0].Z.val} + j \\cdot ${stepObject.components[1].Z.impedance}$$<br>`;
 
     str += `Betrag des komplexen Widerstands<br>`;
     str += `$$|\\underline{Z}| = Z = \\sqrt{R^2 + Xc^2}$$`;
-    str += `$$Z = \\sqrt{${stepObject.components[0].Z.val}^2 + ${stepObject.components[1].Z.complexVal}^2}$$`;
-    str += `$$Z = ${Math.sqrt((stepObject.components[0].Z.val) ^ 2 + (stepObject.components[1].Z.complexVal) ^ 2)}$$<br>`;
+    str += `$$Z = \\sqrt{${stepObject.components[0].Z.val}^2 + ${stepObject.components[1].Z.impedance}^2}$$`;
+    str += `$$Z = ${Math.sqrt((stepObject.components[0].Z.val) ^ 2 + (stepObject.components[1].Z.impedance) ^ 2)}$$<br>`;
     return str;
 }
 
@@ -87,10 +87,15 @@ function generateTextForVoltageCurrent(stepObject) {
 
 function generateTextForTotalCurrent(stepObject) {
     let str = "";
+    let sfx = languageManager.currentLang.totalSuffix;
+    if ([circuitMapper.selectorIds.cap, circuitMapper.selectorIds.ind, circuitMapper.selectorIds.mixed].includes(state.currentCircuitMap.selectorGroup)) {
+        sfx += "," + languageManager.currentLang.effectiveSuffix;
+    }
+
     str += `${languageManager.currentLang.currentCalcHeading} \\(${stepObject.simplifiedTo.Z.name}\\)<br>`;
-    str += `$$I_{${languageManager.currentLang.totalSuffix}} = \\frac{${languageManager.currentLang.voltageSymbol}_{${languageManager.currentLang.totalSuffix}}}{${stepObject.simplifiedTo.Z.name}}$$`
-    str += `$$I_{${languageManager.currentLang.totalSuffix}} = \\frac{${stepObject.simplifiedTo.U.val}}{${stepObject.getZVal(stepObject.simplifiedTo)}}$$`;
-    str += `$$I_{${languageManager.currentLang.totalSuffix}} = ${stepObject.simplifiedTo.I.val}$$`;
+    str += `$$I_{${sfx}} = \\frac{${languageManager.currentLang.voltageSymbol}_{${sfx}}}{${stepObject.simplifiedTo.Z.name}}$$`
+    str += `$$I_{${sfx}} = \\frac{${stepObject.simplifiedTo.U.val}}{${stepObject.simplifiedTo.Z.impedance}}$$`;
+    str += `$$I_{${sfx}} = ${stepObject.simplifiedTo.I.val}$$`;
     return str;
 }
 
@@ -163,8 +168,12 @@ function getNonSymbolicSeriesVCDescription(stepObject) {
     let str = "";
     // Calculate current
     str += `${languageManager.currentLang.currentCalcHeading} \\(${stepObject.simplifiedTo.Z.name}\\)<br>`;
-    str += `$$${stepObject.simplifiedTo.I.name} = \\frac{${stepObject.simplifiedTo.U.name}}{${stepObject.simplifiedTo.Z.name}}$$`;
-    str += `$$${stepObject.simplifiedTo.I.name} = \\frac{${stepObject.simplifiedTo.U.val}}{${stepObject.getZVal(stepObject.simplifiedTo)}}$$`;
+    if (stepObject.simplifiedTo.Z.name.includes("R") || stepObject.simplifiedTo.Z.name.includes("Z")) {
+        str += `$$${stepObject.simplifiedTo.I.name} = \\frac{${stepObject.simplifiedTo.U.name}}{${stepObject.simplifiedTo.Z.name}}$$`;
+    } else {
+        str += `$$${stepObject.simplifiedTo.I.name} = \\frac{${stepObject.simplifiedTo.U.name}}{X_{${stepObject.simplifiedTo.Z.name}}}$$`;
+    }
+    str += `$$${stepObject.simplifiedTo.I.name} = \\frac{${stepObject.simplifiedTo.U.val}}{${stepObject.simplifiedTo.Z.impedance}}$$`;
     str += `$$${stepObject.simplifiedTo.I.name} = ${stepObject.simplifiedTo.I.val}$$<br>`;
     // Text
     str += `${languageManager.currentLang.relationTextSeries}.<br>`;
@@ -184,8 +193,12 @@ function getNonSymbolicSeriesVCDescription(stepObject) {
     str += `<br>`;
     // Voltage calculation
     stepObject.components.forEach((component) => {
-        str += `$$${component.U.name} = ${component.Z.name} \\cdot  ${component.I.name}$$`;
-        str += `$$= ${stepObject.getZVal(component)} \\cdot ${stepObject.simplifiedTo.I.val}$$`;  // use simplifiedTo val to make it more explanatory in symbolic circuits
+        if (stepObject.simplifiedTo.Z.name.includes("R") || stepObject.simplifiedTo.Z.name.includes("Z")) {
+            str += `$$${component.U.name} = ${component.Z.name} \\cdot  ${component.I.name}$$`;
+        } else {
+            str += `$$${component.U.name} = X_{${component.Z.name}} \\cdot  ${component.I.name}$$`;
+        }
+        str += `$$= ${component.Z.impedance} \\cdot ${stepObject.simplifiedTo.I.val}$$`;  // use simplifiedTo val to make it more explanatory in symbolic circuits
         str += `$$= ${component.U.val}$$<br>`;
     });
     return str;

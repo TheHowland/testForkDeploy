@@ -94,6 +94,8 @@ const english = {
         "V",
     totalSuffix:
         "tot",
+    effectiveSuffix:
+        "eff",
     theElements:
         "The elements",
     areSimplifiedTo:

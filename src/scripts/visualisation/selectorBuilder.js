@@ -211,8 +211,8 @@ class SelectorBuilder {
         svgData = setSvgColorMode(svgData);
         circuitDiv.innerHTML = svgData;
 
-        this.hideSvgArrows(circuitDiv);
-        hideSourceLabel(circuitDiv);
+        hideSvgArrows(circuitDiv);
+        hideLabels(circuitDiv);
 
         // Setup specific circuit in overview modal
         this.setupOverviewModalCircuit(circuitMap, circuitDiv, pageManager);
@@ -235,11 +235,6 @@ class SelectorBuilder {
                 this.circuitSelectorStartButtonPressed(circuitMap, pageManager);
             });
         }
-    }
-
-    hideSvgArrows(circuitDiv) {
-        let arrows = circuitDiv.getElementsByClassName("arrow");
-        for (let arrow of arrows) arrow.style.display = "none";
     }
 
     resetSelectorSelections(circuitSet) {

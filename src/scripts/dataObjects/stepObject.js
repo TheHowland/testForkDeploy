@@ -8,7 +8,7 @@ class StepObject {
     svgData = ""
 
     getZVal(component) {
-        return component.hasConversion ? component.Z.val : component.Z.complexVal;
+        return component.hasConversion ? component.Z.val : component.Z.impedance;
     }
 
     getComponentTypes() {
@@ -43,7 +43,7 @@ class StepObject {
 class component {
     Z = {
         name: "",
-        complexVal: "",
+        impedance: "",
         val: ""
     }
     U = {

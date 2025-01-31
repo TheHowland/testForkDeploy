@@ -97,6 +97,8 @@ const german = {
         "U",
     totalSuffix:
         "ges",
+    effectiveSuffix:
+        "eff",
     theElements:
         "Die Elemente",
     areSimplifiedTo:

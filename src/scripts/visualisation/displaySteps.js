@@ -71,7 +71,7 @@ function addComponentValues(component) {
         if (component.hasConversion) {
             state.allValuesMap.set(component.Z.name, component.Z.val);
         } else {
-            state.allValuesMap.set(component.Z.name, component.Z.complexVal);
+            state.allValuesMap.set(component.Z.name, component.Z.impedance);
         }
         state.allValuesMap.set(component.U.name, component.U.val);
         state.allValuesMap.set(component.I.name, component.I.val);
@@ -84,9 +84,9 @@ function addTotalValues(stepObject) {
         // Rges Lges Cges
         state.allValuesMap.set(`${stepObject.simplifiedTo.Z.name[0]}${languageManager.currentLang.totalSuffix}`, stepObject.simplifiedTo.Z.val);
     } else {
-        state.allValuesMap.set(stepObject.simplifiedTo.Z.name, stepObject.simplifiedTo.Z.complexVal);
+        state.allValuesMap.set(stepObject.simplifiedTo.Z.name, stepObject.simplifiedTo.Z.impedance);
         // Zges
-        state.allValuesMap.set(`Z${languageManager.currentLang.totalSuffix}`, stepObject.simplifiedTo.Z.complexVal);
+        state.allValuesMap.set(`Z${languageManager.currentLang.totalSuffix}`, stepObject.simplifiedTo.Z.impedance);
     }
     state.allValuesMap.set(stepObject.simplifiedTo.U.name, stepObject.simplifiedTo.U.val);
     state.allValuesMap.set(stepObject.simplifiedTo.I.name, stepObject.simplifiedTo.I.val);
@@ -115,11 +115,15 @@ function createExplanationBtnContainer(element) {
 
 function getFinishMsg(showVCData) {
     let msg;
+    let sfx = languageManager.currentLang.totalSuffix;
+    if ([circuitMapper.selectorIds.cap, circuitMapper.selectorIds.ind, circuitMapper.selectorIds.mixedId].includes(state.currentCircuitMap.selectorGroup)) {
+        sfx += "," + languageManager.currentLang.effectiveSuffix;
+    }
     if (showVCData) {
         // Give a note what voltage is used and that voltage/current is available
         msg = `
         <p>${languageManager.currentLang.msgVoltAndCurrentAvailable}.<br></p>
-        <p>${languageManager.currentLang.msgShowVoltage}<br>$$ ${languageManager.currentLang.voltageSymbol}_{${languageManager.currentLang.totalSuffix}}=${getSourceVoltage()}$$</p>
+        <p>${languageManager.currentLang.msgShowVoltage}<br>$$ ${languageManager.currentLang.voltageSymbol}_{${sfx}}=${getSourceVoltage()}$$</p>
         <button class="btn btn-secondary mx-1" id="reset-btn">reset</button>
         <button class="btn btn-primary mx-1 disabled" id="check-btn">check</button>
     `;
@@ -160,11 +164,6 @@ function setupCircuitContainer(stepObject) {
     return {circuitContainer, svgContainer};
 }
 
-function hideSvgArrows(svgDiv) {
-    let arrows = svgDiv.getElementsByClassName("arrow");
-    for (let arrow of arrows) arrow.style.display = "none";
-}
-
 function addInfoHelpButton(svgDiv) {
     let infoBtn = document.createElement("button");
     infoBtn.type = "button";
@@ -202,7 +201,7 @@ function setupSvgDivContainerAndData(stepObject) {
     svgDiv.innerHTML = svgData;
 
     let allLabelsMap = getAllLabelsMap(stepObject);
-    fillLabelsWithSymbols(allLabelsMap);  // TODO necessary?
+    fillLabelsWithSymbols(svgDiv);
     hideSourceLabel(svgDiv);
     hideSvgArrows(svgDiv);
     createMathJaxLabels(svgDiv, allLabelsMap);
@@ -217,8 +216,19 @@ function setupSvgDivContainerAndData(stepObject) {
     return svgDiv;
 }
 
-function fillLabelsWithSymbols(allLabelsMap) {
-    // TODO do i really need this? :)
+function fillLabelsWithSymbols(svgDiv) {
+    // Initial values in svg are always ###.### ## because it will give us enough space
+    // to display MJ formulas without overlapping, so we need to label the elements with the correct names now
+    let labels = svgDiv.querySelectorAll(".arrow");
+    for (let label of labels) {
+        if (label.classList.contains("arrow")) {
+            if (label.nodeName === "path") continue;
+            let span = label.querySelector("tspan");
+            span.innerHTML = label.classList[label.classList.length - 1];
+        } else {
+            label.innerHTML = label.classList[label.classList.length - 1];
+        }
+    }
 }
 
 function toggleLabelsFromTo(svgDiv, from, to) {
