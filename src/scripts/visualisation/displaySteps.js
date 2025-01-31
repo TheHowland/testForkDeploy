@@ -40,6 +40,14 @@ function getSourceVoltage() {
     return state.step0Data.source.sources.U.val;
 }
 
+function getSourceFrequency() {
+    return state.step0Data.source.omega_0;
+}
+
+function sourceIsAC() {
+    return getSourceFrequency() !== "0";
+}
+
 function getSourceCurrent() {
     // only to display the value as mathjax, not for calculations (consider the sign "-")
     return (state.step0Data.source.sources.I.val).replace("-", "");
@@ -115,15 +123,22 @@ function createExplanationBtnContainer(element) {
 
 function getFinishMsg(showVCData) {
     let msg;
+    let sourceInfo;
     let sfx = languageManager.currentLang.totalSuffix;
     if ([circuitMapper.selectorIds.cap, circuitMapper.selectorIds.ind, circuitMapper.selectorIds.mixedId].includes(state.currentCircuitMap.selectorGroup)) {
         sfx += "," + languageManager.currentLang.effectiveSuffix;
+    }
+    if (sourceIsAC()) {
+        sourceInfo = `$$ ${languageManager.currentLang.voltageSymbol}_{${sfx}}=${getSourceVoltage()} $$
+                      $$ w = ${getSourceFrequency()} $$`;
+    } else {
+        sourceInfo = `$$ ${languageManager.currentLang.voltageSymbol}_{${sfx}}=${getSourceVoltage()} $$`;
     }
     if (showVCData) {
         // Give a note what voltage is used and that voltage/current is available
         msg = `
         <p>${languageManager.currentLang.msgVoltAndCurrentAvailable}.<br></p>
-        <p>${languageManager.currentLang.msgShowVoltage}<br>$$ ${languageManager.currentLang.voltageSymbol}_{${sfx}}=${getSourceVoltage()}$$</p>
+        <p>${languageManager.currentLang.msgShowVoltage}<br>${sourceInfo}</p>
         <button class="btn btn-secondary mx-1" id="reset-btn">reset</button>
         <button class="btn btn-primary mx-1 disabled" id="check-btn">check</button>
     `;

@@ -93,7 +93,12 @@ function generateTextForTotalCurrent(stepObject) {
     }
 
     str += `${languageManager.currentLang.currentCalcHeading} \\(${stepObject.simplifiedTo.Z.name}\\)<br>`;
-    str += `$$I_{${sfx}} = \\frac{${languageManager.currentLang.voltageSymbol}_{${sfx}}}{${stepObject.simplifiedTo.Z.name}}$$`
+    if (stepObject.simplifiedTo.Z.name.includes("R") || stepObject.simplifiedTo.Z.name.includes("Z")) {
+        str += `$$I_{${sfx}} = \\frac{${languageManager.currentLang.voltageSymbol}_{${sfx}}}{${stepObject.simplifiedTo.Z.name}}$$`
+    } else {
+        str += `$$I_{${sfx}} = \\frac{${languageManager.currentLang.voltageSymbol}_{${sfx}}}{X_{${stepObject.simplifiedTo.Z.name}}}$$`
+    }
+
     str += `$$I_{${sfx}} = \\frac{${stepObject.simplifiedTo.U.val}}{${stepObject.simplifiedTo.Z.impedance}}$$`;
     str += `$$I_{${sfx}} = ${stepObject.simplifiedTo.I.val}$$`;
     return str;
@@ -164,6 +169,11 @@ function getSymbolicSeriesVCDescription(stepObject) {
     return "TODO";
 }
 
+function getSymbolicParallelVCDescription(stepObject) {
+    let str = "";
+    return "TODO";
+}
+
 function getNonSymbolicSeriesVCDescription(stepObject) {
     let str = "";
     // Calculate current
@@ -204,21 +214,16 @@ function getNonSymbolicSeriesVCDescription(stepObject) {
     return str;
 }
 
-function getSeriesVCDescription(stepObject) {
-    let str = "";
-    if (state.currentCircuitMap.selectorGroup === circuitMapper.selectorIds.symbolic) {
-        return getSymbolicSeriesVCDescription(stepObject);
-    } else {
-        return getNonSymbolicSeriesVCDescription(stepObject);
-    }
-}
-
-function getParallelVCDescription(stepObject) {
+function getNonSymbolicParallelVCDescription(stepObject) {
     let str = "";
     // Calculate current
     str += `${languageManager.currentLang.currentCalcHeading} \\(${stepObject.simplifiedTo.Z.name}\\)<br>`;
-    str += `$$${stepObject.simplifiedTo.I.name} = \\frac{${stepObject.simplifiedTo.U.name}}{${stepObject.simplifiedTo.Z.name}}$$`;
-    str += `$$${stepObject.simplifiedTo.I.name} = \\frac{${stepObject.simplifiedTo.U.val}}{${stepObject.getZVal(stepObject.simplifiedTo)}}$$`;
+    if (stepObject.simplifiedTo.Z.name.includes("R") || stepObject.simplifiedTo.Z.name.includes("Z")) {
+        str += `$$${stepObject.simplifiedTo.I.name} = \\frac{${stepObject.simplifiedTo.U.name}}{${stepObject.simplifiedTo.Z.name}}$$`;
+    } else {
+        str += `$$${stepObject.simplifiedTo.I.name} = \\frac{${stepObject.simplifiedTo.U.name}}{X_{${stepObject.simplifiedTo.Z.name}}}$$`;
+    }
+    str += `$$${stepObject.simplifiedTo.I.name} = \\frac{${stepObject.simplifiedTo.U.val}}{${stepObject.simplifiedTo.Z.impedance}}$$`;
     str += `$$${stepObject.simplifiedTo.I.name} = ${stepObject.simplifiedTo.I.val}$$<br>`;
     // Text
     str += `${languageManager.currentLang.relationTextParallel}.<br>`;
@@ -236,9 +241,29 @@ function getParallelVCDescription(stepObject) {
     str += `<br>`;
     // Current calculation
     stepObject.components.forEach((component) => {
-        str += `$$${component.I.name} = \\frac{${component.U.name}}{${component.Z.name}}$$`;
-        str += `$$= \\frac{${component.U.val}}{${stepObject.getZVal(component)}}$$`;
+        if (stepObject.simplifiedTo.Z.name.includes("R") || stepObject.simplifiedTo.Z.name.includes("Z")) {
+            str += `$$${component.I.name} = \\frac{${component.U.name}}{${component.Z.name}}$$`;
+        } else {
+            str += `$$${component.I.name} = \\frac{${component.U.name}}{X_{${component.Z.name}}}$$`;
+        }
+        str += `$$= \\frac{${component.U.val}}{${component.Z.impedance}}$$`;
         str += `$$= ${component.I.val}$$<br>`;
     });
     return str;
+}
+
+function getSeriesVCDescription(stepObject) {
+    if (state.currentCircuitMap.selectorGroup === circuitMapper.selectorIds.symbolic) {
+        return getSymbolicSeriesVCDescription(stepObject);
+    } else {
+        return getNonSymbolicSeriesVCDescription(stepObject);
+    }
+}
+
+function getParallelVCDescription(stepObject) {
+    if (state.currentCircuitMap.selectorGroup === circuitMapper.selectorIds.symbolic) {
+        return getSymbolicParallelVCDescription(stepObject);
+    } else {
+        return getNonSymbolicParallelVCDescription(stepObject);
+    }
 }
