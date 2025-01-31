@@ -131,6 +131,11 @@ function getElementsAndRelationDescription(stepObject) {
 function getReciprocialCalculation(stepObject) {
     // creates 1/X = 1/X1 + 1/X2
     // Use block MJ ('$$') to make sure formulas are horizontally scrollable if too long
+
+    if (currentCircuitIsSymbolic()) {
+        return `$$${stepObject.simplifiedTo.Z.name} = ${stepObject.getZVal(stepObject.simplifiedTo)}$$`;
+    }
+    
     let str = "";
     str += `$$\\frac{1}{${stepObject.simplifiedTo.Z.name}} = `;
     stepObject.components.forEach((component) => {str+= `\\frac{1}{${component.Z.name}} + `});
@@ -149,6 +154,11 @@ function getReciprocialCalculation(stepObject) {
 function getAdditionCalculation(stepObject) {
     // creates X = X1 + X2
     // Use block MJ ('$$') to make sure formulas are horizontally scrollable if too long
+
+    if (currentCircuitIsSymbolic()) {
+        return `$$${stepObject.simplifiedTo.Z.name} = ${stepObject.getZVal(stepObject.simplifiedTo)}$$`;
+    }
+
     let str = "";
     str += `$$${stepObject.simplifiedTo.Z.name} = `;
     stepObject.components.forEach((component) => {str+= `${component.Z.name} + `});
@@ -253,7 +263,7 @@ function getNonSymbolicParallelVCDescription(stepObject) {
 }
 
 function getSeriesVCDescription(stepObject) {
-    if (state.currentCircuitMap.selectorGroup === circuitMapper.selectorIds.symbolic) {
+    if (currentCircuitIsSymbolic()) {
         return getSymbolicSeriesVCDescription(stepObject);
     } else {
         return getNonSymbolicSeriesVCDescription(stepObject);
@@ -261,7 +271,7 @@ function getSeriesVCDescription(stepObject) {
 }
 
 function getParallelVCDescription(stepObject) {
-    if (state.currentCircuitMap.selectorGroup === circuitMapper.selectorIds.symbolic) {
+    if (currentCircuitIsSymbolic()) {
         return getSymbolicParallelVCDescription(stepObject);
     } else {
         return getNonSymbolicParallelVCDescription(stepObject);

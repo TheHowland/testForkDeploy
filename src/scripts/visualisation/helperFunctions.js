@@ -396,4 +396,8 @@ function hideSvgArrows(circuitDiv) {
     for (let arrow of arrows) arrow.style.display = "none";
 }
 
+function currentCircuitIsSymbolic() {
+    return state.currentCircuitMap.selectorGroup === circuitMapper.selectorIds.symbolic;
+}
+
 

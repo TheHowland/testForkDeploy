@@ -234,15 +234,11 @@ function setupSvgDivContainerAndData(stepObject) {
 function fillLabelsWithSymbols(svgDiv) {
     // Initial values in svg are always ###.### ## because it will give us enough space
     // to display MJ formulas without overlapping, so we need to label the elements with the correct names now
-    let labels = svgDiv.querySelectorAll(".arrow");
+    let labels = svgDiv.querySelectorAll(".arrow, .element-label");
     for (let label of labels) {
-        if (label.classList.contains("arrow")) {
-            if (label.nodeName === "path") continue;
-            let span = label.querySelector("tspan");
-            span.innerHTML = label.classList[label.classList.length - 1];
-        } else {
-            label.innerHTML = label.classList[label.classList.length - 1];
-        }
+        if (label.nodeName === "path") continue;
+        let span = label.querySelector("tspan");
+        span.innerHTML = label.classList[label.classList.length - 1];
     }
 }
 
@@ -500,7 +496,11 @@ function removeExistingBoxAndText(existingBox, bboxId, pathElement) {
 function addElementValueToTextBox(pathElement, bboxId, nextElementsList) {
     const value = pathElement.getAttribute('class') || 'na';
     const listItem = document.createElement('li');
-    listItem.innerHTML = `\\(${pathElement.getAttribute('id') || 'no id'} = ${value}\\)`;
+    if (currentCircuitIsSymbolic()) {
+        listItem.innerHTML = `\\(${pathElement.getAttribute('id') || 'no id'}\\)`;
+    } else {
+        listItem.innerHTML = `\\(${pathElement.getAttribute('id') || 'no id'} = ${value}\\)`;
+    }
     listItem.setAttribute('data-bbox-id', bboxId);
     nextElementsList.appendChild(listItem);
     state.selectedElements.push(pathElement.getAttribute('id') || 'no id');
