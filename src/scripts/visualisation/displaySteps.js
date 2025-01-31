@@ -202,6 +202,7 @@ function setupSvgDivContainerAndData(stepObject) {
     svgDiv.innerHTML = svgData;
 
     let allLabelsMap = getAllLabelsMap(stepObject);
+    fillLabelsWithSymbols(allLabelsMap);  // TODO necessary?
     hideSourceLabel(svgDiv);
     hideSvgArrows(svgDiv);
     createMathJaxLabels(svgDiv, allLabelsMap);
@@ -214,6 +215,10 @@ function setupSvgDivContainerAndData(stepObject) {
         setTogglesDependingOnState(svgDiv);  // only after toggler was added
     }
     return svgDiv;
+}
+
+function fillLabelsWithSymbols(allLabelsMap) {
+    // TODO do i really need this? :)
 }
 
 function toggleLabelsFromTo(svgDiv, from, to) {
