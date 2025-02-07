@@ -326,6 +326,56 @@ function getSymbolicParallelVCDescription(stepObject) {
 }
 
 function getNonSymbolicSeriesVCDescription(stepObject) {
+    if (state.step0Data.componentTypes === "RLC") {
+        return getComplexNonSymbolicSeriesVC(stepObject);
+    } else {
+        return getNonSymbolicSeriesVC(stepObject);
+    }
+}
+
+function getComplexNonSymbolicSeriesVC(stepObject) {
+    let str = "";
+    // Calculate current
+    // TODO adapt with impedance and j
+    // make distinction between RLC and R L C again
+    str += `${languageManager.currentLang.currentCalcHeading} \\(${stepObject.simplifiedTo.Z.name}\\)<br>`;
+    if (stepObject.simplifiedTo.Z.name.includes("R") || stepObject.simplifiedTo.Z.name.includes("Z")) {
+        str += `$$\\underline{${stepObject.simplifiedTo.I.name}} = \\frac{\\underline{${stepObject.simplifiedTo.U.name}}}{\\underline{${stepObject.simplifiedTo.Z.name}}}$$`;
+    } else {
+        str += `$$\\underline{${stepObject.simplifiedTo.I.name}} = \\frac{\\underline{${stepObject.simplifiedTo.U.name}}}{\\underline{Z_{${stepObject.simplifiedTo.Z.name}}}}$$`;
+    }
+    str += `$$\\underline{${stepObject.simplifiedTo.I.name}} = \\frac{${stepObject.simplifiedTo.U.val}}{${stepObject.simplifiedTo.Z.impedance}}$$`;
+    str += `$$\\underline{${stepObject.simplifiedTo.I.name}} = ${stepObject.simplifiedTo.I.val}$$<br>`;
+    // Text
+    str += `${languageManager.currentLang.relationTextSeries}.<br>`;
+    str += `${languageManager.currentLang.currentStaysTheSame}.<br>`;
+    str += `$$\\underline{${stepObject.simplifiedTo.I.name}} = `;
+    stepObject.components.forEach((component) => {
+        str += `\\underline{${component.I.name}} = `
+    });
+    str = str.slice(0, -3);  // remove last =
+    str += `$$`;
+    str += "$$42.123\\cdot e^{j \\cdot 17°}$$";//`$$= ${stepObject.simplifiedTo.I.val}$$`;  // TODO polar darstellung e = r * e^(j * phi)
+    // Voltage split
+    str += `<br>${languageManager.currentLang.voltageSplits}.<br>`;
+    stepObject.components.forEach((component) => {
+        str += `$$\\underline{${component.U.name}} = ?$$`;
+    });
+    str += `<br>`;
+    // Voltage calculation
+    stepObject.components.forEach((component) => {
+        if (stepObject.simplifiedTo.Z.name.includes("R") || stepObject.simplifiedTo.Z.name.includes("Z")) {
+            str += `$$\\underline{${component.U.name}} = \\underline{${component.Z.name}} \\cdot  \\underline{${component.I.name}}$$`;
+        } else {
+            str += `$$\\underline{${component.U.name}} = \\underline{Z_{${component.Z.name}}} \\cdot  \\underline{${component.I.name}}$$`;
+        }
+        str += `$$= ${component.Z.impedance} \\cdot ${stepObject.simplifiedTo.I.val}$$`;  // use simplifiedTo val to make it more explanatory in symbolic circuits
+        str += `$$= ${component.U.val}$$<br>`;
+    });
+    return str;
+}
+
+function getNonSymbolicSeriesVC(stepObject) {
     let str = "";
     // Calculate current
     // TODO adapt with impedance and j
