@@ -10,13 +10,13 @@ function generateTextForZ(stepObject) {
         if (relation === "series") {
             paragraphElement.innerHTML = firstPart + getAdditionCalculation(stepObject)
         } else if (relation === "parallel") {
-            paragraphElement.innerHTML = firstPart + getReciprocialCalculation(stepObject)
+            paragraphElement.innerHTML = firstPart + getReciprocalCalculation(stepObject)
         }
     } else if (state.step0Data.componentTypes === "C") {
         if (relation === "parallel") {
             paragraphElement.innerHTML = firstPart + getAdditionCalculation(stepObject);
         } else if (relation === "series") {
-            paragraphElement.innerHTML = firstPart + getReciprocialCalculation(stepObject);
+            paragraphElement.innerHTML = firstPart + getReciprocalCalculation(stepObject);
         }
     } else if (state.step0Data.componentTypes === "RLC") {
         // This can still be R, L, C, RC, RL, LC, RLC, needs to be checked
@@ -32,41 +32,117 @@ function generateTextForZ(stepObject) {
 }
 
 function getComplexSeriesCalculation(stepObject) {
-    let str = "";
-    let stepComponentTypes = stepObject.getComponentTypes();
-    if (stepComponentTypes === "R") return getAdditionCalculation(stepObject);
-    if (stepComponentTypes === "L") return getAdditionCalculation(stepObject);
-    if (stepComponentTypes === "C") return getReciprocialCalculation(stepObject);
-    if (stepComponentTypes === "RC") return getRCSeriesCalculation(str, stepObject);
+    let cptTypes = stepObject.getComponentTypes();
+    if (["R", "L"].includes(cptTypes)) return getAdditionCalculation(stepObject);
+    if (["C"].includes(cptTypes)) return getReciprocalCalculation(stepObject);
+    if (["Z", "RC", "RL", "LC", "RLC"].includes(cptTypes)) return getComplexAdditionCalculation(stepObject);
+    return "It seems like we don't have an explanation for this step yet, sorry :(";
+}
 
+function getComplexParallelCalculation(stepObject) {
+    let cptTypes = stepObject.getComponentTypes();
+    if (["R", "L"].includes(cptTypes)) return getReciprocalCalculation(stepObject);
+    if (["C"].includes(cptTypes)) return getAdditionCalculation(stepObject);
+    if (["Z", "RC", "RL", "LC", "RLC"].includes(cptTypes)) return getComplexReciprocalCalculation(stepObject);
+    return "It seems like we don't have an explanation for this step yet, sorry :(";
+}
+
+function getLorCtoZExplanations(stepObject) {
+    let str = "";
+    for (let component of stepObject.components) {
+        if (component.Z.name.includes("C")) {
+            str += `${languageManager.currentLang.complexImpedanceHeading} \\(Z_{${component.Z.name}}\\)<br>`;
+            str += `$$Z_{${component.Z.name}} = \\frac{-j}{2\\pi f ${component.Z.name}}$$`;
+            str += `$$Z_{${component.Z.name}} = -j \\cdot ${component.Z.impedance}$$<br>`;
+        }
+        if (component.Z.name.includes("L")) {
+            str += `${languageManager.currentLang.complexImpedanceHeading} \\(Z_{${component.Z.name}}\\)<br>`;
+            str += `$$Z_{${component.Z.name}} = j \\cdot 2\\pi f ${component.Z.name}$$`;
+            str += `$$Z_{${component.Z.name}} = j \\cdot ${component.Z.impedance}$$<br>`;
+        }
+    }
+    return str;
+}
+
+function getComplexAdditionCalculation(stepObject) {
+    let str = "";
+    str += "<br><br>";
+    // TODO adapt with all the js, because die will ich von yannick :D
+
+    // Generate Zl or Zc explanations
+    str += getLorCtoZExplanations(stepObject);
+
+    // Add all Z
+    str += `${languageManager.currentLang.complexImpedanceHeading} \\(${stepObject.simplifiedTo.Z.name}\\)<br>`;
+    str += `$$${stepObject.simplifiedTo.Z.name} = `;
+    for (let component of stepObject.components) {
+        if (component.Z.name.includes("Z")) {
+            str += `${component.Z.name} + `;
+        } else {
+            str += `Z_{${component.Z.name}} + `;
+        }
+    }
+    str = str.slice(0, -3);  // remove last +
+    str += `$$`;
+
+    str += `$$${stepObject.simplifiedTo.Z.name} = `;
+    for (let component of stepObject.components) {
+        if (component.Z.name.includes("C")) {
+            if (str[str.length - 2] === "+") {
+                str = str.slice(0, -2);  // remove last +
+            }
+            str += `-j \\cdot ${component.Z.impedance} + `;
+        } else if (component.Z.name.includes("L")) {
+            str += `j \\cdot ${component.Z.impedance} + `;
+        } else {
+            str += `${component.Z.impedance} + `;
+        }
+    }
+    str = str.slice(0, -3);  // remove last +
+    str += `$$`;
+
+    str += `$$${stepObject.simplifiedTo.Z.name} = ${stepObject.simplifiedTo.Z.impedance}$$<br>`;
 
     return str;
 }
 
-function getComplexParallelCalculation(stepObject) {
-    console.error("Complex parallel calculation not implemented yet");
-    return "TODO";
-}
+function getComplexReciprocalCalculation(stepObject) {
+    let str = "";
+    str += "<br><br>";
+    // TODO adapt with all the js, because die will ich von yannick :D
 
-function getRCSeriesCalculation(str, stepObject) {
-    // Calculate Xc
-    str += `Blindwiderstand für Kondensator<br>`;
+    // Generate Zl or Zc explanations
+    str += getLorCtoZExplanations(stepObject);
+
+    // Add all Z
+    str += `${languageManager.currentLang.complexImpedanceHeading} \\(${stepObject.simplifiedTo.Z.name}\\)<br>`;
+    str += `$$\\frac{1}{${stepObject.simplifiedTo.Z.name}} = `;
     for (let component of stepObject.components) {
-        if (component.Z.name.includes("C")) {
-            str += `$$X_{${component.Z.name}} = \\frac{1}{2\\pi f ${component.Z.name}}$$`;
-            str += `$$X_{${component.Z.name}} = \\frac{1}{2\\pi \\cdot 50Hz \\cdot ${component.Z.val}}$$`;  // Z.val because we know it's only a C
-            str += `$$X_{${component.Z.name}} = ${component.Z.impedance}$$<br>`;  // TODO this needs to be the correct value without j
+        if (component.Z.name.includes("Z")) {
+            str += `\\frac{1}{${component.Z.name}} + `;
+        } else {
+            str += `\\frac{1}{Z_{${component.Z.name}}} + `;
         }
     }
-    // Calculate Z
-    str += `Komplexer Widerstand<br>`;
-    str += `$$\\underline{Z} = R + jX$$`;
-    str += `$$\\underline{Z} = ${stepObject.components[0].Z.val} + j \\cdot ${stepObject.components[1].Z.impedance}$$<br>`;
+    str = str.slice(0, -3);  // remove last +
+    str += `$$`;
 
-    str += `Betrag des komplexen Widerstands<br>`;
-    str += `$$|\\underline{Z}| = Z = \\sqrt{R^2 + Xc^2}$$`;
-    str += `$$Z = \\sqrt{${stepObject.components[0].Z.val}^2 + ${stepObject.components[1].Z.impedance}^2}$$`;
-    str += `$$Z = ${Math.sqrt((stepObject.components[0].Z.val) ^ 2 + (stepObject.components[1].Z.impedance) ^ 2)}$$<br>`;
+    str += `$$\\frac{1}{${stepObject.simplifiedTo.Z.name}} = `;
+    for (let component of stepObject.components) {
+        if (component.Z.name.includes("C")) {
+            str += `\\frac{1}{-j \\cdot ${component.Z.impedance}} + `;
+        } else if (component.Z.name.includes("L")) {
+            str += `\\frac{1}{j \\cdot ${component.Z.impedance}} + `;
+        } else {
+            str += `\\frac{1}{${component.Z.impedance}} + `;
+        }
+    }
+    str = str.slice(0, -3);  // remove last +
+    str += `$$`;
+
+    str += `$$\\frac{1}{${stepObject.simplifiedTo.Z.name}} = \\frac{1}{${stepObject.simplifiedTo.Z.impedance}}$$<br>`;
+    str += `$$${stepObject.simplifiedTo.Z.name} = ${stepObject.simplifiedTo.Z.impedance}$$<br>`;
+
     return str;
 }
 
@@ -128,7 +204,7 @@ function getElementsAndRelationDescription(stepObject) {
     return str;
 }
 
-function getReciprocialCalculation(stepObject) {
+function getReciprocalCalculation(stepObject) {
     // creates 1/X = 1/X1 + 1/X2
     // Use block MJ ('$$') to make sure formulas are horizontally scrollable if too long
 
@@ -176,22 +252,91 @@ function getAdditionCalculation(stepObject) {
 
 function getSymbolicSeriesVCDescription(stepObject) {
     let str = "";
-    return "TODO";
-}
-
-function getSymbolicParallelVCDescription(stepObject) {
-    let str = "";
-    return "TODO";
-}
-
-function getNonSymbolicSeriesVCDescription(stepObject) {
-    let str = "";
     // Calculate current
     str += `${languageManager.currentLang.currentCalcHeading} \\(${stepObject.simplifiedTo.Z.name}\\)<br>`;
     if (stepObject.simplifiedTo.Z.name.includes("R") || stepObject.simplifiedTo.Z.name.includes("Z")) {
         str += `$$${stepObject.simplifiedTo.I.name} = \\frac{${stepObject.simplifiedTo.U.name}}{${stepObject.simplifiedTo.Z.name}}$$`;
     } else {
-        str += `$$${stepObject.simplifiedTo.I.name} = \\frac{${stepObject.simplifiedTo.U.name}}{X_{${stepObject.simplifiedTo.Z.name}}}$$`;
+        str += `$$${stepObject.simplifiedTo.I.name} = \\frac{${stepObject.simplifiedTo.U.name}}{Z_{${stepObject.simplifiedTo.Z.name}}}$$`;
+    }
+    str += `$$${stepObject.simplifiedTo.I.name} = ${stepObject.simplifiedTo.I.val}$$<br>`;
+    // Text
+    str += `${languageManager.currentLang.relationTextSeries}.<br>`;
+    str += `${languageManager.currentLang.currentStaysTheSame}.<br>`;
+    str += `$$${stepObject.simplifiedTo.I.name} = `;
+    stepObject.components.forEach((component) => {
+        str += `${component.I.name} = `
+    });
+    str = str.slice(0, -3);  // remove last =
+    str += `$$`;
+    str += `$$= ${stepObject.simplifiedTo.I.val}$$`;
+    // Voltage split
+    str += `<br>${languageManager.currentLang.voltageSplits}.<br>`;
+    stepObject.components.forEach((component) => {
+        str += `$$${component.U.name} = ?$$`;
+    });
+    str += `<br>`;
+    // Voltage calculation
+    stepObject.components.forEach((component) => {
+        if (stepObject.simplifiedTo.Z.name.includes("R") || stepObject.simplifiedTo.Z.name.includes("Z")) {
+            str += `$$${component.U.name} = ${component.Z.name} \\cdot  ${component.I.name}$$`;
+        } else {
+            str += `$$${component.U.name} = X_{${component.Z.name}} \\cdot  ${component.I.name}$$`;
+        }
+        str += `$$= ${component.Z.impedance} \\cdot ${stepObject.simplifiedTo.I.val}$$`;  // use simplifiedTo val to make it more explanatory in symbolic circuits
+        str += `$$= ${component.U.val}$$<br>`;
+    });
+    return str;
+}
+
+function getSymbolicParallelVCDescription(stepObject) {
+    let str = "";
+    // Calculate current
+    // TODO adapt with j and impedance....
+    str += `${languageManager.currentLang.currentCalcHeading} \\(${stepObject.simplifiedTo.Z.name}\\)<br>`;
+    if (stepObject.simplifiedTo.Z.name.includes("R") || stepObject.simplifiedTo.Z.name.includes("Z")) {
+        str += `$$${stepObject.simplifiedTo.I.name} = \\frac{${stepObject.simplifiedTo.U.name}}{${stepObject.simplifiedTo.Z.name}}$$`;
+    } else {
+        str += `$$${stepObject.simplifiedTo.I.name} = \\frac{${stepObject.simplifiedTo.U.name}}{Z_{${stepObject.simplifiedTo.Z.name}}}$$`;
+    }
+    str += `$$${stepObject.simplifiedTo.I.name} = ${stepObject.simplifiedTo.I.val}$$<br>`;
+    // Text
+    str += `${languageManager.currentLang.relationTextParallel}.<br>`;
+    str += `${languageManager.currentLang.voltageStaysTheSame}.<br>`;
+    str += `$$${stepObject.simplifiedTo.U.name} = `;
+    stepObject.components.forEach((component) => {str+= `${component.U.name} = `});
+    str = str.slice(0, -3);  // remove last =
+    str += `$$`;
+    str += `$$= ${stepObject.simplifiedTo.U.val}$$`;
+    // Current split
+    str += `<br>${languageManager.currentLang.currentSplits}.<br>`;
+    stepObject.components.forEach((component) => {
+        str += `$$${component.I.name} = ?$$`;
+    });
+    str += `<br>`;
+    // Current calculation
+    stepObject.components.forEach((component) => {
+        if (stepObject.simplifiedTo.Z.name.includes("R") || stepObject.simplifiedTo.Z.name.includes("Z")) {
+            str += `$$${component.I.name} = \\frac{${component.U.name}}{${component.Z.name}}$$`;
+        } else {
+            str += `$$${component.I.name} = \\frac{${component.U.name}}{X_{${component.Z.name}}}$$`;
+        }
+        str += `$$= \\frac{${component.U.val}}{${component.Z.impedance}}$$`;
+        str += `$$= ${component.I.val}$$<br>`;
+    });
+    return str;
+}
+
+function getNonSymbolicSeriesVCDescription(stepObject) {
+    let str = "";
+    // Calculate current
+    // TODO adapt with impedance and j
+    // make distinction between RLC and R L C again
+    str += `${languageManager.currentLang.currentCalcHeading} \\(${stepObject.simplifiedTo.Z.name}\\)<br>`;
+    if (stepObject.simplifiedTo.Z.name.includes("R") || stepObject.simplifiedTo.Z.name.includes("Z")) {
+        str += `$$${stepObject.simplifiedTo.I.name} = \\frac{${stepObject.simplifiedTo.U.name}}{${stepObject.simplifiedTo.Z.name}}$$`;
+    } else {
+        str += `$$${stepObject.simplifiedTo.I.name} = \\frac{${stepObject.simplifiedTo.U.name}}{Z_{${stepObject.simplifiedTo.Z.name}}}$$`;
     }
     str += `$$${stepObject.simplifiedTo.I.name} = \\frac{${stepObject.simplifiedTo.U.val}}{${stepObject.simplifiedTo.Z.impedance}}$$`;
     str += `$$${stepObject.simplifiedTo.I.name} = ${stepObject.simplifiedTo.I.val}$$<br>`;

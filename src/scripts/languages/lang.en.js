@@ -102,6 +102,8 @@ const english = {
         "are simplified to",
     calculationHeading:
         "Calculation",
+    complexImpedanceHeading:
+        "Complex Impedance for",
 
     // Voltage Current text
     currentCalcHeading:

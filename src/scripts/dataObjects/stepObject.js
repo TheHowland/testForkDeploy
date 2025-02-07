@@ -12,7 +12,7 @@ class StepObject {
     }
 
     getComponentTypes() {
-        let r, l, c = false
+        let r, l, c, z = false
         this.components.forEach((component) => {
             if (component.Z.name.includes("R")) {
                 r = true
@@ -20,9 +20,13 @@ class StepObject {
                 l = true
             } else if (component.Z.name.includes("C")) {
                 c = true
+            } else if (component.Z.name.includes("Z")) {
+                z = true
             }
         })
-        if (r && l && c) {
+        if (z) {
+            return "Z"
+        } else if (r && l && c) {
             return "RLC"
         } else if (r && l) {
             return "RL"

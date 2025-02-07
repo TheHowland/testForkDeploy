@@ -105,10 +105,12 @@ const german = {
         "wurden vereinfacht zu",
     calculationHeading:
         "Rechnung",
+    complexImpedanceHeading:
+        "Komplexer Widerstand f&uumlr",
 
     // Voltage Current text
     currentCalcHeading:
-        "Berechnen des Stroms f&uuml",
+        "Berechnen des Stroms f&uumlr",
     currentStaysTheSame:
         "Der Strom bleibt gleich",
     voltageSplits:
