@@ -51,14 +51,14 @@ function getLorCtoZExplanations(stepObject) {
     let str = "";
     for (let component of stepObject.components) {
         if (component.Z.name.includes("C")) {
-            str += `${languageManager.currentLang.complexImpedanceHeading} \\(Z_{${component.Z.name}}\\)<br>`;
-            str += `$$Z_{${component.Z.name}} = \\frac{-j}{2\\pi f ${component.Z.name}}$$`;
-            str += `$$Z_{${component.Z.name}} = -j \\cdot ${component.Z.impedance}$$<br>`;
+            str += `${languageManager.currentLang.complexImpedanceHeading} \\(\\underline{Z_{${component.Z.name}}}\\)<br>`;
+            str += `$$\\underline{Z_{${component.Z.name}}} = \\frac{-j}{2\\pi f ${component.Z.name}}$$`;
+            str += `$$\\underline{Z_{${component.Z.name}}} = -j \\cdot ${component.Z.impedance}$$<br>`;
         }
         if (component.Z.name.includes("L")) {
-            str += `${languageManager.currentLang.complexImpedanceHeading} \\(Z_{${component.Z.name}}\\)<br>`;
-            str += `$$Z_{${component.Z.name}} = j \\cdot 2\\pi f ${component.Z.name}$$`;
-            str += `$$Z_{${component.Z.name}} = j \\cdot ${component.Z.impedance}$$<br>`;
+            str += `${languageManager.currentLang.complexImpedanceHeading} \\(\\underline{Z_{${component.Z.name}}}\\)<br>`;
+            str += `$$\\underline{Z_{${component.Z.name}}} = j \\cdot 2\\pi f ${component.Z.name}$$`;
+            str += `$$\\underline{Z_{${component.Z.name}}} = j \\cdot ${component.Z.impedance}$$<br>`;
         }
     }
     return str;
@@ -74,18 +74,18 @@ function getComplexAdditionCalculation(stepObject) {
 
     // Add all Z
     str += `${languageManager.currentLang.complexImpedanceHeading} \\(${stepObject.simplifiedTo.Z.name}\\)<br>`;
-    str += `$$${stepObject.simplifiedTo.Z.name} = `;
+    str += `$$\\underline{${stepObject.simplifiedTo.Z.name}} = `;
     for (let component of stepObject.components) {
         if (component.Z.name.includes("Z")) {
-            str += `${component.Z.name} + `;
+            str += `\\underline{${component.Z.name}} + `;
         } else {
-            str += `Z_{${component.Z.name}} + `;
+            str += `\\underline{Z_{${component.Z.name}}} + `;
         }
     }
     str = str.slice(0, -3);  // remove last +
     str += `$$`;
 
-    str += `$$${stepObject.simplifiedTo.Z.name} = `;
+    str += `$$\\underline{${stepObject.simplifiedTo.Z.name}} = `;
     for (let component of stepObject.components) {
         if (component.Z.name.includes("C")) {
             if (str[str.length - 2] === "+") {
@@ -101,7 +101,7 @@ function getComplexAdditionCalculation(stepObject) {
     str = str.slice(0, -3);  // remove last +
     str += `$$`;
 
-    str += `$$${stepObject.simplifiedTo.Z.name} = ${stepObject.simplifiedTo.Z.impedance}$$<br>`;
+    str += `$$\\underline{${stepObject.simplifiedTo.Z.name}} = ${stepObject.simplifiedTo.Z.impedance}$$<br>`;
 
     return str;
 }
@@ -139,8 +139,6 @@ function getComplexReciprocalCalculation(stepObject) {
     }
     str = str.slice(0, -3);  // remove last +
     str += `$$`;
-
-    str += `$$\\frac{1}{${stepObject.simplifiedTo.Z.name}} = \\frac{1}{${stepObject.simplifiedTo.Z.impedance}}$$<br>`;
     str += `$$${stepObject.simplifiedTo.Z.name} = ${stepObject.simplifiedTo.Z.impedance}$$<br>`;
 
     return str;

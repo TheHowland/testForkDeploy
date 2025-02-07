@@ -83,6 +83,9 @@ function addComponentValues(component) {
         }
         state.allValuesMap.set(component.U.name, component.U.val);
         state.allValuesMap.set(component.I.name, component.I.val);
+        if (state.step0Data.componentTypes === "RLC") {
+            state.allValuesMap.set(`Z_{${component.Z.name}}`, component.Z.impedance);
+        }
     }
 }
 
@@ -861,25 +864,29 @@ function generateTextElement(stepObject) {
     return text;
 }
 
-function generateZIUArrays() {
+function generateVZIUArrays() {
+    let vMap = new Map();
     let iMap = new Map();
     let uMap = new Map();
     let zMap = new Map();
     for (let [key, value] of state.allValuesMap.entries()) {
         if (key === null) continue;
         if (key === undefined) continue;
-        if (key.startsWith('U') || key.startsWith('V')) {
+        if (key.startsWith('R') || key.startsWith('C') || key.startsWith('L')) {
+            vMap.set(key, value);
+        } else if (key.startsWith('U') || key.startsWith('V')) {
             uMap.set(key, value);
         } else if (key.startsWith('I')) {
             iMap.set(key, value);
-        } else {
+        } else if (key.startsWith('Z')) {
             zMap.set(key, value);
         }
     }
+    let vArray = Array.from(vMap);
     let iArray = Array.from(iMap);
     let uArray = Array.from(uMap);
     let zArray = Array.from(zMap);
-    return {iArray, uArray, zArray};
+    return {vArray, zArray, iArray, uArray};
 }
 
 function generateSolutionsTable() {
@@ -893,20 +900,45 @@ function generateSolutionsTable() {
         tableData = `<table id="solutionsTable" class="table table-light"><tbody>`;
     }
 
-    let {iArray, uArray, zArray} = generateZIUArrays();
+    let {vArray, zArray, iArray, uArray} = generateVZIUArrays();
     let regex = /[A-Z]s\d*/;  // To differentiate between X1 and Xs1 (helper values)
-    for (let i = 0; i < zArray.length; i++) {
-        if (regex.test(zArray[i][0])) {
-            continue; // Remove if you want to show helper values in this table
-            //color = colors.keyGreyedOut;
-        } else {
-            color = ((isDarkMode) ? colors.keyLight : colors.keyDark);
-        }
-        tableData += `<tr>
-            <td style="color: ${color}">$$${zArray[i][0]} = ${zArray[i][1]}$$</td>
+
+    if (state.step0Data.componentTypes === "RLC") {
+        for (let i = 0; i < zArray.length; i++) {
+            if (regex.test(zArray[i][0])) {
+                continue; // Remove if you want to show helper values in this table
+                //color = colors.keyGreyedOut;
+            } else {
+                color = ((isDarkMode) ? colors.keyLight : colors.keyDark);
+            }
+            let vString = "";
+            if (vArray.length > i) {
+                vString = `${vArray[i][0]} = ${vArray[i][1]}`;
+            } else {
+                vString = "-";
+            }
+
+            tableData += `<tr>
+            <td style="color: ${color}">$$${vString}$$</td>
+            <td style="color: ${color}">$$\\underline{${zArray[i][0]}} = ${zArray[i][1]}$$</td>
             <td style="color: ${color}">$$${uArray[i][0]} = ${uArray[i][1]}$$</td>
             <td style="color: ${color}">$$${iArray[i][0]} = ${iArray[i][1]}$$</td>
-        </tr>`;
+            </tr>`;
+        }
+    } else {
+        for (let i = 0; i < vArray.length; i++) {
+            if (regex.test(vArray[i][0])) {
+                continue; // Remove if you want to show helper values in this table
+                //color = colors.keyGreyedOut;
+            } else {
+                color = ((isDarkMode) ? colors.keyLight : colors.keyDark);
+            }
+            tableData += `<tr>
+            <td style="color: ${color}">$$${vArray[i][0]} = ${vArray[i][1]}$$</td>
+            <td style="color: ${color}">$$${uArray[i][0]} = ${uArray[i][1]}$$</td>
+            <td style="color: ${color}">$$${iArray[i][0]} = ${iArray[i][1]}$$</td>
+            </tr>`;
+        }
     }
 
     tableData += `</tbody></table></div>`;
