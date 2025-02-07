@@ -53,12 +53,12 @@ function getLorCtoZExplanations(stepObject) {
         if (component.Z.name.includes("C")) {
             str += `${languageManager.currentLang.complexImpedanceHeading} \\(\\underline{Z_{${component.Z.name}}}\\)<br>`;
             str += `$$\\underline{Z_{${component.Z.name}}} = \\frac{-j}{2\\pi f ${component.Z.name}}$$`;
-            str += `$$\\underline{Z_{${component.Z.name}}} = -j \\cdot ${component.Z.impedance}$$<br>`;
+            str += `$$\\underline{Z_{${component.Z.name}}} = ${component.Z.cpxVal}$$<br>`;
         }
         if (component.Z.name.includes("L")) {
             str += `${languageManager.currentLang.complexImpedanceHeading} \\(\\underline{Z_{${component.Z.name}}}\\)<br>`;
             str += `$$\\underline{Z_{${component.Z.name}}} = j \\cdot 2\\pi f ${component.Z.name}$$`;
-            str += `$$\\underline{Z_{${component.Z.name}}} = j \\cdot ${component.Z.impedance}$$<br>`;
+            str += `$$\\underline{Z_{${component.Z.name}}} = ${component.Z.cpxVal}$$<br>`;
         }
     }
     return str;
@@ -67,7 +67,6 @@ function getLorCtoZExplanations(stepObject) {
 function getComplexAdditionCalculation(stepObject) {
     let str = "";
     str += "<br><br>";
-    // TODO adapt with all the js, because die will ich von yannick :D
 
     // Generate Zl or Zc explanations
     str += getLorCtoZExplanations(stepObject);
@@ -87,21 +86,13 @@ function getComplexAdditionCalculation(stepObject) {
 
     str += `$$\\underline{${stepObject.simplifiedTo.Z.name}} = `;
     for (let component of stepObject.components) {
-        if (component.Z.name.includes("C")) {
-            if (str[str.length - 2] === "+") {
-                str = str.slice(0, -2);  // remove last +
-            }
-            str += `-j \\cdot ${component.Z.impedance} + `;
-        } else if (component.Z.name.includes("L")) {
-            str += `j \\cdot ${component.Z.impedance} + `;
-        } else {
-            str += `${component.Z.impedance} + `;
-        }
+        str += `${component.Z.cpxVal} + `;
     }
     str = str.slice(0, -3);  // remove last +
     str += `$$`;
 
-    str += `$$\\underline{${stepObject.simplifiedTo.Z.name}} = ${stepObject.simplifiedTo.Z.impedance}$$<br>`;
+    str += `$$\\underline{${stepObject.simplifiedTo.Z.name}} = ${stepObject.simplifiedTo.Z.cpxVal}$$<br>`;
+    // TODO Betrag und Phase oder polarform
 
     return str;
 }
@@ -109,7 +100,6 @@ function getComplexAdditionCalculation(stepObject) {
 function getComplexReciprocalCalculation(stepObject) {
     let str = "";
     str += "<br><br>";
-    // TODO adapt with all the js, because die will ich von yannick :D
 
     // Generate Zl or Zc explanations
     str += getLorCtoZExplanations(stepObject);
@@ -129,17 +119,11 @@ function getComplexReciprocalCalculation(stepObject) {
 
     str += `$$\\frac{1}{${stepObject.simplifiedTo.Z.name}} = `;
     for (let component of stepObject.components) {
-        if (component.Z.name.includes("C")) {
-            str += `\\frac{1}{-j \\cdot ${component.Z.impedance}} + `;
-        } else if (component.Z.name.includes("L")) {
-            str += `\\frac{1}{j \\cdot ${component.Z.impedance}} + `;
-        } else {
-            str += `\\frac{1}{${component.Z.impedance}} + `;
-        }
+        str += `\\frac{1}{${component.Z.cpxVal}} + `;
     }
     str = str.slice(0, -3);  // remove last +
     str += `$$`;
-    str += `$$${stepObject.simplifiedTo.Z.name} = ${stepObject.simplifiedTo.Z.impedance}$$<br>`;
+    str += `$$${stepObject.simplifiedTo.Z.name} = ${stepObject.simplifiedTo.Z.cpxVal}$$<br>`;
 
     return str;
 }
@@ -247,7 +231,6 @@ function getAdditionCalculation(stepObject) {
     return str;
 }
 
-
 function getSymbolicSeriesVCDescription(stepObject) {
     let str = "";
     // Calculate current
@@ -333,19 +316,43 @@ function getNonSymbolicSeriesVCDescription(stepObject) {
     }
 }
 
+function getNonSymbolicParallelVCDescription(stepObject) {
+    if (state.step0Data.componentTypes === "RLC") {
+        return getComplexNonSymbolicParallelVC(stepObject);
+    } else {
+        return getNonSymbolicParallelVC(stepObject);
+    }
+}
+
+function toPolar(A, P) {
+    if (P[0] === "-") {
+        return `${A} \\cdot e^{j\\cdot(${P})}`;
+    } else {
+        return `${A} \\cdot e^{j\\cdot${P}}`;
+    }
+}
+function getComplexNonSymbolicParallelVC(stepObject) {
+    // TODO
+    return "TODO";
+}
+
+
+
 function getComplexNonSymbolicSeriesVC(stepObject) {
     let str = "";
+    let SimplifiedZinPolar = toPolar(stepObject.simplifiedTo.Z.impedance, stepObject.simplifiedTo.Z.phase);
+    let SimplifiedIinPolar = toPolar(stepObject.simplifiedTo.I.val, stepObject.simplifiedTo.I.phase);
+
     // Calculate current
-    // TODO adapt with impedance and j
-    // make distinction between RLC and R L C again
+    // make distinction between RLC and R L C again TODO
     str += `${languageManager.currentLang.currentCalcHeading} \\(${stepObject.simplifiedTo.Z.name}\\)<br>`;
     if (stepObject.simplifiedTo.Z.name.includes("R") || stepObject.simplifiedTo.Z.name.includes("Z")) {
         str += `$$\\underline{${stepObject.simplifiedTo.I.name}} = \\frac{\\underline{${stepObject.simplifiedTo.U.name}}}{\\underline{${stepObject.simplifiedTo.Z.name}}}$$`;
     } else {
         str += `$$\\underline{${stepObject.simplifiedTo.I.name}} = \\frac{\\underline{${stepObject.simplifiedTo.U.name}}}{\\underline{Z_{${stepObject.simplifiedTo.Z.name}}}}$$`;
     }
-    str += `$$\\underline{${stepObject.simplifiedTo.I.name}} = \\frac{${stepObject.simplifiedTo.U.val}}{${stepObject.simplifiedTo.Z.impedance}}$$`;
-    str += `$$\\underline{${stepObject.simplifiedTo.I.name}} = ${stepObject.simplifiedTo.I.val}$$<br>`;
+    str += `$$\\underline{${stepObject.simplifiedTo.I.name}} = \\frac{${stepObject.simplifiedTo.U.val}}{${SimplifiedZinPolar}}$$`;
+    str += `$$\\underline{${stepObject.simplifiedTo.I.name}} = ${toPolar(stepObject.simplifiedTo.I.val, stepObject.simplifiedTo.I.phase)}$$<br>`;
     // Text
     str += `${languageManager.currentLang.relationTextSeries}.<br>`;
     str += `${languageManager.currentLang.currentStaysTheSame}.<br>`;
@@ -355,7 +362,7 @@ function getComplexNonSymbolicSeriesVC(stepObject) {
     });
     str = str.slice(0, -3);  // remove last =
     str += `$$`;
-    str += "$$42.123\\cdot e^{j \\cdot 17°}$$";//`$$= ${stepObject.simplifiedTo.I.val}$$`;  // TODO polar darstellung e = r * e^(j * phi)
+    str += `$$= ${SimplifiedIinPolar}$$`;
     // Voltage split
     str += `<br>${languageManager.currentLang.voltageSplits}.<br>`;
     stepObject.components.forEach((component) => {
@@ -363,14 +370,14 @@ function getComplexNonSymbolicSeriesVC(stepObject) {
     });
     str += `<br>`;
     // Voltage calculation
-    stepObject.components.forEach((component) => {
-        if (stepObject.simplifiedTo.Z.name.includes("R") || stepObject.simplifiedTo.Z.name.includes("Z")) {
-            str += `$$\\underline{${component.U.name}} = \\underline{${component.Z.name}} \\cdot  \\underline{${component.I.name}}$$`;
+    stepObject.components.forEach((cpt) => {
+        if (cpt.Z.name.includes("Z")) {
+            str += `$$\\underline{${cpt.U.name}} = \\underline{${cpt.Z.name}} \\cdot  \\underline{${cpt.I.name}}$$`;
         } else {
-            str += `$$\\underline{${component.U.name}} = \\underline{Z_{${component.Z.name}}} \\cdot  \\underline{${component.I.name}}$$`;
+            str += `$$\\underline{${cpt.U.name}} = \\underline{Z_{${cpt.Z.name}}} \\cdot  \\underline{${cpt.I.name}}$$`;
         }
-        str += `$$= ${component.Z.impedance} \\cdot ${stepObject.simplifiedTo.I.val}$$`;  // use simplifiedTo val to make it more explanatory in symbolic circuits
-        str += `$$= ${component.U.val}$$<br>`;
+        str += `$$= ${cpt.Z.cpxVal} \\cdot ${toPolar(stepObject.simplifiedTo.I.val, stepObject.simplifiedTo.I.phase)}$$`;  // use simplifiedTo val to make it more explanatory in symbolic circuits
+        str += `$$= ${toPolar(cpt.U.val, cpt.U.phase)}$$<br>`;
     });
     return str;
 }
@@ -417,7 +424,7 @@ function getNonSymbolicSeriesVC(stepObject) {
     return str;
 }
 
-function getNonSymbolicParallelVCDescription(stepObject) {
+function getNonSymbolicParallelVC(stepObject) {
     let str = "";
     // Calculate current
     str += `${languageManager.currentLang.currentCalcHeading} \\(${stepObject.simplifiedTo.Z.name}\\)<br>`;

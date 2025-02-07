@@ -48,15 +48,21 @@ class component {
     Z = {
         name: "",
         impedance: "",
-        val: ""
+        cpxVal: "",  // with j
+        re: "", // Real part
+        im: "", // Imaginary part
+        phase: "",
+        val: ""  // C, R or L
     }
     U = {
         name: "",
-        val: "",
+        val: "",  // magnitude (amplitude)
+        phase: "",
     }
     I = {
         name: "",
         val: "",
+        phase: "",
     }
     hasConversion = false
 }

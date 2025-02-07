@@ -84,7 +84,8 @@ function addComponentValues(component) {
         state.allValuesMap.set(component.U.name, component.U.val);
         state.allValuesMap.set(component.I.name, component.I.val);
         if (state.step0Data.componentTypes === "RLC") {
-            state.allValuesMap.set(`Z_{${component.Z.name}}`, component.Z.impedance);
+            state.allValuesMap.set(`Z_{${component.Z.name}}`, component.Z.cpxVal);
+            // TODO maybe add impedance
         }
     }
 }
