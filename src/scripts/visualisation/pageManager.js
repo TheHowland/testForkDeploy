@@ -255,8 +255,8 @@ class PageManager {
         indRea.innerHTML = "$$ \\omega \\cdot L$$";
 
         const pRX = document.getElementById("pRX");
-        pRX.innerHTML = "$$\\underline{Z} = R + j \\cdot X$$" +
-            "$$\\underline{Z} = R + j \\cdot \\sqrt{X_L - X_C}$$"
+        pRX.innerHTML = "$$\\mathbf{Z} = R + j \\cdot X$$" +
+            "$$\\mathbf{Z} = R + j \\cdot \\sqrt{X_L - X_C}$$"
         pRX.style.color = "white";
 
         whenAvailable("MathJax", () => {

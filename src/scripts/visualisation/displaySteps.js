@@ -921,9 +921,9 @@ function generateSolutionsTable() {
 
             tableData += `<tr>
             <td style="color: ${color}">$$${vString}$$</td>
-            <td style="color: ${color}">$$\\underline{${zArray[i][0]}} = ${zArray[i][1]}$$</td>
-            <td style="color: ${color}">$$${uArray[i][0]} = ${uArray[i][1]}$$</td>
-            <td style="color: ${color}">$$${iArray[i][0]} = ${iArray[i][1]}$$</td>
+            <td style="color: ${color}">$$\\mathbf{${zArray[i][0]}} = ${zArray[i][1]}$$</td>
+            <td style="color: ${color}">$$\\mathbf{${uArray[i][0]}} = ${uArray[i][1]}$$</td>
+            <td style="color: ${color}">$$\\mathbf{${iArray[i][0]}} = ${iArray[i][1]}$$</td>
             </tr>`;
         }
     } else {

@@ -248,15 +248,15 @@ mjx-container {
 
 mjx-container mjx-c::before {
     /*will-change: opacity;*/
-    /*padding-top: 20px !important;
-    padding-bottom: 5px !important;*/
+    padding-top: 20px !important;
+    padding-bottom: 5px !important;
 }
 
 foreignObject {
     span {
         mjx-container {
             margin-top: 0 !important;
-            /*padding-top: 0 !important;*/
+            padding-top: 0 !important;
         }
     }
 }
