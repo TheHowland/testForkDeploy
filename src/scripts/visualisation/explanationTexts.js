@@ -143,7 +143,7 @@ function generateTextForVoltageCurrent(stepObject) {
     return text;
 }
 
-function generateTextForTotalCurrent(stepObject) {
+function getTotalCurrent(stepObject) {
     let str = "";
     let sfx = languageManager.currentLang.totalSuffix;
     if ([circuitMapper.selectorIds.cap, circuitMapper.selectorIds.ind, circuitMapper.selectorIds.mixed].includes(state.currentCircuitMap.selectorGroup)) {
@@ -160,6 +160,37 @@ function generateTextForTotalCurrent(stepObject) {
     str += `$$I_{${sfx}} = \\frac{${stepObject.simplifiedTo.U.val}}{${stepObject.simplifiedTo.Z.impedance}}$$`;
     str += `$$I_{${sfx}} = ${stepObject.simplifiedTo.I.val}$$`;
     return str;
+}
+
+function getComplexTotalCurrent(stepObject) {
+    let str = "";
+    let sfx = languageManager.currentLang.totalSuffix;
+    if ([circuitMapper.selectorIds.cap, circuitMapper.selectorIds.ind, circuitMapper.selectorIds.mixed].includes(state.currentCircuitMap.selectorGroup)) {
+        sfx += "," + languageManager.currentLang.effectiveSuffix;
+    }
+
+    str += `${languageManager.currentLang.currentCalcHeading} \\(${stepObject.simplifiedTo.Z.name}\\)<br>`;
+    if (stepObject.simplifiedTo.Z.name.includes("Z")) {
+        str += `$$\\underline{I_{${sfx}}} = \\frac{\\underline{${languageManager.currentLang.voltageSymbol}_{${sfx}}}}{\\underline{${stepObject.simplifiedTo.Z.name}}}$$`
+    } else {
+        str += `$$\\underline{I_{${sfx}}} = \\frac{\\underline{${languageManager.currentLang.voltageSymbol}_{${sfx}}}}{\\underline{Z_{${stepObject.simplifiedTo.Z.name}}}}$$`
+    }
+
+    str += `$$\\underline{I_{${sfx}}} = \\frac{${stepObject.simplifiedTo.U.val}}{${toPolar(stepObject.simplifiedTo.Z.impedance, stepObject.simplifiedTo.Z.phase)}}$$`;
+    str += `$$\\underline{I_{${sfx}}} = ${toPolar(stepObject.simplifiedTo.I.val, stepObject.simplifiedTo.I.phase)}$$`;
+    return str;
+}
+
+
+function generateTextForTotalCurrent(stepObject) {
+    if (state.step0Data.componentTypes === "RLC") {
+        return getComplexTotalCurrent(stepObject);
+    } else {
+        return getTotalCurrent(stepObject);
+    }
+
+
+
 }
 
 function getRelationText(stepObject) {
@@ -325,6 +356,7 @@ function getNonSymbolicParallelVCDescription(stepObject) {
 }
 
 function toPolar(A, P) {
+    // TODO maybe refactor so we only input a complex value
     if (P[0] === "-") {
         return `${A} \\cdot e^{j\\cdot(${P})}`;
     } else {
@@ -376,7 +408,7 @@ function getComplexNonSymbolicSeriesVC(stepObject) {
         } else {
             str += `$$\\underline{${cpt.U.name}} = \\underline{Z_{${cpt.Z.name}}} \\cdot  \\underline{${cpt.I.name}}$$`;
         }
-        str += `$$= ${cpt.Z.cpxVal} \\cdot ${toPolar(stepObject.simplifiedTo.I.val, stepObject.simplifiedTo.I.phase)}$$`;  // use simplifiedTo val to make it more explanatory in symbolic circuits
+        str += `$$= ${toPolar(cpt.Z.impedance, cpt.Z.phase)} \\cdot ${toPolar(stepObject.simplifiedTo.I.val, stepObject.simplifiedTo.I.phase)}$$`;  // use simplifiedTo val to make it more explanatory in symbolic circuits
         str += `$$= ${toPolar(cpt.U.val, cpt.U.phase)}$$<br>`;
     });
     return str;
