@@ -64,6 +64,10 @@ function getAllLabelsMap(stepObject) {
     for (let component of stepObject.allComponents) {
         if (component.Z.name !== null && component.Z.name !== undefined) {
             elementNameValueMap.set(component.Z.name, stepObject.getZVal(component));
+        }
+    }
+    for (let component of stepObject.allComponents) {
+        if (component.Z.name !== null && component.Z.name !== undefined) {
             elementNameValueMap.set(component.U.name, component.U.val);
             elementNameValueMap.set(component.I.name, component.I.val);
         }
@@ -281,18 +285,23 @@ function createForeignObject(symbol, value, svgDiv, labelproperties) {
     var svgNS = "http://www.w3.org/2000/svg";
     let foreignObject = document.createElementNS(svgNS, "foreignObject");
     foreignObject.id = `${symbol}-foreignObject`;
+    let disp;
     if (labelproperties.labelclass === "") {
         foreignObject.classList.add("mathjax-value-label");
+        if (state.valuesShown && arrowsShown(svgDiv)) {
+            disp = "block";
+        } else {
+            disp = "none";
+        }
     } else {
         foreignObject.classList.add("mathjax-value-label", labelproperties.labelclass);
+        if (state.step0Data.componentTypes !== "RLC" && state.valuesShown && arrowsShown(svgDiv)) {
+            disp = "block";
+        } else {
+            disp = "none";
+        }
     }
     foreignObject.style.textAlign = "right";
-    let disp;
-    if (state.valuesShown && arrowsShown(svgDiv)) {
-        disp = "block";
-    } else {
-        disp = "none";
-    }
     foreignObject.style.display = disp;
     // Make object as small as needed and just show the overflow -> Doesn't block bounding boxes
     foreignObject.style.direction = labelproperties.direction;
@@ -384,20 +393,32 @@ function addNameValueToggleBtn(svgDiv, elementNameValueMap) {
     svgDiv.insertAdjacentElement("afterbegin", nameValueToggleBtn);
 }
 
-function toggleMathJaxFormulas(svgDiv) {
+function toggleMathJaxElementFormulas(svgDiv) {
     let mathjaxValueLabels = svgDiv.querySelectorAll(".mathjax-value-label");
     for (let mathjaxValueLabel of mathjaxValueLabels) {
         if (mathjaxValueLabel.classList.contains("V1")) continue;  // Source label stays hidden
-        // If arrows are not shown, skip voltage and current labels
-        if (!arrowsShown(svgDiv)) {
-            if (mathjaxValueLabel.classList.contains("current") || mathjaxValueLabel.classList.contains("voltage"))
-                continue;
+        if (!(mathjaxValueLabel.classList.contains("current") || mathjaxValueLabel.classList.contains("voltage"))) {
+            // Toggle
+            if (state.valuesShown) {
+                mathjaxValueLabel.style.setProperty("display", "none");
+            } else {
+                mathjaxValueLabel.style.setProperty("display", "block");
+            }
         }
-        // Toggle
-        if (state.valuesShown) {
-            mathjaxValueLabel.style.setProperty("display", "none");
-        } else {
-            mathjaxValueLabel.style.setProperty("display", "block");
+    }
+}
+
+function toggleMathJaxUIFormulas(svgDiv) {
+    let mathjaxValueLabels = svgDiv.querySelectorAll(".mathjax-value-label");
+    for (let mathjaxValueLabel of mathjaxValueLabels) {
+        if (mathjaxValueLabel.classList.contains("V1")) continue;  // Source label stays hidden
+        if (arrowsShown(svgDiv) && (mathjaxValueLabel.classList.contains("current") || mathjaxValueLabel.classList.contains("voltage"))) {
+            // Toggle
+            if (state.valuesShown) {
+                mathjaxValueLabel.style.setProperty("display", "none");
+            } else {
+                mathjaxValueLabel.style.setProperty("display", "block");
+            }
         }
     }
 }
@@ -433,8 +454,12 @@ function toggleVandISymbolLabels(svgDiv) {
 
 function toggleElements() {
     let svgDiv = document.getElementById("content-col");
-    toggleMathJaxFormulas(svgDiv);    // toggles values, 10V, 1A, ...
-    toggleVandISymbolLabels(svgDiv);  // toggles symbols, U1, I1, ...
+    toggleMathJaxElementFormulas(svgDiv);    // toggles element values, R1, C1 Formulas
+    if (state.step0Data.componentTypes !== "RLC") {
+        // Don't show U/I values in complex circuits
+        toggleMathJaxUIFormulas(svgDiv);      // toggles U, I, Formulas
+        toggleVandISymbolLabels(svgDiv);  // toggles symbols, U1, I1, ...
+    }
     toggleElementLabels(svgDiv);      // toggles Elements, R1, C1, ...
 }
 

@@ -180,6 +180,9 @@ function resetSimplifierPage(calledFromResetBtn = false) {
     state.pictureCounter = 0;
     state.allValuesMap = new Map();
     scrollBodyToTop();
+    if (calledFromResetBtn && state.pyodideReady) {
+        startSolving();  // Draw the first picture again
+    }
 }
 
 function enableLastCalcButton() {
