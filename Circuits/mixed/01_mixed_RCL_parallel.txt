@@ -1,4 +1,4 @@
-V1 2 0 ac {10} {0} {2*pi*30}; up
+V1 2 0 ac {10} {0} {2*pi*100}; up
 W 2 3; right
 R1 3 4 {300}; down
 W 3 5; right
