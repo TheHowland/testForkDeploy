@@ -179,9 +179,6 @@ function resetSimplifierPage(calledFromResetBtn = false) {
     state.selectedElements = [];
     state.pictureCounter = 0;
     state.allValuesMap = new Map();
-    if (state.pyodideReady) {
-        startSolving();  // Draw the first picture again
-    }
     scrollBodyToTop();
 }
 

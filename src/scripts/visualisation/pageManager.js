@@ -137,7 +137,7 @@ class PageManager {
 
     setupNavigation() {
         const navHomeLink = document.getElementById("nav-home");
-        const navSimplifierLink = document.getElementById("nav-select");
+        const navSelectLink = document.getElementById("nav-select");
         const navCheatLink = document.getElementById("nav-cheat");
         const navLogo = document.getElementById("nav-logo");
         const selectEnglish = document.getElementById("select-english");
@@ -148,7 +148,7 @@ class PageManager {
             closeNavbar();
             this.showLandingPage();
         })
-        navSimplifierLink.addEventListener("click", async () => {
+        navSelectLink.addEventListener("click", async () => {
             checkIfSimplifierPageNeedsReset();  // must be in front of page change
             closeNavbar();
             if (state.pyodideReady) {
