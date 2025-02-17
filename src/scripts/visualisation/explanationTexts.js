@@ -90,11 +90,15 @@ function getComplexAdditionCalculation(stepObject) {
     }
     str = str.slice(0, -3);  // remove last +
     str += `$$`;
-
+    // Carthesian
     str += `$$\\mathbf{${stepObject.simplifiedTo.Z.name}} = ${stepObject.simplifiedTo.Z.cpxVal}$$`;
+    // Absolute value
+    str += `$$|\\mathbf{${stepObject.simplifiedTo.Z.name}}| = \\sqrt{(${stepObject.simplifiedTo.Z.re}\\Omega)^2 + (${stepObject.simplifiedTo.Z.im}\\Omega)^2} $$`;
+    str += `$$|\\mathbf{${stepObject.simplifiedTo.Z.name}}| = ${stepObject.simplifiedTo.Z.impedance}$$`;
+    // Phase
+    str += `$$\\varphi = \\arctan(\\frac{${stepObject.simplifiedTo.Z.im}}{${stepObject.simplifiedTo.Z.re}}) = ${stepObject.simplifiedTo.Z.phase}$$`;
+    // Polar
     str += `$$\\mathbf{${stepObject.simplifiedTo.Z.name}} = ${toPolar(stepObject.simplifiedTo.Z.impedance, stepObject.simplifiedTo.Z.phase)}$$<br>`;
-
-
     return str;
 }
 
@@ -124,8 +128,15 @@ function getComplexReciprocalCalculation(stepObject) {
     }
     str = str.slice(0, -3);  // remove last +
     str += `$$`;
-    str += `$$${stepObject.simplifiedTo.Z.name} = ${stepObject.simplifiedTo.Z.cpxVal}$$<br>`;
-
+    // Carthesian
+    str += `$$\\mathbf{${stepObject.simplifiedTo.Z.name}} = ${stepObject.simplifiedTo.Z.cpxVal}$$`;
+    // Absolute value
+    str += `$$|\\mathbf{${stepObject.simplifiedTo.Z.name}}| = \\sqrt{(${stepObject.simplifiedTo.Z.re}\\Omega)^2 + (${stepObject.simplifiedTo.Z.im}\\Omega)^2} $$`;
+    str += `$$|\\mathbf{${stepObject.simplifiedTo.Z.name}}| = ${stepObject.simplifiedTo.Z.impedance}$$`;
+    // Phase
+    str += `$$\\varphi = \\arctan(\\frac{${stepObject.simplifiedTo.Z.im}}{${stepObject.simplifiedTo.Z.re}}) = ${stepObject.simplifiedTo.Z.phase}$$`;
+    // Polar
+    str += `$$\\mathbf{${stepObject.simplifiedTo.Z.name}} = ${toPolar(stepObject.simplifiedTo.Z.impedance, stepObject.simplifiedTo.Z.phase)}$$<br>`;
     return str;
 }
 

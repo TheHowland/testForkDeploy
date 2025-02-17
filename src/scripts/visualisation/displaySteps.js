@@ -41,7 +41,8 @@ function getSourceVoltage() {
 }
 
 function getSourceFrequency() {
-    return state.step0Data.source.omega_0;
+    let f = parseFloat(state.step0Data.source.omega_0) / (2*Math.PI);
+    return Math.round((f + Number.EPSILON) * 100) / 100
 }
 
 function sourceIsAC() {
@@ -63,7 +64,15 @@ function getAllLabelsMap(stepObject) {
     }
     for (let component of stepObject.allComponents) {
         if (component.Z.name !== null && component.Z.name !== undefined) {
-            elementNameValueMap.set(component.Z.name, stepObject.getZVal(component));
+            if (state.step0Data.componentTypes === "RLC") {
+                if (component.Z.name.startsWith('Z')) {
+                    elementNameValueMap.set(component.Z.name, component.Z.impedance);
+                } else {
+                    elementNameValueMap.set(component.Z.name, stepObject.getZVal(component));
+                }
+            } else {
+                elementNameValueMap.set(component.Z.name, stepObject.getZVal(component));
+            }
         }
     }
     for (let component of stepObject.allComponents) {
@@ -85,11 +94,14 @@ function addComponentValues(component) {
         } else {
             state.allValuesMap.set(component.Z.name, component.Z.impedance);
         }
-        state.allValuesMap.set(component.U.name, component.U.val);
-        state.allValuesMap.set(component.I.name, component.I.val);
         if (state.step0Data.componentTypes === "RLC") {
             state.allValuesMap.set(`Z_{${component.Z.name}}`, component.Z.cpxVal);
-            // TODO maybe add impedance
+            state.allValuesMap.set(`Zpolar_{${component.Z.name}}`, toPolar(component.Z.impedance, component.Z.phase));
+            state.allValuesMap.set(component.U.name, toPolar(component.U.val, component.U.phase));
+            state.allValuesMap.set(component.I.name, toPolar(component.I.val, component.I.phase));
+        } else {
+            state.allValuesMap.set(component.U.name, component.U.val);
+            state.allValuesMap.set(component.I.name, component.I.val);
         }
     }
 }
@@ -101,13 +113,22 @@ function addTotalValues(stepObject) {
         state.allValuesMap.set(`${stepObject.simplifiedTo.Z.name[0]}${languageManager.currentLang.totalSuffix}`, stepObject.simplifiedTo.Z.val);
     } else {
         state.allValuesMap.set(stepObject.simplifiedTo.Z.name, stepObject.simplifiedTo.Z.impedance);
+        state.allValuesMap.set(stepObject.simplifiedTo.Z.name.replace('Z', 'Zpolar'), toPolar(stepObject.simplifiedTo.Z.impedance, stepObject.simplifiedTo.Z.phase));
         // Zges
-        state.allValuesMap.set(`Z${languageManager.currentLang.totalSuffix}`, stepObject.simplifiedTo.Z.impedance);
+        state.allValuesMap.set(`Z${languageManager.currentLang.totalSuffix}`, stepObject.simplifiedTo.Z.val);
+        state.allValuesMap.set(`Zpolar${languageManager.currentLang.totalSuffix}`, toPolar(stepObject.simplifiedTo.Z.impedance, stepObject.simplifiedTo.Z.phase));
     }
-    state.allValuesMap.set(stepObject.simplifiedTo.U.name, stepObject.simplifiedTo.U.val);
-    state.allValuesMap.set(stepObject.simplifiedTo.I.name, stepObject.simplifiedTo.I.val);
-    // Add total current
-    state.allValuesMap.set(`I${languageManager.currentLang.totalSuffix}`, stepObject.simplifiedTo.I.val);
+    if (state.step0Data.componentTypes === "RLC") {
+        state.allValuesMap.set(stepObject.simplifiedTo.U.name, toPolar(stepObject.simplifiedTo.U.val, stepObject.simplifiedTo.U.phase));
+        state.allValuesMap.set(stepObject.simplifiedTo.I.name, toPolar(stepObject.simplifiedTo.I.val, stepObject.simplifiedTo.I.phase));
+        // Add total current
+        state.allValuesMap.set(`I${languageManager.currentLang.totalSuffix}`, toPolar(stepObject.simplifiedTo.I.val, stepObject.simplifiedTo.I.phase));
+    } else {
+        state.allValuesMap.set(stepObject.simplifiedTo.U.name, stepObject.simplifiedTo.U.val);
+        state.allValuesMap.set(stepObject.simplifiedTo.I.name, stepObject.simplifiedTo.I.val);
+        // Add total current
+        state.allValuesMap.set(`I${languageManager.currentLang.totalSuffix}`, stepObject.simplifiedTo.I.val);
+    }
 }
 
 function appendToAllValuesMap(showVCData, stepObject, electricalElements) {
@@ -138,7 +159,7 @@ function getFinishMsg(showVCData) {
     }
     if (sourceIsAC()) {
         sourceInfo = `$$ ${languageManager.currentLang.voltageSymbol}_{${sfx}}=${getSourceVoltage()} $$
-                      $$ w = ${getSourceFrequency()} $$`;
+                      $$ f = ${getSourceFrequency()} Hz$$`;
     } else {
         sourceInfo = `$$ ${languageManager.currentLang.voltageSymbol}_{${sfx}}=${getSourceVoltage()} $$`;
     }
@@ -223,6 +244,10 @@ function setupSvgDivContainerAndData(stepObject) {
     svgData = setSvgColorMode(svgData);
     svgDiv.innerHTML = svgData;
 
+    if (state.step0Data.componentTypes === "RLC") {
+        // Always start with symbols shown on complex circuits
+        state.valuesShown = false;
+    }
     let allLabelsMap = getAllLabelsMap(stepObject);
     fillLabelsWithSymbols(svgDiv);
     hideSourceLabel(svgDiv);
@@ -270,14 +295,14 @@ function toggleLabelsFromTo(svgDiv, from, to) {
 }
 
 function setTogglesDependingOnState(svgDiv) {
-    if (!state.valuesShown) {
-        toggleLabelsFromTo(svgDiv, "none", "block");
-        // Toggle button text already correct
-    } else {
+    if (state.valuesShown) {
         toggleLabelsFromTo(svgDiv, "block", "none");
         // Toggle toggle-button
         let toggler = svgDiv.querySelector(".toggle-view");
         toggler.innerText = toggleSymbolDefinition.valuesShown;
+    } else {
+        toggleLabelsFromTo(svgDiv, "none", "block");
+        // Toggle button text already correct
     }
 }
 
@@ -895,6 +920,7 @@ function generateVZIUArrays() {
     let iMap = new Map();
     let uMap = new Map();
     let zMap = new Map();
+    let zPMap = new Map();
     for (let [key, value] of state.allValuesMap.entries()) {
         if (key === null) continue;
         if (key === undefined) continue;
@@ -905,14 +931,19 @@ function generateVZIUArrays() {
         } else if (key.startsWith('I')) {
             iMap.set(key, value);
         } else if (key.startsWith('Z')) {
-            zMap.set(key, value);
+            if (key.startsWith('Zpolar')) {
+                zPMap.set(key.replace('polar', ''), value);
+            } else {
+                zMap.set(key, value);
+            }
         }
     }
     let vArray = Array.from(vMap);
     let iArray = Array.from(iMap);
     let uArray = Array.from(uMap);
     let zArray = Array.from(zMap);
-    return {vArray, zArray, iArray, uArray};
+    let zPArray = Array.from(zPMap);
+    return {vArray, zArray, zPArray, iArray, uArray};
 }
 
 function generateSolutionsTable() {
@@ -926,7 +957,7 @@ function generateSolutionsTable() {
         tableData = `<table id="solutionsTable" class="table table-light"><tbody>`;
     }
 
-    let {vArray, zArray, iArray, uArray} = generateVZIUArrays();
+    let {vArray, zArray, zPArray, iArray, uArray} = generateVZIUArrays();
     let regex = /[A-Z]s\d*/;  // To differentiate between X1 and Xs1 (helper values)
 
     if (state.step0Data.componentTypes === "RLC") {
@@ -947,6 +978,7 @@ function generateSolutionsTable() {
             tableData += `<tr>
             <td style="color: ${color}">$$${vString}$$</td>
             <td style="color: ${color}">$$\\mathbf{${zArray[i][0]}} = ${zArray[i][1]}$$</td>
+            <td style="color: ${color}">$$\\mathbf{${zPArray[i][0]}} = ${zPArray[i][1]}$$</td>
             <td style="color: ${color}">$$\\mathbf{${uArray[i][0]}} = ${uArray[i][1]}$$</td>
             <td style="color: ${color}">$$\\mathbf{${iArray[i][0]}} = ${iArray[i][1]}$$</td>
             </tr>`;
