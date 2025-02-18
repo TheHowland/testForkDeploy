@@ -7,6 +7,7 @@ function display_step(stepObject) {
     state.pictureCounter++;  // increment before usage in the below functions
 
     // Create the new elements for the current step
+    appendToAllValuesMap(showVCData, stepObject);  // Before setupCircuitContainer because values are needed for labels
     const {circuitContainer, svgContainer} = setupCircuitContainer(stepObject);
 
     const {newCalcBtn, newVCBtn} = setupExplanationButtons(showVCData);
@@ -26,7 +27,7 @@ function display_step(stepObject) {
     if (showVCData) div.appendChild(newVCBtn);
 
     setupStepButtonsFunctionality(div);
-    appendToAllValuesMap(showVCData, stepObject, electricalElements);
+    appendTotalValues(stepObject, electricalElements);
     congratsAndVCDisplayIfFinished(electricalElements, contentCol, showVCData, stepObject);
     MathJax.typeset();
     // ##############################
@@ -54,37 +55,22 @@ function getSourceCurrent() {
     return (state.step0Data.source.sources.I.val).replace("-", "");
 }
 
-
-function getAllLabelsMap(stepObject) {
-    stepObject.__proto__ = StepObject.prototype;
-    let elementNameValueMap = new Map();
-    if (stepObject.allComponents === null || stepObject.allComponents === undefined) {
-        console.error("No components found in stepObject");
-        return elementNameValueMap;
+function MJtoText(mjStr) {
+    if (mjStr === undefined || mjStr === null) return "";
+    if (mjStr.includes("\\Omega")) {
+        mjStr = mjStr.replaceAll("\\Omega", "Ω");
     }
-    for (let component of stepObject.allComponents) {
-        if (component.Z.name !== null && component.Z.name !== undefined) {
-            if (state.step0Data.componentTypes === "RLC") {
-                if (component.Z.name.startsWith('Z')) {
-                    elementNameValueMap.set(component.Z.name, component.Z.impedance);
-                } else {
-                    elementNameValueMap.set(component.Z.name, stepObject.getZVal(component));
-                }
-            } else {
-                elementNameValueMap.set(component.Z.name, stepObject.getZVal(component));
-            }
+    if (mjStr.includes("\\mu")) {
+        mjStr = mjStr.replaceAll("\\mu", "µ");
+    }
+    // search in mjStr for generic "\\text{x}" and replace with x
+    if (mjStr.includes("\\text")) {
+        while (/\\text{(.*?)}/.test(mjStr)) {
+            mjStr = mjStr.replace(/\\text{(.*?)}/g, (match, p1) => p1);
         }
     }
-    for (let component of stepObject.allComponents) {
-        if (component.Z.name !== null && component.Z.name !== undefined) {
-            elementNameValueMap.set(component.U.name, component.U.val);
-            elementNameValueMap.set(component.I.name, component.I.val);
-        }
-    }
-    elementNameValueMap.set(`${languageManager.currentLang.voltageSymbol}${languageManager.currentLang.totalSuffix}`, getSourceVoltage());
-    elementNameValueMap.set(`I${languageManager.currentLang.totalSuffix}`, getSourceCurrent());
-
-    return elementNameValueMap;
+    mjStr = mjStr.replaceAll(" ", "");
+    return mjStr;
 }
 
 function addComponentValues(component) {
@@ -131,12 +117,20 @@ function addTotalValues(stepObject) {
     }
 }
 
-function appendToAllValuesMap(showVCData, stepObject, electricalElements) {
+function appendToAllValuesMap(showVCData, stepObject) {
     if (stepObject.step !== "step0") {
         for (let component of stepObject.components) {
             addComponentValues(component);
         }
+        addComponentValues(stepObject.simplifiedTo);
+    } else {
+        for (let component of stepObject.allComponents) {
+            addComponentValues(component);
+        }
     }
+}
+
+function appendTotalValues(stepObject, electricalElements) {
     if (onlyOneElementLeft(electricalElements)) {
         addTotalValues(stepObject);
     }
@@ -248,161 +242,34 @@ function setupSvgDivContainerAndData(stepObject) {
         // Always start with symbols shown on complex circuits
         state.valuesShown = false;
     }
-    let allLabelsMap = getAllLabelsMap(stepObject);
-    fillLabelsWithSymbols(svgDiv);
+    fillLabels(svgDiv);
     hideSourceLabel(svgDiv);
     hideSvgArrows(svgDiv);
-    createMathJaxLabels(svgDiv, allLabelsMap);
-
     // SVG Data written, now add eventListeners, only afterward because they would be removed on rewrite of svgData
     if (state.pictureCounter === 1) addInfoHelpButton(svgDiv);
     if (state.currentCircuitMap.selectorGroup !== circuitMapper.selectorIds.symbolic) {
         // Add name value toggle only for non-symbolic circuits (no need to toggle between R1 and R1...:) )
-        addNameValueToggleBtn(svgDiv, allLabelsMap);
-        setTogglesDependingOnState(svgDiv);  // only after toggler was added
+        addNameValueToggleBtn(svgDiv);
     }
     return svgDiv;
 }
 
-function fillLabelsWithSymbols(svgDiv) {
+function fillLabels(svgDiv) {
     // Initial values in svg are always ###.### ## because it will give us enough space
-    // to display MJ formulas without overlapping, so we need to label the elements with the correct names now
+    // to display values without overlapping, so we need to label the elements with the correct names now
     let labels = svgDiv.querySelectorAll(".arrow, .element-label");
     for (let label of labels) {
         if (label.nodeName === "path") continue;
         let span = label.querySelector("tspan");
-        span.innerHTML = label.classList[label.classList.length - 1];
-    }
-}
-
-function toggleLabelsFromTo(svgDiv, from, to) {
-    let mathjaxValueLabels = svgDiv.querySelectorAll(".mathjax-value-label");
-    for (let mathjaxValueLabel of mathjaxValueLabels) {
-        if (mathjaxValueLabel.classList.contains("V1")) continue;  // Source label stays hidden
-        // if arrow hidden, don't toggle voltage and current labels
-        if (!arrowsShown(svgDiv)) {
-            if (mathjaxValueLabel.classList.contains("current") || mathjaxValueLabel.classList.contains("voltage"))
-                continue;
-        }
-        mathjaxValueLabel.style.setProperty("display", from);
-    }
-    // Toggle all element labels
-    let elementLabels = svgDiv.querySelectorAll(".element-label");
-    for (let elementLabel of elementLabels) {
-        if (elementLabel.classList.contains("V1")) continue;  // Source label stays hidden
-        elementLabel.style.setProperty("display", to);
-    }
-}
-
-function setTogglesDependingOnState(svgDiv) {
-    if (state.valuesShown) {
-        toggleLabelsFromTo(svgDiv, "block", "none");
-        // Toggle toggle-button
-        let toggler = svgDiv.querySelector(".toggle-view");
-        toggler.innerText = toggleSymbolDefinition.valuesShown;
-    } else {
-        toggleLabelsFromTo(svgDiv, "none", "block");
-        // Toggle button text already correct
-    }
-}
-
-function createForeignObject(symbol, value, svgDiv, labelproperties) {
-    var svgNS = "http://www.w3.org/2000/svg";
-    let foreignObject = document.createElementNS(svgNS, "foreignObject");
-    foreignObject.id = `${symbol}-foreignObject`;
-    let disp;
-    if (labelproperties.labelclass === "") {
-        foreignObject.classList.add("mathjax-value-label");
-        if (state.valuesShown && arrowsShown(svgDiv)) {
-            disp = "block";
+        if (state.valuesShown) {
+            span.innerHTML = MJtoText(state.allValuesMap.get(label.classList[label.classList.length - 1]));
         } else {
-            disp = "none";
-        }
-    } else {
-        foreignObject.classList.add("mathjax-value-label", labelproperties.labelclass);
-        if (state.step0Data.componentTypes !== "RLC" && state.valuesShown && arrowsShown(svgDiv)) {
-            disp = "block";
-        } else {
-            disp = "none";
+            span.innerHTML = label.classList[label.classList.length - 1];
         }
     }
-    foreignObject.style.textAlign = "right";
-    foreignObject.style.display = disp;
-    // Make object as small as needed and just show the overflow -> Doesn't block bounding boxes
-    foreignObject.style.direction = labelproperties.direction;
-    foreignObject.style.color = labelproperties.color;
-    foreignObject.style.fontSize = labelproperties.fontSize;
-    foreignObject.style.opacity = labelproperties.opacity;
-    foreignObject.style.overflow = "visible";
-    foreignObject.setAttribute("width", "1");
-    foreignObject.setAttribute("height", "1");
-    foreignObject.setAttribute("x", labelproperties.x);
-    foreignObject.setAttribute("y", labelproperties.y);
-    foreignObject.innerHTML = `<span style="display: inline-block;">$$${value}$$</span>`;
-    return foreignObject;
 }
 
-function getVLabelInfo(label) {
-    let labelclass = "voltage";
-    let x = parseFloat(label.getAttribute("x"));
-    let y = parseFloat(label.getAttribute("y")) - 2;
-    let direction = "ltr";
-    let color = "#9898ff";
-    let fontSize = "90%";
-    let opacity = "0.8";
-    return {labelclass, x, y, direction, color, fontSize, opacity};
-}
-
-function getILabelInfo(label) {
-    let labelclass = "current";
-    let x = parseFloat(label.getAttribute("x"));
-    let y = parseFloat(label.getAttribute("y")) - 7 ;
-    let direction = "rtl";
-    let color = "red";
-    let fontSize = "90%";
-    let opacity = "0.8";
-    return {labelclass, x, y, direction, color, fontSize, opacity};
-}
-
-function getElementLabelInfo(label) {
-    let labelclass = "";
-    let x = parseFloat(label.getAttribute("x")) - 3;
-    let y = parseFloat(label.getAttribute("y")) - 5;
-    let direction = "rtl";
-    let color = colors.currentForeground;
-    let fontSize = "95%";
-    let opacity = "0.8";
-    return {labelclass, x, y, direction, color, fontSize, opacity};
-}
-
-function createMathJaxLabels(svgDiv, allLabelsMap) {
-    for (let [symbol, value] of allLabelsMap) {
-        let label;
-        let labelProperties;
-        if (symbol.includes("V") || symbol.includes("U")) {
-            label = svgDiv.querySelector(`text.voltage-label.${symbol}`);
-            if (label === null) continue;
-            labelProperties = getVLabelInfo(label);
-        } else if (symbol.includes("I")) {
-            label = svgDiv.querySelector(`text.current-label.${symbol}`);
-            if (label === null) continue;
-            labelProperties = getILabelInfo(label);
-        } else {
-            label = svgDiv.querySelector(`.${symbol}`);
-            if (label === null) continue;
-            labelProperties = getElementLabelInfo(label);
-        }
-        const foreignObject = createForeignObject(symbol, value, svgDiv, labelProperties);
-        // Serialize it this way to ensure that the foreignObject is correctly written as foreignObject and not foreignobject
-        // because if we don't use the XMLSerializer it gets parsed by HTML Parser and the foreignobject is not recognized
-        var serializer = new XMLSerializer();
-        var svgString = serializer.serializeToString(foreignObject);
-        svgDiv.querySelector("svg").innerHTML += svgString;
-    }
-    MathJax.typeset();
-}
-
-function addNameValueToggleBtn(svgDiv, elementNameValueMap) {
+function addNameValueToggleBtn(svgDiv) {
     const nameValueToggleBtn = document.createElement("button");
     nameValueToggleBtn.type = "button";
     nameValueToggleBtn.id = `toggle-view-${state.pictureCounter}`;
@@ -413,88 +280,51 @@ function addNameValueToggleBtn(svgDiv, elementNameValueMap) {
     nameValueToggleBtn.style.color = colors.currentForeground;
     nameValueToggleBtn.style.border = `1px solid ${colors.currentForeground}`;
     nameValueToggleBtn.style.background = "none";
-    nameValueToggleBtn.innerText = toggleSymbolDefinition.namesShown;
+    if (state.valuesShown) {
+        nameValueToggleBtn.innerText = toggleSymbolDefinition.valuesShown;
+    } else {
+        nameValueToggleBtn.innerText = toggleSymbolDefinition.namesShown;
+    }
     nameValueToggleBtn.onclick = () => {toggleNameValue()};
     svgDiv.insertAdjacentElement("afterbegin", nameValueToggleBtn);
 }
 
-function toggleMathJaxElementFormulas(svgDiv) {
-    let mathjaxValueLabels = svgDiv.querySelectorAll(".mathjax-value-label");
-    for (let mathjaxValueLabel of mathjaxValueLabels) {
-        if (mathjaxValueLabel.classList.contains("V1")) continue;  // Source label stays hidden
-        if (!(mathjaxValueLabel.classList.contains("current") || mathjaxValueLabel.classList.contains("voltage"))) {
-            // Toggle
-            if (state.valuesShown) {
-                mathjaxValueLabel.style.setProperty("display", "none");
-            } else {
-                mathjaxValueLabel.style.setProperty("display", "block");
-            }
-        }
-    }
-}
-
-function toggleMathJaxUIFormulas(svgDiv) {
-    let mathjaxValueLabels = svgDiv.querySelectorAll(".mathjax-value-label");
-    for (let mathjaxValueLabel of mathjaxValueLabels) {
-        if (mathjaxValueLabel.classList.contains("V1")) continue;  // Source label stays hidden
-        if (arrowsShown(svgDiv) && (mathjaxValueLabel.classList.contains("current") || mathjaxValueLabel.classList.contains("voltage"))) {
-            // Toggle
-            if (state.valuesShown) {
-                mathjaxValueLabel.style.setProperty("display", "none");
-            } else {
-                mathjaxValueLabel.style.setProperty("display", "block");
-            }
-        }
-    }
-}
-
-function toggleElementLabels(svgDiv) {
-    let elementLabels = svgDiv.querySelectorAll(".element-label");
-    for (let elementLabel of elementLabels) {
-        if (elementLabel.classList.contains("V1")) continue;  // Source label stays hidden
-        // Toggle
-        if (state.valuesShown) {
-            elementLabel.style.setProperty("display", "block");
-        } else {
-            elementLabel.style.setProperty("display", "none");
-        }
-    }
-}
-
-function toggleVandISymbolLabels(svgDiv) {
-    if (arrowsShown(svgDiv)) {
-        // only text elements with class voltage-label or current-label (not path elements (arrows))
-        let VIelementLabels = svgDiv.querySelectorAll("text.voltage-label, text.current-label");
-        for (let elementLabel of VIelementLabels) {
-            if (elementLabel.classList.contains("V1")) continue;  // Source label stays hidden
-            // Toggle
-            if (state.valuesShown) {
-                elementLabel.style.setProperty("display", "block");
-            } else {
-                elementLabel.style.setProperty("display", "none");
-            }
-        }
-    }
-}
-
 function toggleElements() {
     let svgDiv = document.getElementById("content-col");
-    toggleMathJaxElementFormulas(svgDiv);    // toggles element values, R1, C1 Formulas
+    toggleElementSymbols(svgDiv);
     if (state.step0Data.componentTypes !== "RLC") {
         // Don't show U/I values in complex circuits
-        toggleMathJaxUIFormulas(svgDiv);      // toggles U, I, Formulas
-        toggleVandISymbolLabels(svgDiv);  // toggles symbols, U1, I1, ...
+        toggleUISymbols(svgDiv);
     }
-    toggleElementLabels(svgDiv);      // toggles Elements, R1, C1, ...
 }
 
-function arrowsShown(svgDiv) {
-    let arrows = svgDiv.getElementsByClassName("arrow");
-    if (arrows.length === 0) return false;
-    return arrows[0].style.display !== "none";
+function toggleUISymbols(svgDiv) {
+    let texts = svgDiv.querySelectorAll("text.current-label:not(#nextElementsContainer text.current-label), text.voltage-label:not(#nextElementsContainer text.voltage-label)");
+    for (let text of texts) {
+        let span = text.querySelector("tspan");
+        if (state.valuesShown) {
+            span.innerHTML = MJtoText(state.allValuesMap.get(text.classList[text.classList.length - 1]));
+        } else {
+            span.innerHTML = text.classList[text.classList.length - 1];
+        }
+    }
+}
+
+function toggleElementSymbols(svgDiv) {
+    let texts = svgDiv.querySelectorAll(".element-label:not(#nextElementsContainer .element-label)");
+    for (let text of texts) {
+        if (text.classList.contains("V1")) continue;  // Source label stays hidden
+        let span = text.querySelector("tspan");
+        if (state.valuesShown) {
+            span.innerHTML = MJtoText(state.allValuesMap.get(text.classList[text.classList.length - 1]));
+        } else {
+            span.innerHTML = text.classList[text.classList.length - 1];
+        }
+    }
 }
 
 function toggleNameValue() {
+    state.valuesShown = !state.valuesShown;
     toggleElements();
     // Toggle button icons
     let togglers = document.querySelectorAll(".toggle-view");
@@ -505,7 +335,6 @@ function toggleNameValue() {
             toggler.innerText = toggleSymbolDefinition.valuesShown;
         }
     }
-    state.valuesShown = !state.valuesShown;
 }
 
 function getElementsFromSvgContainer(svgContainer) {
@@ -817,8 +646,7 @@ function cloneAndAdaptStep0Svg() {
     let toggleBtn = originalStep0Svg.querySelector("#toggle-view-1");
     if (toggleBtn !== null) {
         // We have a toggle btn so check which state it is in
-        let valuesShown = originalStep0Svg.querySelector("#toggle-view-1").innerHTML === toggleSymbolDefinition.valuesShown;
-        if (valuesShown) {
+        if (state.valuesShown) {
             // copy the svg with names shown
             originalStep0Svg.querySelector("#toggle-view-1").click();
             clonedSvgData = originalStep0Svg.cloneNode(true);
@@ -831,7 +659,7 @@ function cloneAndAdaptStep0Svg() {
         clonedSvgData = originalStep0Svg.cloneNode(true);
     }
     clonedSvgData.id = "clonedOverviewSvg";
-    // Adapt svg data
+    // Adapt svg data, remove info and toggle btn
     clonedSvgData.removeChild(clonedSvgData.querySelector("#open-info-gif-btn"));
     let toggleBtnClone = clonedSvgData.querySelector("#toggle-view-1");
     if (toggleBtnClone !== null) {

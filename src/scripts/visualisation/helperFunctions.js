@@ -176,6 +176,7 @@ function resetSimplifierPage(calledFromResetBtn = false) {
     }
     clearSimplifierPageContent();
     resetSolverObject();
+    state.valuesShown = false;
     state.selectedElements = [];
     state.pictureCounter = 0;
     state.allValuesMap = new Map();
@@ -288,19 +289,6 @@ function showArrows(contentCol) {
     for (let arrow of arrows) {
         arrow.style.display = "block";
         arrow.style.opacity = "0.5";
-    }
-    if (state.valuesShown) {
-        // Hide labels
-        let arrows = contentCol.querySelectorAll("text.arrow");
-        for (let arrow of arrows) {
-            arrow.style.display = "none";
-        }
-        // Show mathjax formulas
-        let mathjax = contentCol.querySelectorAll(".mathjax-value-label");
-        for (let mj of mathjax) {
-            mj.style.display = "block";
-        }
-
     }
 }
 

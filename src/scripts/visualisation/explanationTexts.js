@@ -313,7 +313,6 @@ function getSymbolicSeriesVCDescription(stepObject) {
 function getSymbolicParallelVCDescription(stepObject) {
     let str = "";
     // Calculate current
-    // TODO adapt with j and impedance....
     str += `${languageManager.currentLang.currentCalcHeading} \\(${stepObject.simplifiedTo.Z.name}\\)<br>`;
     if (stepObject.simplifiedTo.Z.name.includes("R") || stepObject.simplifiedTo.Z.name.includes("Z")) {
         str += `$$${stepObject.simplifiedTo.I.name} = \\frac{${stepObject.simplifiedTo.U.name}}{${stepObject.simplifiedTo.Z.name}}$$`;
