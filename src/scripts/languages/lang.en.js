@@ -80,6 +80,8 @@ const english = {
         "Can not simplify those elements",
     alertChooseAtLeastOneElement:
         "Choose at least one element",
+    alertNotToggleable:
+        "There are complex elements in the circuit for which a short representation is not possible. See calculations",
 
     // Calculation text
     relationTextParallel:
