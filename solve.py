@@ -1,4 +1,4 @@
-# for lcapy version: 1.24+inskale.0.34
+# for lcapy version: 1.24+inskale.0.35
 from lcapy import Circuit, FileToImpedance, DrawWithSchemdraw
 from lcapy.solution import Solution
 from lcapy.componentRelation import ComponentRelation
@@ -81,12 +81,9 @@ class SolveInUserOrder:
 
         sol = Solution(self.steps, langSymbols=self.langSymbols)
         newestStep = sol.available_steps[-1]
-
-        stepData = sol.exportStepAsDict(newestStep)
-
         self.circuit = newNet
 
-        return stepData
+        return sol.exportStepAsDict(newestStep)
 
     def createInitialStep(self) -> ExportDict:
         """
