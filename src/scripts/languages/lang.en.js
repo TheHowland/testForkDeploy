@@ -153,6 +153,8 @@ const english = {
 
     /* About Page */
     aboutText:
-        "Test - en",
-
+        "<br><br>'simplipfy' was created at Pforzheim University in 2024.<br><br>" +
+        "The goal of the tool is to help students and pupils simplify electrical circuits.<br><br>" +
+        "It was developed under the direction of Prof.Dr. Stefan Kray and funded by the Foundation for Innovation in Higher Education.<br><br>" +
+        "The project is open-source and can be viewed on GitHub at the following link: <a href='https://github.com/prof-sky/inskale'>Github-Repo</a>"
 }

@@ -6,6 +6,7 @@ class LanguageManager {
         this.updateLanguageSelectorPage();
         this.updateLanguageSimplifierPage();
         this.updateLanguageCheatSheetPage();
+        this.updateLanguageAboutPage();
     }
 
     updateLanguageLandingPage() {

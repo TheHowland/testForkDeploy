@@ -139,6 +139,7 @@ function updateAvailableBsClassesTo(colorScheme) {
     updateBsClassesTo(colorScheme, "bg", document.getElementById("cheat-sheet-container"));
     updateBsClassesTo(colorScheme, "bg", document.getElementById("simplifier-page-container"));
     updateBsClassesTo(colorScheme, "bg", document.getElementById("select-page-container"));
+    updateBsClassesTo(colorScheme, "bg", document.getElementById("about-page-container"));
 }
 
 
@@ -164,6 +165,8 @@ function updateCheatSheetPageColorsTo(bsColorScheme) {
     for (const table of tables) {
         updateBsClassesTo(bsColorScheme, "table", table);
     }
+    const formula = document.getElementById("pRX");
+    formula.style.color = colors.currentForeground;
 }
 function updateSelectorPageSvgStrokeColor(fromSvgColor, toSvgColor) {
     // Change border color of selectors
