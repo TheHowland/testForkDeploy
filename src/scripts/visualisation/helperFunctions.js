@@ -329,6 +329,7 @@ async function createAndShowStep0(circuitMap) {
     stepSolve = state.solve.SolveInUserOrder(
         circuitMap.circuitFile,
         `${conf.pyodideCircuitPath}/${circuitMap.sourceDir}`,
+        "",
         paramMap);
 
     let obj = await stepSolve.createStep0().toJs({dict_converter: Object.fromEntries});

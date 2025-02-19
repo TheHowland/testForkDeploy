@@ -816,7 +816,7 @@ function createStandardTable(vMap, helperValueRegex, tableData, color, uMap, iMa
     for (let [key, value] of vMap.entries()) {
         if (helperValueRegex.test(key)) continue;
         let iKey = "I" + key.slice(1);
-        let uKey = "U" + key.slice(1); // TODO language
+        let uKey = languageManager.currentLang.voltageSymbol + key.slice(1);
         tableData += `<tr>
             <td style="color: ${color}">$$${key} = ${value}$$</td>
             <td style="color: ${color}">$$\\mathbf{${uKey}} = ${uMap.get(uKey)}$$</td>
