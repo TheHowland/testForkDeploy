@@ -34,6 +34,7 @@ async function main() {
     pageManager.setupNavigation();
     pageManager.setupCheatSheet();
     pageManager.setupSimplifierPage();
+    pageManager.setupAboutPage();
     // Selector page is set up when start button is clicked
 
     setupDarkModeSwitch();

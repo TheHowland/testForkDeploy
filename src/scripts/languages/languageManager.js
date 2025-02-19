@@ -75,6 +75,11 @@ class LanguageManager {
         ind.innerHTML = this.currentLang.inductorRowHeading;
     }
 
+    updateLanguageAboutPage() {
+        const aboutText = document.getElementById('about-text');
+        aboutText.innerHTML = this.currentLang.aboutText;
+    }
+
     updateDataPrivacyPage() {
         const backBtn = document.getElementById('back-btn-data-privacy');
         backBtn.innerHTML = this.currentLang.dataPrivacyBackBtn;

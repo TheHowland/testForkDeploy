@@ -20,6 +20,7 @@ function changeToDarkMode() {
     updateCheatSheetPageColorsTo(colors.bsColorSchemeDark);
     updateSimplifierPageColors();
     updateSelectorPageColors();
+    updateAboutPageColors();
     if (circuitMapper !== null) {
         updateSelectorPageSvgStrokeColor(colors.lightModeSvgStrokeColor, colors.darkModeSvgStrokeColor);
     }
@@ -32,6 +33,7 @@ function changeToLightMode() {
     updateCheatSheetPageColorsTo(colors.bsColorSchemeLight);
     updateSimplifierPageColors();
     updateSelectorPageColors();
+    updateAboutPageColors();
     if (circuitMapper !== null) {
         updateSelectorPageSvgStrokeColor(colors.darkModeSvgStrokeColor, colors.lightModeSvgStrokeColor);
     }
@@ -106,6 +108,11 @@ function updateSimplifierPageColors() {
     for (const toggleViewButton of toggleViewButtons) {
         toggleViewButton.style.color = colors.currentForeground;
     }
+}
+
+function updateAboutPageColors() {
+    const aboutText = document.getElementById("about-text");
+    aboutText.style.color = colors.currentForeground;
 }
 
 function updateSelectorPageNote() {

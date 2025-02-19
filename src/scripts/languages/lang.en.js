@@ -151,5 +151,8 @@ const english = {
     legalNoticeHeading:
         "Legal Notice",
 
+    /* About Page */
+    aboutText:
+        "Test - en",
 
 }
