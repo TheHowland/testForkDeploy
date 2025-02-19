@@ -158,7 +158,8 @@ const german = {
     /* About Page */
     aboutText:
         "<br><br>'simplipfy' wurde 2024 in einem Projekt an der Hoschule Pforzheim entwickelt.<br><br>" +
-        "Ziel des Tools soll es sein Studierenden und Sch&uumllern bei der Vereinfachung von Schaltkreisen zu helfen.<br><br>" +
-        "Es wurde unter der Leitung von Prof.Dr. Stefan Kray entwickelt und von der Stiftung Innovation in der Hochschullehre gef&oumlrdert.<br><br>" +
+        "Ziel des Tools soll es sein Studierenden und Sch&uumllern beim interaktiven Erlernen von Elektrotechnik-Themen zu helfen, wobei darauf geachtet wurde, dass " +
+        "weitere Themen hinzugef&uumlgt werden k&oumlnnen und es nicht nur bei der Vereinfachung von Schaltkreisen bleiben muss.<br><br>" +
+        "simplipfy wurde unter der Leitung von Prof.Dr. Stefan Kray entwickelt und von der Stiftung Innovation in der Hochschullehre gef&oumlrdert.<br><br>" +
         "Das Projekt ist open-source und kann unter folgendem Link auf GitHub eingesehen werden: <a href='https://github.com/prof-sky/inskale'>Github-Repo</a>"
 }
