@@ -855,7 +855,7 @@ function generateSolutionsTable() {
     // Sort map after key number (C1, R2, C3, ...)
     vMap = sortMapByKeyIndices(vMap);
     let helperValueRegex = /[A-Z]s\d*/;
-    if (state.step0Data.componentTypes === "RLC") {
+    if (!currentCircuitIsSymbolic() && state.step0Data.componentTypes === "RLC") {
         tableData = createRLCTable(vMap, helperValueRegex, tableData, color, zMap, zPMap, uMap, iMap);
     } else {
         tableData = createStandardTable(vMap, helperValueRegex, tableData, color, uMap, iMap);
