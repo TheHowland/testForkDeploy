@@ -118,14 +118,8 @@ function addTotalValues(stepObject) {
 }
 
 function appendToAllValuesMap(showVCData, stepObject) {
-    if (stepObject.step !== "step0") {
-        for (let component of stepObject.components) {
-            addComponentValues(component);
-        }
-    } else {
-        for (let component of stepObject.allComponents) {
-            addComponentValues(component);
-        }
+    for (let component of stepObject.allComponents) {
+        addComponentValues(component);
     }
 }
 
