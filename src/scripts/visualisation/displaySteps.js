@@ -105,6 +105,7 @@ function addTotalValues(stepObject) {
         state.allValuesMap.set(`Zpolar${languageManager.currentLang.totalSuffix}`, toPolar(stepObject.simplifiedTo.Z.impedance, stepObject.simplifiedTo.Z.phase));
     }
     if (state.step0Data.componentTypes === "RLC") {
+        // If RLC, then add everything in polar form
         state.allValuesMap.set(stepObject.simplifiedTo.U.name, toPolar(stepObject.simplifiedTo.U.val, stepObject.simplifiedTo.U.phase));
         state.allValuesMap.set(stepObject.simplifiedTo.I.name, toPolar(stepObject.simplifiedTo.I.val, stepObject.simplifiedTo.I.phase));
         // Add total current
@@ -757,7 +758,7 @@ function generateTextElement(stepObject) {
     return text;
 }
 
-function generateVZIUArrays() {
+function generateVZIUMaps() {
     let vMap = new Map();
     let iMap = new Map();
     let uMap = new Map();
@@ -780,12 +781,62 @@ function generateVZIUArrays() {
             }
         }
     }
-    let vArray = Array.from(vMap);
-    let iArray = Array.from(iMap);
-    let uArray = Array.from(uMap);
-    let zArray = Array.from(zMap);
-    let zPArray = Array.from(zPMap);
-    return {vArray, zArray, zPArray, iArray, uArray};
+    return {vMap, zMap, zPMap, iMap, uMap};
+}
+
+function createRLCTable(vMap, helperValueRegex, tableData, color, zMap, zPMap, uMap, iMap) {
+    for (let [key, value] of vMap.entries()) {
+        if (helperValueRegex.test(key)) continue;
+        let iKey = "I" + key.slice(1);
+        let uKey = languageManager.currentLang.voltageSymbol + key.slice(1);
+        let zKey = `Z_{${key}}`;
+        tableData += `<tr>
+            <td style="color: ${color}">$$${key} = ${value}$$</td>
+            <td style="color: ${color}">$$\\mathbf{${zKey}} = ${zMap.get(zKey)}$$</td>
+            <td style="color: ${color}">$$\\mathbf{${zKey}} = ${zPMap.get(zKey)}$$</td>
+            <td style="color: ${color}">$$\\mathbf{${uKey}} = ${uMap.get(uKey)}$$</td>
+            <td style="color: ${color}">$$\\mathbf{${iKey}} = ${iMap.get(iKey)}$$</td>
+            </tr>`;
+    }
+    // Total values
+    let iTot = `I${languageManager.currentLang.totalSuffix}`;
+    let uTot = `${languageManager.currentLang.voltageSymbol}${languageManager.currentLang.totalSuffix}`;
+    let zTot = `Z${languageManager.currentLang.totalSuffix}`;
+    tableData += `<tr>
+        <td style="color: ${color}">-</td>
+        <td style="color: ${color}">$$\\mathbf{Z_${languageManager.currentLang.totalSuffix}} = ${zMap.get(zTot)}$$</td>
+        <td style="color: ${color}">$$\\mathbf{Z_${languageManager.currentLang.totalSuffix}} = ${zPMap.get(zTot)}$$</td>
+        <td style="color: ${color}">$$\\mathbf{${languageManager.currentLang.voltageSymbol}_${languageManager.currentLang.totalSuffix}} = ${uMap.get(uTot)}$$</td>
+        <td style="color: ${color}">$$\\mathbf{I_${languageManager.currentLang.totalSuffix}} = ${iMap.get(iTot)}$$</td>
+        </tr>`;
+    return tableData;
+}
+
+function createStandardTable(vMap, helperValueRegex, tableData, color, uMap, iMap) {
+    for (let [key, value] of vMap.entries()) {
+        if (helperValueRegex.test(key)) continue;
+        let iKey = "I" + key.slice(1);
+        let uKey = "U" + key.slice(1); // TODO language
+        tableData += `<tr>
+            <td style="color: ${color}">$$${key} = ${value}$$</td>
+            <td style="color: ${color}">$$\\mathbf{${uKey}} = ${uMap.get(uKey)}$$</td>
+            <td style="color: ${color}">$$\\mathbf{${iKey}} = ${iMap.get(iKey)}$$</td>
+            </tr>`;
+    }
+    return tableData;
+}
+
+function sortMapByKeyIndices(vMap) {
+    return new Map([...vMap.entries()].sort((a, b) => {
+        const numA = a[0].match(/\d+/);
+        const numB = b[0].match(/\d+/);
+
+        if (!numA && !numB) return 0; // Both keys don't have numbers
+        if (!numA) return 1; // a doesn't have a number -> at end
+        if (!numB) return -1; // b doesn't have a number -> a stays
+
+        return parseInt(numA[0]) - parseInt(numB[0]);
+    }));
 }
 
 function generateSolutionsTable() {
@@ -793,52 +844,21 @@ function generateSolutionsTable() {
     table.classList.add("table-responsive");
     let isDarkMode = document.getElementById("darkmode-switch").checked;
     let tableData, color;
+    color = ((isDarkMode) ? colors.keyLight : colors.keyDark);
     if (isDarkMode) {
         tableData = `<table id="solutionsTable" class="table table-dark"><tbody>`;
     } else {
         tableData = `<table id="solutionsTable" class="table table-light"><tbody>`;
     }
 
-    let {vArray, zArray, zPArray, iArray, uArray} = generateVZIUArrays();
-    let regex = /[A-Z]s\d*/;  // To differentiate between X1 and Xs1 (helper values)
-
+    let {vMap, zMap, zPMap, iMap, uMap} = generateVZIUMaps();
+    // Sort map after key number (C1, R2, C3, ...)
+    vMap = sortMapByKeyIndices(vMap);
+    let helperValueRegex = /[A-Z]s\d*/;
     if (state.step0Data.componentTypes === "RLC") {
-        for (let i = 0; i < zArray.length; i++) {
-            if (regex.test(zArray[i][0])) {
-                continue; // Remove if you want to show helper values in this table
-                //color = colors.keyGreyedOut;
-            } else {
-                color = ((isDarkMode) ? colors.keyLight : colors.keyDark);
-            }
-            let vString = "";
-            if (vArray.length > i) {
-                vString = `${vArray[i][0]} = ${vArray[i][1]}`;
-            } else {
-                vString = "-";
-            }
-
-            tableData += `<tr>
-            <td style="color: ${color}">$$${vString}$$</td>
-            <td style="color: ${color}">$$\\mathbf{${zArray[i][0]}} = ${zArray[i][1]}$$</td>
-            <td style="color: ${color}">$$\\mathbf{${zPArray[i][0]}} = ${zPArray[i][1]}$$</td>
-            <td style="color: ${color}">$$\\mathbf{${uArray[i][0]}} = ${uArray[i][1]}$$</td>
-            <td style="color: ${color}">$$\\mathbf{${iArray[i][0]}} = ${iArray[i][1]}$$</td>
-            </tr>`;
-        }
+        tableData = createRLCTable(vMap, helperValueRegex, tableData, color, zMap, zPMap, uMap, iMap);
     } else {
-        for (let i = 0; i < vArray.length; i++) {
-            if (regex.test(vArray[i][0])) {
-                continue; // Remove if you want to show helper values in this table
-                //color = colors.keyGreyedOut;
-            } else {
-                color = ((isDarkMode) ? colors.keyLight : colors.keyDark);
-            }
-            tableData += `<tr>
-            <td style="color: ${color}">$$${vArray[i][0]} = ${vArray[i][1]}$$</td>
-            <td style="color: ${color}">$$${uArray[i][0]} = ${uArray[i][1]}$$</td>
-            <td style="color: ${color}">$$${iArray[i][0]} = ${iArray[i][1]}$$</td>
-            </tr>`;
-        }
+        tableData = createStandardTable(vMap, helperValueRegex, tableData, color, uMap, iMap);
     }
 
     tableData += `</tbody></table></div>`;
