@@ -122,7 +122,6 @@ function appendToAllValuesMap(showVCData, stepObject) {
         for (let component of stepObject.components) {
             addComponentValues(component);
         }
-        addComponentValues(stepObject.simplifiedTo);
     } else {
         for (let component of stepObject.allComponents) {
             addComponentValues(component);
