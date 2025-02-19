@@ -81,7 +81,7 @@ const english = {
     alertChooseAtLeastOneElement:
         "Choose at least one element",
     alertNotToggleable:
-        "There are complex elements in the circuit for which a short representation is not possible. See calculations",
+        "Complex elements can not be toggled here, see calculations",
 
     // Calculation text
     relationTextParallel:

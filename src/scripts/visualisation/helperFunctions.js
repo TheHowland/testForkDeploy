@@ -86,7 +86,7 @@ function setSvgWidthTo(svgData, width) {
 }
 
 // Displays a temporary message to the user in a message box.
-function showMessage(container, message, prio = "warning", fixedBottom = true) {
+function showMessage(container, message, prio = "warning", fixedBottom = true, yPxHeight = 0) {
     let bootstrapAlert;
     let emoji;
     if (prio === "only2") {
@@ -98,35 +98,51 @@ function showMessage(container, message, prio = "warning", fixedBottom = true) {
     } else if (prio === "success") {
         emoji = goodEmojis[Math.floor(Math.random() * goodEmojis.length)];
         bootstrapAlert = "success";
+    } else if (prio === "info") {
+        emoji = "";
+        bootstrapAlert = "secondary";
+    } else {
+        emoji = "";
+        bootstrapAlert = "secondary";
     }
     const msg = document.createElement('div');
     msg.classList.add("alert", `alert-${bootstrapAlert}`);
     if (fixedBottom) {
         msg.classList.add("fixed-bottom");
         msg.style.bottom = "170px";
+    } else {
+        msg.style.position = "absolute";
+        msg.style.top = `${yPxHeight}px`;
+        msg.style.left = "0";
+        msg.style.right = "0";
     }
     msg.classList.add("mx-auto");  // centers it when max-width is set
     msg.style.maxWidth = "400px";
 
-    let emojiSpan = document.createElement('span');
-    emojiSpan.style.fontSize = '1.66em';
-    emojiSpan.innerHTML = emoji;
+    if (emoji !== "") {
+        let emojiSpan = document.createElement('span');
+        emojiSpan.style.fontSize = '1.66em';
+        emojiSpan.innerHTML = emoji;
+        msg.appendChild(emojiSpan);
+        msg.appendChild(document.createElement('br'));
+    }
 
     let msgSpan = document.createElement('span');
     msgSpan.innerHTML = message;
-
-    msg.appendChild(emojiSpan);
-    msg.appendChild(document.createElement('br'));
     msg.appendChild(msgSpan);
-
     container.appendChild(msg);
 
     // Remove the message when the user clicks anywhere
-    document.addEventListener("click", () => {
-        if (container.contains(msg)) {
-            container.removeChild(msg);
-        }
-    });
+    // Distinction between info messages and others because info message will be created by clicking on something
+    // this would already remove it again with this handler. Warning and so on are created by something done wrong
+    // without a click on the screen
+    if (prio !== "info") {
+        document.addEventListener("click", () => {
+            if (container.contains(msg)) {
+                container.removeChild(msg);
+            }
+        });
+    }
     // Remove the message after 3 seconds if not clicked already
     setTimeout(() => {
         if (container.contains(msg)) {

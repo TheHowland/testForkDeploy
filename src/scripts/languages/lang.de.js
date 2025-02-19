@@ -84,7 +84,7 @@ const german = {
     alertChooseAtLeastOneElement:
         "W&aumlhle mindestens ein Element",
     alertNotToggleable:
-        "Im Kreis sind komplexe Elemente dabei für die eine Kurzdarstellung nicht m&oumlglich ist. Siehe Rechnungen",
+        "Komplexe Elemente k&oumlnnen hier nicht dargestellt werden, siehe Rechnungen",
 
     // Calculation text
     relationTextParallel:

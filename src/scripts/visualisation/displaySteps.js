@@ -222,6 +222,18 @@ function addInfoHelpButton(svgDiv) {
     svgDiv.insertAdjacentElement("afterbegin", infoBtn);
 }
 
+function divContainsZLabels(svgDiv) {
+    let symbols = svgDiv.querySelectorAll(".element-label");
+    let containsZ = false;
+    for (let symbol of symbols) {
+        if (symbol.classList[symbol.classList.length - 1].includes("Z")) {
+            containsZ = true;
+            break;
+        }
+    }
+    return containsZ;
+}
+
 function setupSvgDivContainerAndData(stepObject) {
     let svgData = stepObject.svgData;
     const svgDiv = document.createElement('div');
@@ -237,18 +249,16 @@ function setupSvgDivContainerAndData(stepObject) {
     // Svg manipulation - set width and color for dark mode
     svgData = setSvgColorMode(svgData);
     svgDiv.innerHTML = svgData;
+    let containsZ = divContainsZLabels(svgDiv);
 
-    if (svgDiv.id === "svgDiv1") {
+    if (svgDiv.id === "svgDiv1" || containsZ) {
         // First svg, set valuesShown to false
+        // Also set to zero if labels contain Z because they can't be toggled
         state.valuesShown.set(svgDiv.id, false);
     } else {
         // Set valuesShown to the previous state
         state.valuesShown.set(svgDiv.id, state.valuesShown.get(`svgDiv${state.pictureCounter - 1}`));
     }
-    /*if (state.step0Data.componentTypes === "RLC") {
-        // Always start with symbols shown on complex circuits
-        state.valuesShown.set(svgDiv.id, false);
-    }*/
 
     fillLabels(svgDiv);
     hideSourceLabel(svgDiv);
@@ -298,8 +308,7 @@ function addNameValueToggleBtn(svgDiv) {
 }
 
 function toggleElements(svgDiv) {
-    //let svgDiv = document.getElementById("content-col");
-    toggleElementSymbols(svgDiv);
+     toggleElementSymbols(svgDiv);
     if (state.step0Data.componentTypes !== "RLC") {
         // Don't show U/I values in complex circuits
         toggleUISymbols(svgDiv);
@@ -307,31 +316,38 @@ function toggleElements(svgDiv) {
 }
 
 function toggleUISymbols(svgDiv) {
-    let texts = svgDiv.querySelectorAll("text.current-label:not(#nextElementsContainer text.current-label), text.voltage-label:not(#nextElementsContainer text.voltage-label)");
+    let texts = svgDiv.querySelectorAll("text.current-label, text.voltage-label");
     for (let text of texts) {
-        let span = text.querySelector("tspan");
-        if (state.valuesShown.get(svgDiv.id)) {
-            span.innerHTML = MJtoText(state.allValuesMap.get(text.classList[text.classList.length - 1]));
-        } else {
-            span.innerHTML = text.classList[text.classList.length - 1];
-        }
+        toggleText(text, svgDiv);
     }
 }
 
 function toggleElementSymbols(svgDiv) {
-    let texts = svgDiv.querySelectorAll(".element-label:not(#nextElementsContainer .element-label)");
+    let texts = svgDiv.querySelectorAll(".element-label");
     for (let text of texts) {
         if (text.classList.contains("V1")) continue;  // Source label stays hidden
-        let span = text.querySelector("tspan");
-        if (state.valuesShown.get(svgDiv.id)) {
-            span.innerHTML = MJtoText(state.allValuesMap.get(text.classList[text.classList.length - 1]));
-        } else {
-            span.innerHTML = text.classList[text.classList.length - 1];
-        }
+        toggleText(text, svgDiv);
+    }
+}
+
+function toggleText(text, svgDiv) {
+    let span = text.querySelector("tspan");
+    if (state.valuesShown.get(svgDiv.id)) {
+        span.innerHTML = MJtoText(state.allValuesMap.get(text.classList[text.classList.length - 1]));
+    } else {
+        span.innerHTML = text.classList[text.classList.length - 1];
     }
 }
 
 function toggleNameValue(svgDiv, nameValueToggleBtn) {
+    let containsZ = divContainsZLabels(svgDiv);
+    if (containsZ) {
+        let rect = svgDiv.getBoundingClientRect();
+        let y = rect.y + window.scrollY + 20;
+        showMessage(document.getElementById("content-col"), languageManager.currentLang.alertNotToggleable, "info", false, y);
+        return;
+    }
+
     state.valuesShown.set(svgDiv.id, !state.valuesShown.get(svgDiv.id));
     toggleElements(svgDiv);
     // Toggle button icons
