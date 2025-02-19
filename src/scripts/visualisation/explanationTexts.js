@@ -98,7 +98,17 @@ function getComplexAdditionCalculation(stepObject) {
     // Phase
     str += `$$\\varphi = \\arctan(\\frac{${stepObject.simplifiedTo.Z.im}}{${stepObject.simplifiedTo.Z.re}}) = ${stepObject.simplifiedTo.Z.phase}$$`;
     // Polar
-    str += `$$\\mathbf{${stepObject.simplifiedTo.Z.name}} = ${toPolar(stepObject.simplifiedTo.Z.impedance, stepObject.simplifiedTo.Z.phase)}$$<br>`;
+    str += `$$\\mathbf{${stepObject.simplifiedTo.Z.name}} = ${toPolar(stepObject.simplifiedTo.Z.impedance, stepObject.simplifiedTo.Z.phase)}$$`;
+
+    // At this point we know we simplify to a complex impedance, if however we find that simplifiedTo.Z.name
+    // contains either L or C, we know that we can calculate the complex value back to L or C
+    if (stepObject.simplifiedTo.Z.name.includes("L")) {
+        str += `$$(${stepObject.simplifiedTo.Z.name} = \\frac{\\mathbf{${stepObject.simplifiedTo.Z.name}}}{j2\\pi f} = ${stepObject.simplifiedTo.Z.val})$$<br>`;
+    }
+    if (stepObject.simplifiedTo.Z.name.includes("C")) {
+        str += `$$(${stepObject.simplifiedTo.Z.name} = \\frac{-j}{2\\pi f \\mathbf{${stepObject.simplifiedTo.Z.name}}} = ${stepObject.simplifiedTo.Z.val})$$<br>`;
+    }
+
     return str;
 }
 
@@ -136,7 +146,17 @@ function getComplexReciprocalCalculation(stepObject) {
     // Phase
     str += `$$\\varphi = \\arctan(\\frac{${stepObject.simplifiedTo.Z.im}}{${stepObject.simplifiedTo.Z.re}}) = ${stepObject.simplifiedTo.Z.phase}$$`;
     // Polar
-    str += `$$\\mathbf{${stepObject.simplifiedTo.Z.name}} = ${toPolar(stepObject.simplifiedTo.Z.impedance, stepObject.simplifiedTo.Z.phase)}$$<br>`;
+    str += `$$\\mathbf{${stepObject.simplifiedTo.Z.name}} = ${toPolar(stepObject.simplifiedTo.Z.impedance, stepObject.simplifiedTo.Z.phase)}$$`;
+
+    // At this point we know we simplify to a complex impedance, if however we find that simplifiedTo.Z.name
+    // contains either L or C, we know that we can calculate the complex value back to L or C
+    if (stepObject.simplifiedTo.Z.name.includes("L")) {
+        str += `$$(${stepObject.simplifiedTo.Z.name} = \\frac{\\mathbf{${stepObject.simplifiedTo.Z.name}}}{j2\\pi f} = ${stepObject.simplifiedTo.Z.val})$$<br>`;
+    }
+    if (stepObject.simplifiedTo.Z.name.includes("C")) {
+        str += `$$(${stepObject.simplifiedTo.Z.name} = \\frac{-j}{2\\pi f \\mathbf{${stepObject.simplifiedTo.Z.name}}} = ${stepObject.simplifiedTo.Z.val})$$<br>`;
+    }
+
     return str;
 }
 
