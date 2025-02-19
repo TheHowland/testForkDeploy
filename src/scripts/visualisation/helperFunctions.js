@@ -176,7 +176,7 @@ function resetSimplifierPage(calledFromResetBtn = false) {
     }
     clearSimplifierPageContent();
     resetSolverObject();
-    state.valuesShown = false;
+    state.valuesShown = new Map();
     state.selectedElements = [];
     state.pictureCounter = 0;
     state.allValuesMap = new Map();
