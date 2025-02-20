@@ -22,7 +22,8 @@ class PageManager {
             feature.classList.remove("visible");
         }
         document.title = "simpliPFy";
-        pushPageViewMatomo()
+        pushPageViewMatomo();
+        scrollBodyToTop();
     }
 
     showSelectPage() {
@@ -39,6 +40,7 @@ class PageManager {
         } else {
             pushPageViewMatomo("Loading");
         }
+        scrollBodyToTop();
     }
 
     showSimplifierPage() {
@@ -50,6 +52,7 @@ class PageManager {
         this.disableSettings();
         document.title = "Simplifier";
         pushPageViewMatomo();
+        scrollBodyToTop();
     }
 
     showCheatSheet() {
@@ -61,6 +64,7 @@ class PageManager {
         this.enableSettings();
         document.title = "Cheat Sheet";
         pushPageViewMatomo();
+        scrollBodyToTop();
     }
 
     showAboutPage() {
@@ -72,6 +76,7 @@ class PageManager {
         this.enableSettings();
         document.title = "About";
         pushPageViewMatomo();
+        scrollBodyToTop();
     }
 
     disableSettings() {
