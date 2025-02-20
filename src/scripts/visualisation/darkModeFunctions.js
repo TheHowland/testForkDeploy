@@ -1,6 +1,6 @@
 function setupDarkModeSwitch() {
     const darkModeSwitch = document.getElementById("darkmode-switch");
-    darkModeSwitch.checked = true;
+    //darkModeSwitch.checked = true; not necessary, because default mode is set in beginning
     darkModeSwitch.addEventListener("change", () => {
         if (darkModeSwitch.checked) {
             changeToDarkMode();

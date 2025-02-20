@@ -361,10 +361,12 @@ function getCheckBoxValueOrQuickStartDef(circuitMap) {
 }
 
 function setLanguageAndScheme() {
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-    document.getElementById("darkmode-switch").checked = prefersDark;
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const darkModeSwitch = document.getElementById("darkmode-switch");
+    darkModeSwitch.checked = true;
     if (!prefersDark) {
         changeToLightMode();
+        darkModeSwitch.checked = false;
     }
 
     var userLang = navigator.language;
