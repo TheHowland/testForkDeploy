@@ -39,4 +39,5 @@ async function main() {
 
     setupDarkModeSwitch();
     enableStartBtnAndSimplifierLink();
+    setBodyPaddingForFixedTopNavbar();
 }

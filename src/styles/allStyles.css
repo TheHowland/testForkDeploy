@@ -218,7 +218,6 @@ body, html {
     overscroll-behavior-y: none;  /* prevent reloading the page when scrolling up */
     width: 100%;
     position: relative;
-    padding-top: 57px;
 }
 
 #bootstrap-overrides body {

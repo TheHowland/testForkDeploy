@@ -408,4 +408,11 @@ function currentCircuitIsSymbolic() {
     return state.currentCircuitMap.selectorGroup === circuitMapper.selectorIds.symbolic;
 }
 
+function setBodyPaddingForFixedTopNavbar() {
+    const navBar = document.getElementById("navbar");
+    let height = navBar.offsetHeight;
+    const body = document.getElementsByTagName("body")[0];
+    body.style.paddingTop = height + "px";
+}
+
 
