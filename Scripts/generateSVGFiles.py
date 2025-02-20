@@ -36,11 +36,12 @@ try:
             os.remove(os.path.join(folder, file))
 
         for file in files:
-            path = os.path.join(folder, file).replace(".txt", ".svg")
-            print(f"generating: {path}")
+            path = os.path.join(folder, file)
+            print(f"generating: {path.replace('.txt', '.svg')}")
             if not os.path.isfile(path):
                 continue
-            with warnings.catch_warnings(action="ignore"):
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
                 solver = solve.SolveInUserOrder(file, filePath=folder, savePath=savePath)
                 solver.createInitialStep().toSVG(fileName=file, savePath=savePath)
 
