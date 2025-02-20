@@ -37,8 +37,12 @@ function display_step(stepObject) {
 // ############################################# Helper functions #####################################################
 // ####################################################################################################################
 
-function getSourceVoltage() {
+function getSourceVoltageVal() {
     return state.step0Data.source.sources.U.val;
+}
+
+function getSourceCurrentVal() {
+    return state.step0Data.source.sources.I.val;
 }
 
 function getSourceFrequency() {
@@ -48,11 +52,6 @@ function getSourceFrequency() {
 
 function sourceIsAC() {
     return getSourceFrequency() !== "0";
-}
-
-function getSourceCurrent() {
-    // only to display the value as mathjax, not for calculations (consider the sign "-")
-    return (state.step0Data.source.sources.I.val).replace("-", "");
 }
 
 function MJtoText(mjStr) {
@@ -146,10 +145,10 @@ function getFinishMsg(showVCData) {
         sfx += "," + languageManager.currentLang.effectiveSuffix;
     }
     if (sourceIsAC()) {
-        sourceInfo = `$$ ${languageManager.currentLang.voltageSymbol}_{${sfx}}=${getSourceVoltage()} $$
+        sourceInfo = `$$ ${languageManager.currentLang.voltageSymbol}_{${sfx}}=${getSourceVoltageVal()} $$
                       $$ f = ${getSourceFrequency()} Hz$$`;
     } else {
-        sourceInfo = `$$ ${languageManager.currentLang.voltageSymbol}_{${sfx}}=${getSourceVoltage()} $$`;
+        sourceInfo = `$$ ${languageManager.currentLang.voltageSymbol}_{${sfx}}=${getSourceVoltageVal()} $$`;
     }
     if (showVCData) {
         // Give a note what voltage is used and that voltage/current is available
