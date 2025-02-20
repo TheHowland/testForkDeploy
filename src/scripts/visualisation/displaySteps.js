@@ -269,13 +269,26 @@ function setupSvgDivContainerAndData(stepObject) {
 function fillLabels(svgDiv) {
     // Initial values in svg are always ###.### ## because it will give us enough space
     // to display values without overlapping, so we need to label the elements with the correct names now
-    let labels = svgDiv.querySelectorAll(".arrow, .element-label");
+    let labels = svgDiv.querySelectorAll(".element-label");
     for (let label of labels) {
         if (label.nodeName === "path") continue;
         let span = label.querySelector("tspan");
         if (state.valuesShown.get(svgDiv.id)) {
             span.innerHTML = MJtoText(state.allValuesMap.get(label.classList[label.classList.length - 1]));
         } else {
+            span.innerHTML = label.classList[label.classList.length - 1];
+        }
+    }
+    // For U and I labels decide with RLC or not
+    labels = svgDiv.querySelectorAll(".arrow");
+    for (let label of labels) {
+        if (label.nodeName === "path") continue;
+        let span = label.querySelector("tspan");
+        if ((state.step0Data.componentTypes !== "RLC") && state.valuesShown.get(svgDiv.id)) {
+            // If RLC, show U/I values if values are shown
+            span.innerHTML = MJtoText(state.allValuesMap.get(label.classList[label.classList.length - 1]));
+        } else {
+            // If RLC, don't show U/I values
             span.innerHTML = label.classList[label.classList.length - 1];
         }
     }
