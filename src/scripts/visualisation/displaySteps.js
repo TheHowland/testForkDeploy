@@ -571,7 +571,7 @@ function generateTexts(stepObject) {
 }
 
 function finishCircuit(contentCol) {
-    showMessage(contentCol, languageManager.currentLang.msgCongratsFinishedCircuit, "success");
+    //showMessage(contentCol, languageManager.currentLang.msgCongratsFinishedCircuit, "success");
     confetti({
         particleCount: 150,
         angle: 90,
