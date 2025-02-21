@@ -324,7 +324,11 @@ function getSymbolicSeriesVCDescription(stepObject) {
         } else {
             str += `$$${component.U.name} = X_{${component.Z.name}} \\cdot  ${component.I.name}$$`;
         }
-        str += `$$= ${component.Z.impedance} \\cdot ${stepObject.simplifiedTo.I.val}$$`;  // use simplifiedTo val to make it more explanatory in symbolic circuits
+        let value = component.Z.impedance;
+        if (component.Z.impedance.includes("+")) {
+            value = `(${component.Z.impedance})`;  // parentheses for combined values
+        }
+        str += `$$= ${value} \\cdot ${stepObject.simplifiedTo.I.val}$$`;  // use simplifiedTo val to make it more explanatory in symbolic circuits
         str += `$$= ${component.U.val}$$<br>`;
     });
     return str;
