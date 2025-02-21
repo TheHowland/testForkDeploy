@@ -45,8 +45,7 @@ function getSourceCurrentVal() {
 }
 
 function getSourceFrequency() {
-    let f = parseFloat(state.step0Data.source.omega_0) / (2*Math.PI);
-    return `${Math.round((f + Number.EPSILON) * 100) / 100}`;
+    return state.step0Data.source.frequency;
 }
 
 function sourceIsAC() {
@@ -145,7 +144,7 @@ function getFinishMsg() {
     }
     if (sourceIsAC()) {
         sourceInfo = `$$ ${languageManager.currentLang.voltageSymbol}_{${sfx}}=${getSourceVoltageVal()} $$
-                      $$ f = ${getSourceFrequency()} Hz$$`;
+                      $$ f = ${getSourceFrequency()}$$`;
     } else {
         sourceInfo = `$$ ${languageManager.currentLang.voltageSymbol}_{${sfx}}=${getSourceVoltageVal()} $$`;
     }
