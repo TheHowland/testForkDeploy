@@ -55,9 +55,9 @@ function pushCircuitEventMatomo(action, value=-1) {
     let category = state.currentCircuitMap.selectorGroup;
     let showVC;
     if (category === circuitMapper.selectorIds.quick) {
-        showVC = showVCinQuickStart
+        showVC = true
     } else {
-        showVC = state.currentCircuitShowVC
+        showVC = true
     }
     let circuitName = state.currentCircuitMap.circuitFile;
 
