@@ -1,4 +1,4 @@
-# for lcapy version: 1.24+inskale.0.35
+# for lcapy version: 1.24+inskale.0.36
 import os
 import shutil
 import sys
@@ -21,7 +21,12 @@ for path in os.listdir(folderPath):
 
 # create a folder to save the files in temporarily
 savePath = ".tmpSVGFiles"
-os.mkdir(savePath)
+if not os.path.exists(savePath):
+    os.mkdir(savePath)
+else:
+    shutil.rmtree(savePath)
+    os.mkdir(savePath)
+
 try:
     for folder in subFolderPaths:
 
