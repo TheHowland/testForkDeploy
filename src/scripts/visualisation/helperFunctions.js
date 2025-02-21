@@ -338,6 +338,7 @@ async function createAndShowStep0(circuitMap) {
     state.currentStep = 0;
     state.allValuesMap.set(`${languageManager.currentLang.voltageSymbol}${languageManager.currentLang.totalSuffix}`, getSourceVoltageVal());
     state.allValuesMap.set(`I${languageManager.currentLang.totalSuffix}`, getSourceCurrentVal());
+    state.currentCircuitShowVC = getCheckBoxValueOrQuickStartDef(circuitMap);
     display_step(state.step0Data);
 }
 
@@ -349,6 +350,14 @@ function startSolving() {
     const nextElementsContainer = document.querySelector('.next-elements-container');
     if (svgDiv && nextElementsContainer) {
         resetNextElements(svgDiv, nextElementsContainer);
+    }
+}
+
+function getCheckBoxValueOrQuickStartDef(circuitMap) {
+    if (circuitMap.selectorGroup === circuitMapper.selectorIds.quick) {
+        return showVCinQuickStart; // Definition of what the quickstart does show, make false if no VC wished here
+    } else {
+        return showVCDefault;
     }
 }
 
