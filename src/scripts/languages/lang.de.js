@@ -46,6 +46,18 @@ const german = {
     overviewModalBtn:
         "Übersicht",
 
+    // Loading messages
+    messages:
+        [
+            "Lade Schaltungen...",
+            "Lade Widerstände...",
+            "Lade Kondensatoren...",
+            "Lade Spulen...",
+            "Irgendwo waren doch noch Widerstände...",
+            "Suche Taschenrechner...",
+            "Geht ein Widerstand in eine Bar...",
+            "Widerstand ist zwecklos...",
+        ],
 
     // Simplifier page text
     // info gif

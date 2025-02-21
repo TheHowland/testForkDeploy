@@ -124,6 +124,9 @@ class PageManager {
             state.pyodideLoading = true;
             // Get the pyodide instance and setup pages with functionality
             state.pyodide = await loadPyodide();
+            setInterval(() => {
+                    note.innerHTML = languageManager.currentLang.messages[Math.floor(Math.random() * languageManager.currentLang.messages.length)]},
+                3000);
             setPgrBarTo(5);
             // Map all circuits into map and build the selectors
             circuitMapper = new CircuitMapper();

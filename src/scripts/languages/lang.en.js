@@ -44,6 +44,18 @@ const english = {
     overviewModalBtn:
         "Overview",
 
+    // Loading messages
+    messages:
+        [
+            "Loading circuits",
+            "Loading resistors",
+            "Loading capacitors",
+            "Loading inductors",
+            "I know that there were some resistors here...",
+            "Looking for a calculator",
+            "A resistor walks into a bar...",
+        ],
+
     // Simplifier page text
     // info gif
     closeBtn:
