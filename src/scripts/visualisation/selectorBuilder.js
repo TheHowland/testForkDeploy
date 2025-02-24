@@ -253,7 +253,24 @@ class SelectorBuilder {
     setupOverviewModalCircuit(circuitMap, circuitDiv, pageManager) {
         if (circuitMap.selectorGroup !== circuitMapper.selectorIds.quick) {
             const gridElement = document.getElementById(`${circuitMap.circuitDivID}-overviewModal`);
-            gridElement.innerHTML = circuitDiv.innerHTML;  // copy svg without arrows to modal
+            let data;
+            if (!(circuitMap.selectorGroup === circuitMapper.selectorIds.quick || circuitMap.selectorGroup === circuitMapper.selectorIds.symbolic)) {
+                if (circuitMap.frequency === undefined || circuitMap.frequency === null) {
+                    data = `<div id="${circuitMap.btnOverlay}-volt-freq-modal" class="volt-freq-overlay">
+                                <p style="color: ${colors.currentForeground}; position:absolute; top:20px; right: 20px; ">${circuitMap.voltage}</p>
+                            </div>
+                            ${circuitDiv.innerHTML}`;
+                } else {
+                    data = `<div id="${circuitMap.btnOverlay}-volt-freq-modal" class="volt-freq-overlay">
+                                <p style="color: ${colors.currentForeground}; position:absolute; top:20px; right: 20px; ">${circuitMap.voltage}</p>
+                                <p style="color: ${colors.currentForeground}; position:absolute; top:40px; right: 20px; ">${circuitMap.frequency}</p>
+                            </div>
+                            ${circuitDiv.innerHTML}`;
+                }
+            } else {
+                data = circuitDiv.innerHTML; // don't add voltage and frequency overlay for quickstart and symbolic
+            }
+            gridElement.innerHTML = data;  // copy svg without arrows to modal
             const overviewStartBtn = document.getElementById(`${circuitMap.btn}-modalBtn`);
             overviewStartBtn.addEventListener("click", () => {
                 // we need the bootstrap modal instance in order to close it
