@@ -171,13 +171,41 @@ class SelectorBuilder {
     }
 
     createCarouselItemForCircuit(circuit) {
-        return `<div class="carousel-item justify-content-center">
-                    <div id="${circuit.btnOverlay}" class="img-overlay">
-                        <button id="${circuit.btn}" class="btn btn-warning text-dark px-5 circuitStartBtn">start</button>
-                    </div>
-                    <div id="${circuit.circuitDivID}" class="svg-selector mx-auto">
-                    </div>
-                </div>`;
+        if ([circuitMapper.selectorIds.quick, circuitMapper.selectorIds.symbolic].includes(circuit.selectorGroup)) {
+            return `<div class="carousel-item justify-content-center">
+                        <div id="${circuit.btnOverlay}" class="img-overlay">
+                            <button id="${circuit.btn}" class="btn btn-warning text-dark px-5 circuitStartBtn">start</button>
+                        </div>
+                        <div id="${circuit.circuitDivID}" class="svg-selector mx-auto">
+                        </div>
+                    </div>`;
+        } else {
+            // Add voltage and frequency overlay for R, L, C and mixed Circuits
+            if (circuit.frequency === undefined || circuit.frequency === null) {
+                return `<div class="carousel-item justify-content-center">
+                        <div id="${circuit.btnOverlay}" class="img-overlay">
+                            <button id="${circuit.btn}" class="btn btn-warning text-dark px-5 circuitStartBtn">start</button>
+                        </div>
+                        <div id="${circuit.btnOverlay}-volt-freq" class="volt-freq-overlay">
+                            <p style="color: ${colors.currentForeground}; position:absolute; top:20px; right: 20px; ">${circuit.voltage}</p>
+                        </div>
+                        <div id="${circuit.circuitDivID}" class="svg-selector mx-auto">
+                        </div>
+                    </div>`;
+            } else {
+                return `<div class="carousel-item justify-content-center">
+                            <div id="${circuit.btnOverlay}" class="img-overlay">
+                                <button id="${circuit.btn}" class="btn btn-warning text-dark px-5 circuitStartBtn">start</button>
+                            </div>
+                            <div id="${circuit.btnOverlay}-volt-freq" class="volt-freq-overlay">
+                                <p style="color: ${colors.currentForeground}; position:absolute; top:20px; right: 20px; ">${circuit.voltage}</p>
+                                <p style="color: ${colors.currentForeground}; position:absolute; top:40px; right: 20px; ">${circuit.frequency}</p>
+                            </div>
+                            <div id="${circuit.circuitDivID}" class="svg-selector mx-auto">
+                            </div>
+                        </div>`;
+            }
+        }
     }
 
     // ######################### Setup #######################################
@@ -292,12 +320,18 @@ class SelectorBuilder {
     showCircuitAsSelected(circuit, btnOverlay) {
         circuit.style.borderColor = colors.keyYellow;
         circuit.style.opacity = "0.5";
-        btnOverlay.style.display = "block"
+        btnOverlay.style.display = "block";
+        if (!(btnOverlay.id.includes(circuitMapper.selectorIds.quick) || btnOverlay.id.includes(circuitMapper.selectorIds.symbolic))) {
+            document.getElementById(`${btnOverlay.id}-volt-freq`).style.opacity = "0.5";
+        }
     }
     showCircuitAsUnselected(circuit, btnOverlay) {
         circuit.style.borderColor = colors.currentForeground;
         circuit.style.opacity = "1";
-        btnOverlay.style.display = "none"
+        btnOverlay.style.display = "none";
+        if (!(btnOverlay.id.includes(circuitMapper.selectorIds.quick) || btnOverlay.id.includes(circuitMapper.selectorIds.symbolic))) {
+            document.getElementById(`${btnOverlay.id}-volt-freq`).style.opacity = "1";
+        }
     }
 
     setupSelectionCircuit(circuit, startBtn, startBtnOverlay) {
@@ -311,6 +345,9 @@ class SelectorBuilder {
         circuit.style.borderColor = colors.currentForeground;
         circuit.style.opacity = "1";
         overlay.style.display = "none";
+        if (!(circuitMap.selectorGroup === circuitMapper.selectorIds.quick) || (circuitMap.selectorGroup === circuitMapper.selectorIds.symbolic)) {
+            document.getElementById(`${circuitMap.btnOverlay}-volt-freq`).style.opacity = "1";
+        }
     }
 
 }

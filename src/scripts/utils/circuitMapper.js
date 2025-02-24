@@ -122,6 +122,10 @@ class CircuitMapper {
 
     createCircuitMap(circuitFileName, dir, id) {
         let circuitId = circuitFileName.split(".")[0]
+        let result = this.readVoltageAndFreq(`${this._circuitsPath}/${dir}/${circuitId}.txt`);
+        if (result === null) {
+            console.error("No voltage or frequency found in file: " + circuitFileName);
+        }
         return {
             circuitDivID: `${circuitId}-${id}-div`,
             btn: `${circuitId}-${id}-btn`,
@@ -130,7 +134,45 @@ class CircuitMapper {
             sourceDir: dir,
             svgFile: `${this._svgsPath}/${circuitId}_step0.svg`,
             selectorGroup: id,
-            overViewSvgFile: `${this._circuitsPath}/${dir}/${circuitId}_step0.svg`
+            overViewSvgFile: `${this._circuitsPath}/${dir}/${circuitId}_step0.svg`,
+            voltage: result.voltage,
+            frequency: result.frequency
+        }
+    }
+
+    readVoltageAndFreq(path) {
+        let file = state.pyodide.FS.readFile(path, {encoding: "utf8"});
+        const lines = file.split('\n');
+
+        for (let line of lines) {
+            const matchDC = line.match(/^V\d+ \d+ \d+ dc \{(.*?)\}/);
+            const matchAC = line.match(/^V\d+ \d+ \d+ ac \{(.*?)\} \{.*?\} \{(.*?)\}/);
+
+            if (matchDC) {
+                return { voltage: matchDC[1] + "V", frequency: null };
+            } else if (matchAC) {
+                let omegaStr = matchAC[2].trim();
+                let frequency;
+                if (omegaStr.includes("2*pi")) {
+                    omegaStr = omegaStr.replace(/pi/g, "Math.PI");
+                }
+                frequency = eval(omegaStr.replace(/pi/g, "Math.PI")) / (2 * Math.PI);
+                return { voltage: matchAC[1] + "V", frequency: this.formatFrequency(Math.round(frequency))};
+            }
+        }
+
+        return null;
+    }
+
+    formatFrequency(frequency) {
+        if (frequency >= 1e9) {
+            return (frequency / 1e9).toFixed(1) + 'GHz';
+        } else if (frequency >= 1e6) {
+            return (frequency / 1e6).toFixed(1) + 'MHz';
+        } else if (frequency >= 1e3) {
+            return (frequency / 1e3).toFixed(1) + 'kHz';
+        } else {
+            return frequency + 'Hz';
         }
     }
 
