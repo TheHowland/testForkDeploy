@@ -1,4 +1,6 @@
 # for lcapy version: 1.24+inskale.0.36
+import warnings
+warnings.filterwarnings('ignore')
 from lcapy import Circuit, FileToImpedance, DrawWithSchemdraw
 from lcapy.solution import Solution
 from lcapy.componentRelation import ComponentRelation
