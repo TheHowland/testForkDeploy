@@ -126,7 +126,7 @@ class PageManager {
             state.pyodide = await loadPyodide();
             setInterval(() => {
                     note.innerHTML = languageManager.currentLang.messages[Math.floor(Math.random() * languageManager.currentLang.messages.length)]},
-                3000);
+                10000);
             setPgrBarTo(5);
             // Map all circuits into map and build the selectors
             circuitMapper = new CircuitMapper();
@@ -287,7 +287,7 @@ class PageManager {
         const pRX = document.getElementById("pRX");
         pRX.innerHTML = "$$\\mathbf{Z} = R + j \\cdot X$$" +
             "$$\\mathbf{Z} = R + j \\cdot \\sqrt{X_L - X_C}$$"
-        pRX.style.color = "white";
+        pRX.style.color = colors.currentForeground;
 
         whenAvailable("MathJax", () => {
             MathJax.typeset();
