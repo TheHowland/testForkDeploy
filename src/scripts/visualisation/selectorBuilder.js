@@ -171,41 +171,13 @@ class SelectorBuilder {
     }
 
     createCarouselItemForCircuit(circuit) {
-        if ([circuitMapper.selectorIds.quick, circuitMapper.selectorIds.symbolic].includes(circuit.selectorGroup)) {
-            return `<div class="carousel-item justify-content-center">
-                        <div id="${circuit.btnOverlay}" class="img-overlay">
-                            <button id="${circuit.btn}" class="btn btn-warning text-dark px-5 circuitStartBtn">start</button>
-                        </div>
-                        <div id="${circuit.circuitDivID}" class="svg-selector mx-auto">
-                        </div>
-                    </div>`;
-        } else {
-            // Add voltage and frequency overlay for R, L, C and mixed Circuits
-            if (circuit.frequency === undefined || circuit.frequency === null) {
-                return `<div class="carousel-item justify-content-center">
-                        <div id="${circuit.btnOverlay}" class="img-overlay">
-                            <button id="${circuit.btn}" class="btn btn-warning text-dark px-5 circuitStartBtn">start</button>
-                        </div>
-                        <div id="${circuit.btnOverlay}-volt-freq" class="volt-freq-overlay">
-                            <p style="color: ${colors.currentForeground}; position:absolute; top:20px; right: 20px; ">${circuit.voltage}</p>
-                        </div>
-                        <div id="${circuit.circuitDivID}" class="svg-selector mx-auto">
-                        </div>
-                    </div>`;
-            } else {
-                return `<div class="carousel-item justify-content-center">
-                            <div id="${circuit.btnOverlay}" class="img-overlay">
-                                <button id="${circuit.btn}" class="btn btn-warning text-dark px-5 circuitStartBtn">start</button>
-                            </div>
-                            <div id="${circuit.btnOverlay}-volt-freq" class="volt-freq-overlay">
-                                <p style="color: ${colors.currentForeground}; position:absolute; top:20px; right: 20px; ">${circuit.voltage}</p>
-                                <p style="color: ${colors.currentForeground}; position:absolute; top:40px; right: 20px; ">${circuit.frequency}</p>
-                            </div>
-                            <div id="${circuit.circuitDivID}" class="svg-selector mx-auto">
-                            </div>
-                        </div>`;
-            }
-        }
+        return `<div class="carousel-item justify-content-center">
+                    <div id="${circuit.btnOverlay}" class="img-overlay">
+                        <button id="${circuit.btn}" class="btn btn-warning text-dark px-5 circuitStartBtn">start</button>
+                    </div>
+                    <div id="${circuit.circuitDivID}" class="svg-selector mx-auto">
+                    </div>
+                </div>`;
     }
 
     // ######################### Setup #######################################
@@ -238,6 +210,7 @@ class SelectorBuilder {
         svgData = setSvgWidthTo(svgData, "100%");
         svgData = setSvgColorMode(svgData);
         circuitDiv.innerHTML = svgData;
+        this.addVoltFreqOverlay(circuitDiv, circuitMap);
 
         hideSvgArrows(circuitDiv);
         hideLabels(circuitDiv);
@@ -250,27 +223,40 @@ class SelectorBuilder {
             this.circuitSelectorStartButtonPressed(circuitMap, pageManager))
     }
 
+    addVoltFreqOverlay(circuitDiv, circuitMap) {
+        // Add voltage and frequency overlay for R, L, C and mixed Circuits
+        if ([circuitMapper.selectorIds.quick, circuitMapper.selectorIds.symbolic].includes(circuitMap.selectorGroup)){
+            // nothing here
+        } else {
+            if (circuitMap.frequency === undefined || circuitMap.frequency === null) {
+                circuitDiv.insertBefore(this.createVoltOverlay(circuitMap), circuitDiv.firstChild);
+            } else {
+                circuitDiv.insertBefore(this.createVoltFreqOverlay(circuitMap), circuitDiv.firstChild);
+            }
+        }
+    }
+
+    createVoltOverlay(circuitMap) {
+        let div = document.createElement("div");
+        div.id = `${circuitMap.btnOverlay}-volt-freq`;
+        div.classList.add("volt-freq-overlay");
+        div.innerHTML = `<p style="color: ${colors.currentForeground}; position:absolute; top:20px; right: 0; ">${circuitMap.voltage}</p>`;
+        return div;
+    }
+
+    createVoltFreqOverlay(circuitMap) {
+        let div = document.createElement("div");
+        div.id = `${circuitMap.btnOverlay}-volt-freq`;
+        div.classList.add("volt-freq-overlay");
+        div.innerHTML = `<p style="color: ${colors.currentForeground}; position:absolute; top:20px; right: 0; ">${circuitMap.voltage}</p>
+                         <p style="color: ${colors.currentForeground}; position:absolute; top:40px; right: 0; ">${circuitMap.frequency}</p>`;
+        return div;
+    }
+
     setupOverviewModalCircuit(circuitMap, circuitDiv, pageManager) {
         if (circuitMap.selectorGroup !== circuitMapper.selectorIds.quick) {
             const gridElement = document.getElementById(`${circuitMap.circuitDivID}-overviewModal`);
-            let data;
-            if (!(circuitMap.selectorGroup === circuitMapper.selectorIds.quick || circuitMap.selectorGroup === circuitMapper.selectorIds.symbolic)) {
-                if (circuitMap.frequency === undefined || circuitMap.frequency === null) {
-                    data = `<div id="${circuitMap.btnOverlay}-volt-freq-modal" class="volt-freq-overlay">
-                                <p style="color: ${colors.currentForeground}; position:absolute; top:20px; right: 20px; ">${circuitMap.voltage}</p>
-                            </div>
-                            ${circuitDiv.innerHTML}`;
-                } else {
-                    data = `<div id="${circuitMap.btnOverlay}-volt-freq-modal" class="volt-freq-overlay">
-                                <p style="color: ${colors.currentForeground}; position:absolute; top:20px; right: 20px; ">${circuitMap.voltage}</p>
-                                <p style="color: ${colors.currentForeground}; position:absolute; top:40px; right: 20px; ">${circuitMap.frequency}</p>
-                            </div>
-                            ${circuitDiv.innerHTML}`;
-                }
-            } else {
-                data = circuitDiv.innerHTML; // don't add voltage and frequency overlay for quickstart and symbolic
-            }
-            gridElement.innerHTML = data;  // copy svg without arrows to modal
+            gridElement.innerHTML = circuitDiv.innerHTML;  // copy svg without arrows to modal
             const overviewStartBtn = document.getElementById(`${circuitMap.btn}-modalBtn`);
             overviewStartBtn.addEventListener("click", () => {
                 // we need the bootstrap modal instance in order to close it

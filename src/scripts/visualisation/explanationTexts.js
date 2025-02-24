@@ -388,7 +388,6 @@ function getNonSymbolicParallelVCDescription(stepObject) {
 }
 
 function toPolar(A, P) {
-    // TODO maybe refactor so we only input a complex value
     if (P[0] === "-") {
         return `${A} \\cdot e^{j\\cdot(${P})}`;
     } else {
