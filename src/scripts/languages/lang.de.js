@@ -135,6 +135,8 @@ const german = {
         "Der Strom teilt sich auf",
     backBtn:
         "zur&uumlck",
+    onlyImaginaryPart:
+        "Rein imagin&aumlr, zur&uumlck zu ",
 
     // Cheat sheet
     resistanceColHeading:
@@ -169,9 +171,8 @@ const german = {
 
     /* About Page */
     aboutText:
-        "<br><br>'simplipfy' wurde 2024 in einem Projekt an der Hoschule Pforzheim entwickelt.<br><br>" +
-        "Ziel des Tools soll es sein Studierenden und Sch&uumllern beim interaktiven Erlernen von Elektrotechnik-Themen zu helfen, wobei darauf geachtet wurde, dass " +
-        "weitere Themen hinzugef&uumlgt werden k&oumlnnen und es nicht nur bei der Vereinfachung von Schaltkreisen bleiben muss.<br><br>" +
-        "simplipfy wurde unter der Leitung von Prof.Dr. Stefan Kray entwickelt und von der Stiftung Innovation in der Hochschullehre gef&oumlrdert.<br><br>" +
-        "Das Projekt ist open-source und kann unter folgendem Link auf GitHub eingesehen werden: <a href='https://github.com/prof-sky/inskale'>Github-Repo</a>"
+        "<br><br>simplipfy wird von der Hochschule Pforzheim betrieben.<br>" +
+        "Die Software wird unter der Leitung von Prof.Dr. Stefan Kray entwickelt und von der Stiftung Innovation in der Hochschullehre gef&oumlrdert.<br>" +
+        "Das Tool soll Studierenden und Schülern beim Erlernen von Elektrotechnik-Themen helfen.<br><br>" +
+        "Das Projekt ist open-source und kann unter folgendem Link auf GitHub eingesehen werden: <a href='https://github.com/prof-sky/simplipfy'>Github-Repo</a>"
 }

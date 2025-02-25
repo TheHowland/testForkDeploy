@@ -248,12 +248,28 @@ function setupSvgDivContainerAndData(stepObject) {
     hideSourceLabel(svgDiv);
     hideSvgArrows(svgDiv);
     // SVG Data written, now add eventListeners, only afterward because they would be removed on rewrite of svgData
-    if (state.pictureCounter === 1) addInfoHelpButton(svgDiv);
-    if (state.currentCircuitMap.selectorGroup !== circuitMapper.selectorIds.symbolic) {
+    if (state.pictureCounter === 1) {
+        addInfoHelpButton(svgDiv);
+        if (!currentCircuitIsSymbolic()) addVoltageOverlay(svgDiv);
+    }
+    if (!currentCircuitIsSymbolic()) {
         // Add name value toggle only for non-symbolic circuits (no need to toggle between R1 and R1...:) )
         addNameValueToggleBtn(svgDiv);
     }
     return svgDiv;
+}
+
+function addVoltageOverlay(svgDiv) {
+    let overlay = document.createElement("div");
+    overlay.id = "voltage-overlay";
+    overlay.style.color = colors.currentForeground;
+    if (sourceIsAC()) {
+        overlay.innerHTML = `$$ ${languageManager.currentLang.voltageSymbol}_{${languageManager.currentLang.totalSuffix}, ${languageManager.currentLang.effectiveSuffix}} = ${getSourceVoltageVal()}, ` +
+                            `f = ${getSourceFrequency()}$$`;
+    } else {
+        overlay.innerHTML = `$$ ${languageManager.currentLang.voltageSymbol}_{${languageManager.currentLang.totalSuffix}} = ${getSourceVoltageVal()} $$`;
+    }
+    svgDiv.appendChild(overlay);
 }
 
 function fillLabels(svgDiv) {
@@ -681,6 +697,11 @@ function cloneAndAdaptStep0Svg() {
         bbox.style.display = "none";
     }
     clonedSvgData.style.width = "";  // let the table adjust itself to the screensize
+    // remove volt overlay
+    let overlay = clonedSvgData.querySelector("#voltage-overlay");
+    if (overlay !== null) {
+        clonedSvgData.removeChild(overlay);
+    }
     return clonedSvgData;
 }
 

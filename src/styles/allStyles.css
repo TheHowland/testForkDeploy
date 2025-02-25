@@ -252,12 +252,11 @@ mjx-container mjx-c::before {
     padding-bottom: 5px !important;
 }
 
-foreignObject {
-    span {
-        mjx-container {
-            margin-top: 0 !important;
-            padding-top: 0 !important;
-        }
+#bootstrap-overrides #voltage-overlay {
+    mjx-container {
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+        font-size: 90% !important;
     }
 }
 
@@ -534,7 +533,6 @@ th, td {
     right: 10px;
     text-align: center;
 }
-
 
 #bootstrap-overrides .img-overlay:before {
     z-index: 5;
