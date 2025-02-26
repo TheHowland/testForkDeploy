@@ -214,11 +214,19 @@ key-yellow: #FFC107
 
 
 body, html {
-    font-family: 'Roboto', sans-serif;
     overflow-x: hidden;
     overscroll-behavior-y: none;  /* prevent reloading the page when scrolling up */
     width: 100%;
     position: relative;
+}
+
+#bootstrap-overrides body {
+    font-family: 'Roboto', sans-serif;
+}
+
+#bootstrap-overrides h1, h2, h3, h4, h5 {
+    font-family: 'Roboto Condensed', sans-serif;
+    font-weight: bold;
 }
 
 p {
@@ -231,17 +239,41 @@ img {
     max-height: 375px;
 }
 
-mjx-container mjx-c::before {
-    will-change: opacity;
-    padding-top: 20px !important;
-    padding-bottom: 5px !important;
-}
-
 mjx-container {
     overflow-x: auto;
     overflow-y: hidden;
     padding-top: 5px;
     padding-bottom: 5px;
+}
+
+mjx-container mjx-c::before {
+    /*will-change: opacity;*/
+    padding-top: 20px !important;
+    padding-bottom: 5px !important;
+}
+
+#bootstrap-overrides #voltage-overlay {
+    mjx-container {
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+        font-size: 90% !important;
+    }
+}
+
+#bootstrap-overrides .current-label {
+    color: red !important;
+    stroke: red !important;
+    fill: red !important;
+    opacity: 0.8 !important;
+    stroke-width: 0;
+}
+
+#bootstrap-overrides .voltage-label {
+    color: #9898ff !important;
+    stroke: #9898ff !important;
+    fill: #9898ff !important;
+    opacity: 0.8 !important;
+    stroke-width: 0;
 }
 
 th, td {
@@ -426,14 +458,47 @@ th, td {
 
 /* Selection page */
 
+#bootstrap-overrides .form-check-input {
+    border: 1px solid black;
+}
+
+#bootstrap-overrides .form-check-input:checked {
+    background-color: #FFC107;
+}
+
+#bootstrap-overrides .form-check-input:focus {
+    box-shadow: 0 0 0.25rem #ffc107 !important;
+}
+
+#bootstrap-overrides .form-check-label {
+    font-family: 'Roboto', sans-serif;
+}
+
+
+#bootstrap-overrides .accordion-button {
+    /*background-color: #212529;
+    color: #ffc107;*/
+    font-size: 24px;
+    font-family: 'Roboto Condensed', sans-serif;
+}
+
+#bootstrap-overrides .accordion-body {
+    background-color: #212529;
+}
+
+#bootstrap-overrides .accordion-button:focus {
+    z-index: 3;
+    box-shadow: 0 0 0.25rem #ffc107 !important;
+}
+
 #bootstrap-overrides .selector-container {
     max-width: 500px; /* to limit the distance of the next/prev buttons from the picture */
 }
 #bootstrap-overrides .carousel-control-next {
-    z-index: 3;
+    z-index: 10;
 }
 #bootstrap-overrides .carousel-control-prev {
-    z-index: 3;
+    z-index: 10;
 }
 
 
@@ -462,6 +527,13 @@ th, td {
     display: none;  /* don't show button overlay at start */
 }
 
+#bootstrap-overrides .volt-freq-overlay {
+    z-index: 2;
+    position: absolute;
+    right: 10px;
+    text-align: center;
+}
+
 #bootstrap-overrides .img-overlay:before {
     z-index: 5;
     content: ' ';
@@ -474,6 +546,22 @@ th, td {
     font-weight: bold;
     border-radius: 40px;
     z-index: 10;
+}
+/* for the start buttons in the modal overviews */
+#bootstrap-overrides .circuitStartBtnModal {
+    font-weight: bold;
+    border-radius: 0 0 20px 20px;
+    z-index: 10;
+    padding-top: 2px;
+    margin-bottom: 20px;
+}
+
+#bootstrap-overrides .modalOverviewBtn {
+    border-radius: 7px;
+    background: none;
+    color: #ffc107;
+    border: 1px solid #ffc107;
+    font-family: 'Roboto Condensed', sans-serif;
 }
 
 /* Simplifier page */
@@ -492,15 +580,9 @@ th, td {
 }
 
 #bootstrap-overrides #reset-btn {
-    background-color: #b61117;
+    /*background-color: #b61117;*/
     border: none;
     color: white;
-}
-
-#bootstrap-overrides #back-btn {
-    background-color: #FFC107;
-    border: none;
-    color: #222222;
 }
 
 #bootstrap-overrides #solutionsTable {
@@ -523,7 +605,7 @@ th, td {
     color: white;
 }
 
-#bootstrap-overrides #back-btn {
+#bootstrap-overrides #back-btn-data-privacy, #back-btn-legal {
     background-color: #FFC107;
     border: none;
     color: #222222;

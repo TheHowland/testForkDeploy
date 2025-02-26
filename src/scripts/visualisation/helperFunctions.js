@@ -33,6 +33,24 @@ function hideAllSelectors() {
     }
 }
 
+function hideQuickstart() {
+    document.getElementById("quick-carousel").hidden = true;
+    document.getElementById("quick-heading").hidden = true;
+}
+
+function hideAccordion() {
+    document.getElementById("selector-accordion").hidden = true;
+}
+
+function showQuickstart() {
+    document.getElementById("quick-carousel").hidden = false;
+    document.getElementById("quick-heading").hidden = false;
+}
+
+function showAccordion() {
+    document.getElementById("selector-accordion").hidden = false;
+}
+
 function showAllSelectors() {
     for (const circuitSet of circuitMapper.circuitSets) {
         const carousel = document.getElementById(`${circuitSet.identifier}-carousel`);
@@ -40,14 +58,6 @@ function showAllSelectors() {
         carousel.hidden = false;
         heading.hidden = false;
     }
-}
-
-function circuitIsNotSubstituteCircuit(circuitMap) {
-    let showVCData = true;
-    if (circuitMap.selectorGroup === circuitMapper.selectorIds.subId) {
-        showVCData = false;
-    }
-    return showVCData;
 }
 
 function notLastPicture() {
@@ -76,7 +86,7 @@ function setSvgWidthTo(svgData, width) {
 }
 
 // Displays a temporary message to the user in a message box.
-function showMessage(container, message, prio = "warning", fixedBottom = true) {
+function showMessage(container, message, prio = "warning", fixedBottom = true, yPxHeight = 0) {
     let bootstrapAlert;
     let emoji;
     if (prio === "only2") {
@@ -88,33 +98,57 @@ function showMessage(container, message, prio = "warning", fixedBottom = true) {
     } else if (prio === "success") {
         emoji = goodEmojis[Math.floor(Math.random() * goodEmojis.length)];
         bootstrapAlert = "success";
+    } else if (prio === "info") {
+        emoji = "";
+        bootstrapAlert = "secondary";
+    } else {
+        emoji = "";
+        bootstrapAlert = "secondary";
     }
     const msg = document.createElement('div');
-    msg.classList.add("alert");
-    msg.classList.add(`alert-${bootstrapAlert}`);
+    msg.classList.add("alert", `alert-${bootstrapAlert}`);
     if (fixedBottom) {
         msg.classList.add("fixed-bottom");
         msg.style.bottom = "170px";
+    } else {
+        msg.style.position = "absolute";
+        msg.style.top = `${yPxHeight}px`;
+        msg.style.left = "0";
+        msg.style.right = "0";
     }
-    msg.classList.add("m-5");
+    msg.classList.add("mx-auto");  // centers it when max-width is set
+    msg.style.maxWidth = "400px";
 
-    let emojiSpan = document.createElement('span');
-    emojiSpan.style.fontSize = '1.66em';
-    emojiSpan.innerHTML = emoji;
+    if (emoji !== "") {
+        let emojiSpan = document.createElement('span');
+        emojiSpan.style.fontSize = '1.66em';
+        emojiSpan.innerHTML = emoji;
+        msg.appendChild(emojiSpan);
+        msg.appendChild(document.createElement('br'));
+    }
 
     let msgSpan = document.createElement('span');
     msgSpan.innerHTML = message;
-
-    msg.appendChild(emojiSpan);
-    msg.appendChild(document.createElement('br'));
     msg.appendChild(msgSpan);
-
     container.appendChild(msg);
+
+    // Remove the message when the user clicks anywhere
+    // Distinction between info messages and others because info message will be created by clicking on something
+    // this would already remove it again with this handler. Warning and so on are created by something done wrong
+    // without a click on the screen
+    if (prio !== "info") {
+        document.addEventListener("click", () => {
+            if (container.contains(msg)) {
+                container.removeChild(msg);
+            }
+        });
+    }
+    // Remove the message after 3 seconds if not clicked already
     setTimeout(() => {
         if (container.contains(msg)) {
             container.removeChild(msg);
         }
-    }, 2000);
+    }, 3000);
 }
 
 function setPgrBarTo(percent) {
@@ -145,25 +179,27 @@ function enableCheckBtn() {
     document.getElementById("check-btn").disabled = false;
 }
 
-function resetSimplifierPage(pyodide, calledFromResetBtn = false) {
+function resetSimplifierPage(calledFromResetBtn = false) {
     if (state.currentCircuitMap !== null) {
-        // If the back btn exists, the user has finished the simplification
-        // That means if the page is reset and the btn does not exist, the user aborted the simplification
+        // If the check btn is disabled, the user has finished the simplification
+        // That means if the page is reset, the user aborted the simplification
         // If calledFromResetBtn, then don't push the event because it's reset, and not aborted
-        let backBtnDoesNotExist = document.getElementById("back-btn") === null;
-        if (backBtnDoesNotExist && !calledFromResetBtn) {
+        // Also don't push the event if the user is on the first picture, maybe it was just a missclick
+        let checkBtnDisabled = document.getElementById("check-btn").classList.contains("disabled");
+        if (!checkBtnDisabled && !calledFromResetBtn && state.pictureCounter > 1) {
             pushCircuitEventMatomo(circuitActions.Aborted, state.pictureCounter);
         }
     }
     clearSimplifierPageContent();
     resetSolverObject();
+    state.valuesShown = new Map();
     state.selectedElements = [];
     state.pictureCounter = 0;
     state.allValuesMap = new Map();
-    if (state.pyodideReady) {
-        startSolving(pyodide);  // Draw the first picture again
-    }
     scrollBodyToTop();
+    if (calledFromResetBtn && state.pyodideReady) {
+        startSolving();  // Draw the first picture again
+    }
 }
 
 function enableLastCalcButton() {
@@ -185,15 +221,15 @@ function scrollBodyToTop() {
     window.scrollTo(0,0);
 }
 
-async function getCircuitComponentTypes(pyodide) {
+async function getCircuitInfo() {
     let circuitInfoPath = await stepSolve.createCircuitInfo();
-    let circuitInfoFile = await pyodide.FS.readFile(circuitInfoPath, {encoding: "utf8"});
-    const circuitInfo = JSON.parse(circuitInfoFile);
-    return circuitInfo["componentTypes"];
+    let circuitInfoFile = await state.pyodide.FS.readFile(circuitInfoPath, {encoding: "utf8"});
+    return JSON.parse(circuitInfoFile);
+
 }
 
-async function getJsonAndSvgStepFiles(pyodide) {
-    const files = await pyodide.FS.readdir(`${conf.pyodideSolutionsPath}`);
+async function getJsonAndSvgStepFiles() {
+    const files = await state.pyodide.FS.readdir(`${conf.pyodideSolutionsPath}`);
     state.jsonFiles_Z = files.filter(file => !file.endsWith("VC.json") && file.endsWith(".json"));
     state.jsonFiles_VC = files.filter(file => file.endsWith("VC.json"));
     if (state.jsonFiles_VC === []) {
@@ -203,13 +239,13 @@ async function getJsonAndSvgStepFiles(pyodide) {
     state.currentStep = 0;
 }
 
-async function clearSolutionsDir(pyodide) {
+async function clearSolutionsDir() {
     try {
         //An array of file names representing the solution files in the Solutions directory.
-        let solutionFiles = await pyodide.FS.readdir(`${conf.pyodideSolutionsPath}`);
+        let solutionFiles = await state.pyodide.FS.readdir(`${conf.pyodideSolutionsPath}`);
         solutionFiles.forEach(file => {
             if (file !== "." && file !== "..") {
-                pyodide.FS.unlink(`${conf.pyodideSolutionsPath}/${file}`);
+                state.pyodide.FS.unlink(`${conf.pyodideSolutionsPath}/${file}`);
             }
         });
     } catch (error) {
@@ -234,24 +270,6 @@ function resetHighlightedBoundingBoxes(svgDiv) {
     }
 }
 
-// ToDo maybe Remove
-async function createSvgsForSelectors(pyodide) {
-    await clearSolutionsDir(pyodide);
-    // For all circuit sets (e.g. Resistors, Capacitors, ..)
-    let paramMap = new Map();
-    paramMap.set("volt", languageManager.currentLang.voltageSymbol);
-    paramMap.set("total", languageManager.currentLang.totalSuffix);
-
-
-    for (const circuitSet of circuitMapper.circuitSets) {
-        // For all circuits in this set (e.g., Resistor1, Resistor2, ...)
-        for (const circuit of circuitSet.set) {
-            stepSolve = state.solve.SolveInUserOrder(circuit.circuitFile, `${conf.pyodideCircuitPath}/${circuit.sourceDir}`, `${conf.pyodideSolutionsPath}/`, paramMap);
-            await stepSolve.createStep0();
-        }
-    }
-}
-
 function moreThanOneCircuitInSet(circuitSet) {
     return circuitSet.set.length > 1;
 }
@@ -260,9 +278,9 @@ function simplifierPageCurrentlyVisible() {
     return document.getElementById("simplifier-page-container").style.display === "block";
 }
 
-function checkIfSimplifierPageNeedsReset(pyodide) {
+function checkIfSimplifierPageNeedsReset() {
     if (simplifierPageCurrentlyVisible()) {
-        resetSimplifierPage(pyodide);
+        resetSimplifierPage();
     }
 }
 
@@ -282,7 +300,8 @@ function resetNextElements(svgDiv, nextElementsContainer) {
 
 
 function showArrows(contentCol) {
-    let arrows = contentCol.getElementsByClassName("arrow");
+    // Show arrows and symbol labels
+    let arrows = contentCol.querySelectorAll(".arrow");
     for (let arrow of arrows) {
         arrow.style.display = "block";
         arrow.style.opacity = "0.5";
@@ -300,8 +319,8 @@ function whenAvailable(name, callback) {
     }, interval);
 }
 
-async function solveCircuit(circuitMap, pyodide) {
-    await clearSolutionsDir(pyodide);
+async function createAndShowStep0(circuitMap) {
+    await clearSolutionsDir();
 
     let paramMap = new Map();
     paramMap.set("volt", languageManager.currentLang.voltageSymbol);
@@ -310,21 +329,20 @@ async function solveCircuit(circuitMap, pyodide) {
     stepSolve = state.solve.SolveInUserOrder(
         circuitMap.circuitFile,
         `${conf.pyodideCircuitPath}/${circuitMap.sourceDir}`,
-        `${conf.pyodideSolutionsPath}/`,
+        "",
         paramMap);
-    await stepSolve.createStep0().toJs();
 
-    // Get information which components are used in this circuit
-    const componentTypes = await getCircuitComponentTypes(pyodide);
-
-    await getJsonAndSvgStepFiles(pyodide);
-    let stepDetails = fillStepDetailsObject(circuitMap, componentTypes);
-
-    display_step(pyodide, stepDetails);
+    let obj = await stepSolve.createStep0().toJs({dict_converter: Object.fromEntries});
+    obj.__proto__ = Step0Object.prototype;
+    state.step0Data = obj;
+    state.currentStep = 0;
+    state.allValuesMap.set(`${languageManager.currentLang.voltageSymbol}${languageManager.currentLang.totalSuffix}`, getSourceVoltageVal());
+    state.allValuesMap.set(`I${languageManager.currentLang.totalSuffix}`, getSourceCurrentVal());
+    display_step(state.step0Data);
 }
 
-function startSolving(pyodide) {
-    solveCircuit(state.currentCircuitMap, pyodide);
+function startSolving() {
+    createAndShowStep0(state.currentCircuitMap);
     //The div element that contains the SVG representation of the circuit diagram.
     const svgDiv = document.querySelector('.svg-container');
     //The div element that contains the list of elements that have been clicked or selected in the circuit diagram.
@@ -334,17 +352,58 @@ function startSolving(pyodide) {
     }
 }
 
-function fillStepDetailsObject(circuitMap, componentTypes) {
-    let stepDetails = new StepDetails;
-    stepDetails.showVCData = circuitIsNotSubstituteCircuit(circuitMap);
-    stepDetails.jsonZPath = `${conf.pyodideSolutionsPath}/${state.jsonFiles_Z[state.currentStep]}`;
-    stepDetails.jsonZVCath = (state.jsonFiles_VC === null) ? null : `${conf.pyodideSolutionsPath}/${state.jsonFiles_VC[state.currentStep]}`;
-    stepDetails.svgPath = `${conf.pyodideSolutionsPath}/${state.svgFiles[state.currentStep]}`;
-    stepDetails.componentTypes = componentTypes;
-    return stepDetails;
+function setLanguageAndScheme() {
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const darkModeSwitch = document.getElementById("darkmode-switch");
+    darkModeSwitch.checked = true;
+    if (!prefersDark) {
+        changeToLightMode();
+        darkModeSwitch.checked = false;
+    }
+
+    var userLang = navigator.language;
+    if (userLang === "de-DE" || userLang === "de-AT" || userLang === "de-CH" || userLang === "de") {
+        languageManager.currentLang = german;
+    } else {
+        languageManager.currentLang = english;
+    }
 }
 
+function modalConfig() {
+    // This is to prevent the focus from staying on the modal when it is closed
+    document.addEventListener('hide.bs.modal', function (event) {
+        if (document.activeElement) {
+            document.activeElement.blur();
+        }
+    });
+}
 
+function hideSourceLabel(svgDiv) {
+    let sourceLabel = svgDiv.querySelector(".element-label.V1");
+    if (sourceLabel !== null) {
+        sourceLabel.style.display = "none";
+    }
+}
 
+function hideLabels(svgDiv) {
+    let labels = svgDiv.querySelectorAll(".element-label");
+    labels.forEach(label => label.style.display = "none");
+}
+
+function hideSvgArrows(circuitDiv) {
+    let arrows = circuitDiv.getElementsByClassName("arrow");
+    for (let arrow of arrows) arrow.style.display = "none";
+}
+
+function currentCircuitIsSymbolic() {
+    return state.currentCircuitMap.selectorGroup === circuitMapper.selectorIds.symbolic;
+}
+
+function setBodyPaddingForFixedTopNavbar() {
+    const navBar = document.getElementById("navbar");
+    let height = navBar.offsetHeight;
+    const body = document.getElementsByTagName("body")[0];
+    body.style.paddingTop = height + "px";
+}
 
 

@@ -1,17 +1,4 @@
 const english = {
-    cookies: {
-        customize: "CUSTOMIZE",
-        applySome: "APPLY",
-        rejectAll: "REJECT ALL",
-        acceptAll: "ACCEPT ALL",
-        title: "Cookie Settings",
-        text: "We value your privacy. We use cookies to provide you with the best possible experience on our website.",
-        necessary: "Necessary",
-        analytics: "Analytics",
-        preferences: "Preferences",
-        marketing: "Marketing"
-    },
-
     // Landing page text
     landingPageGreeting:
         "a free browser tool for learning<br>" +
@@ -45,14 +32,40 @@ const english = {
         "light or dark mode. While simplifying circuits, these settings cannot be changed.",
 
     // Selector page text
-    carouselHeadings:
+    selectorHeadings:
         {
-            "sub":  "SUBSTITUTE CIRCUITS",
-            "acdc": "AC/DC CIRCUITS",
+            "quick": "QUICKSTART",
+            "res":  "RESISTORS",
+            "cap": "CAPACITORS",
+            "ind": "INDUCTORS",
             "mixed": "MIXED CIRCUITS",
+            "sym": "SYMBOLIC CALCULATION",
         },
+    overviewModalBtn:
+        "Overview",
+
+    // Loading messages
+    messages:
+        [
+            "Loading circuits",
+            "Loading resistors",
+            "Loading capacitors",
+            "Loading inductors",
+            "I know that there were some resistors here...",
+            "Looking for a calculator",
+            "A resistor walks into a bar...",
+        ],
 
     // Simplifier page text
+    // info gif
+    closeBtn:
+        "Close",
+    infoGifHeading:
+        "How to use",
+    infoGifText:
+        "Click the elements you want to simplify and check your selection with the 'check' button. " +
+        "If the elements can be simplified, you will see the next step and can choose the next elements there.",
+    // next elements container and interactions
     nextElementsHeading:
         "Next elements",
     showCalculationBtn:
@@ -77,6 +90,10 @@ const english = {
         "Please choose exactly 2 elements",
     alertCanNotSimplify:
         "Can not simplify those elements",
+    alertChooseAtLeastOneElement:
+        "Choose at least one element",
+    alertNotToggleable:
+        "Complex elements can not be toggled here, see calculations",
 
     // Calculation text
     relationTextParallel:
@@ -91,16 +108,16 @@ const english = {
         "V",
     totalSuffix:
         "tot",
-    calcBeforeFirstElement:
+    effectiveSuffix:
+        "eff",
+    theElements:
         "The elements",
-    calcBetweenElements:
-        "and",
-    calcAfterSecondElement:
+    areSimplifiedTo:
         "are simplified to",
-    calcAfterSimplifiedElement:
-        "",
     calculationHeading:
         "Calculation",
+    complexImpedanceHeading:
+        "Complex Impedance for",
 
     // Voltage Current text
     currentCalcHeading:
@@ -114,7 +131,9 @@ const english = {
     currentSplits:
         "The current splits up",
     backBtn:
-        "back to selection",
+        "back",
+    onlyImaginaryPart:
+        "Only imaginary part, back to ",
 
     // Cheat sheet
     resistanceColHeading:
@@ -146,5 +165,17 @@ const english = {
     legalNoticeHeading:
         "Legal Notice",
 
+    /* About Page */
+    aboutText:
+        "This tool is hosted by Pforzheim University, Germany.<br>" +
+        "The software is developed under the supervision of Prof.Dr. Stefan Kray and is funded by the Foundation for Innovation in University Teaching.<br>" +
+        "The tool is intended to help students and pupils learn about electrical engineering topics.<br><br>" +
+        "The project is open-source and can be viewed on GitHub at the following link: <a href='https://github.com/prof-sky/simplipfy'>Github-Repo</a><br><br>" +
+        "<h3>Used Libraries</h3>" +
+        "<ul>" +
+        "<li><a href='https://github.com/prof-sky/lcapy/tree/lcapy-inskale'>Lcapy (adapted)</a> [LGPL-2.1 license]</li>" +
+        "<li><a href='https://github.com/prof-sky/simplipfy/tree/main/Schemdraw'>SchemDraw (adapted)</a> [MIT license]</li>" +
+        "<li><a href='https://github.com/pyodide/pyodide'>Pyodide</a> [MPL-2.0 license]</li>" +
+        "</ul>"
 
 }

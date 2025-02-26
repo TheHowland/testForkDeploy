@@ -4,10 +4,11 @@ class PageManager {
         this.selectPage = document.getElementById("select-page-container");
         this.simplifierPage = document.getElementById("simplifier-page-container");
         this.cheatSheet = document.getElementById("cheat-sheet-container");
+        this.aboutPage = document.getElementById("about-page-container");
         this.languageSelect = document.getElementById("Dropdown");
         this.darkModeSwitch = document.getElementById("darkmode-switch");
         this.activeLangFlag = document.getElementById("activeLanguageFlag");
-        this.pages = [this.landingPage, this.selectPage, this.simplifierPage, this.cheatSheet]
+        this.pages = [this.landingPage, this.selectPage, this.simplifierPage, this.cheatSheet, this.aboutPage]
     }
 
     showLandingPage() {
@@ -15,19 +16,23 @@ class PageManager {
         this.selectPage.style.display = "none";
         this.simplifierPage.style.display = "none";
         this.cheatSheet.style.display = "none";
+        this.aboutPage.style.display = "none";
         this.enableSettings();
         for (let feature of document.querySelectorAll(".feature-container")) {
             feature.classList.remove("visible");
         }
         document.title = "simpliPFy";
-        pushPageViewMatomo()
+        pushPageViewMatomo();
+        scrollBodyToTop();
     }
 
     showSelectPage() {
+        state.valuesShown = new Map(); // by default symbols shown
         this.landingPage.style.display = "none";
         this.selectPage.style.display = "block";
         this.simplifierPage.style.display = "none";
         this.cheatSheet.style.display = "none";
+        this.aboutPage.style.display = "none";
         this.enableSettings();
         document.title = "Circuit Selection";
         if (state.pyodideReady) {
@@ -35,6 +40,7 @@ class PageManager {
         } else {
             pushPageViewMatomo("Loading");
         }
+        scrollBodyToTop();
     }
 
     showSimplifierPage() {
@@ -42,9 +48,11 @@ class PageManager {
         this.selectPage.style.display = "none";
         this.simplifierPage.style.display = "block";
         this.cheatSheet.style.display = "none";
+        this.aboutPage.style.display = "none";
         this.disableSettings();
         document.title = "Simplifier";
         pushPageViewMatomo();
+        scrollBodyToTop();
     }
 
     showCheatSheet() {
@@ -52,9 +60,23 @@ class PageManager {
         this.selectPage.style.display = "none";
         this.simplifierPage.style.display = "none";
         this.cheatSheet.style.display = "block";
+        this.aboutPage.style.display = "none";
         this.enableSettings();
         document.title = "Cheat Sheet";
         pushPageViewMatomo();
+        scrollBodyToTop();
+    }
+
+    showAboutPage() {
+        this.landingPage.style.display = "none";
+        this.selectPage.style.display = "none";
+        this.simplifierPage.style.display = "none";
+        this.cheatSheet.style.display = "none";
+        this.aboutPage.style.display = "block";
+        this.enableSettings();
+        document.title = "About";
+        pushPageViewMatomo();
+        scrollBodyToTop();
     }
 
     disableSettings() {
@@ -96,26 +118,33 @@ class PageManager {
             this.showSelectPage();
         } else {
             this.showSelectPage();
+            setPgrBarTo(0);
             const note = showWaitingNote();
-
+            setPgrBarTo(1);
             state.pyodideLoading = true;
             // Get the pyodide instance and setup pages with functionality
-            this.pyodide = await loadPyodide();
-
+            state.pyodide = await loadPyodide();
+            setInterval(() => {
+                    note.innerHTML = languageManager.currentLang.messages[Math.floor(Math.random() * languageManager.currentLang.messages.length)]},
+                8000);
+            setPgrBarTo(5);
             // Map all circuits into map and build the selectors
-            circuitMapper = new CircuitMapper(this.pyodide);
+            circuitMapper = new CircuitMapper();
             await circuitMapper.mapCircuits();
-
+            setPgrBarTo(10);
             selectorBuilder.buildSelectorsForAllCircuitSets();
+            updateSelectorPageColors();
 
-            hideAllSelectors();
+            hideQuickstart();
+            hideAccordion();
 
-            // Import packages/scripts, create selector svgs
-            await packageManager.doLoadsAndImports(this.pyodide);
-            //await createSvgsForSelectors(pyodide);
+            // Starts with 10%
+            await packageManager.doLoadsAndImports();
 
             selectorBuilder.adaptSelectorFrameColor();
-            showAllSelectors();
+
+            showQuickstart();
+            showAccordion();
             note.innerHTML = "";
 
             pageManager.setupSelectPage();
@@ -123,32 +152,29 @@ class PageManager {
     }
 
     setupSelectPage() {
+        // Fill accordion and carousels with svg data
+        languageManager.updateLanguageSelectorPage();
         for (const circuitSet of circuitMapper.circuitSets) {
-            this.updateSelectorHeadings(circuitSet.identifier);
             selectorBuilder.setupSelector(circuitSet, this);
         }
     }
 
-    updateSelectorHeadings(circuitSetId) {
-        const heading = document.getElementById(`${circuitSetId}-heading`);
-        heading.innerHTML = languageManager.currentLang.carouselHeadings[circuitSetId];
-    }
-
     setupNavigation() {
         const navHomeLink = document.getElementById("nav-home");
-        const navSimplifierLink = document.getElementById("nav-select");
+        const navSelectLink = document.getElementById("nav-select");
         const navCheatLink = document.getElementById("nav-cheat");
+        const navAboutLink = document.getElementById("nav-about");
         const navLogo = document.getElementById("nav-logo");
         const selectEnglish = document.getElementById("select-english");
         const selectGerman = document.getElementById("select-german");
 
         navHomeLink.addEventListener("click", () => {
-            checkIfSimplifierPageNeedsReset(this.pyodide);  // must be in front of page change
+            checkIfSimplifierPageNeedsReset();  // must be in front of page change
             closeNavbar();
             this.showLandingPage();
         })
-        navSimplifierLink.addEventListener("click", async () => {
-            checkIfSimplifierPageNeedsReset(this.pyodide);  // must be in front of page change
+        navSelectLink.addEventListener("click", async () => {
+            checkIfSimplifierPageNeedsReset();  // must be in front of page change
             closeNavbar();
             if (state.pyodideReady) {
                 this.showSelectPage();
@@ -158,12 +184,17 @@ class PageManager {
             }
         })
         navCheatLink.addEventListener("click", () => {
-            checkIfSimplifierPageNeedsReset(this.pyodide);
+            checkIfSimplifierPageNeedsReset();
             closeNavbar();
             this.showCheatSheet();
         })
+        navAboutLink.addEventListener("click", () => {
+            checkIfSimplifierPageNeedsReset();
+            closeNavbar();
+            this.showAboutPage();
+        })
         navLogo.addEventListener("click", () => {
-            checkIfSimplifierPageNeedsReset(this.pyodide);  // must be in front of page change
+            checkIfSimplifierPageNeedsReset();  // must be in front of page change
             closeNavbar();
             this.showLandingPage();
         })
@@ -209,6 +240,11 @@ class PageManager {
         }
     }
 
+    setupSimplifierPage() {
+        languageManager.updateLanguageSimplifierPage();
+        updateSimplifierPageColors();
+    }
+
     setupCheatSheet() {
         languageManager.updateLanguageCheatSheetPage();
 
@@ -249,11 +285,17 @@ class PageManager {
         indRea.innerHTML = "$$ \\omega \\cdot L$$";
 
         const pRX = document.getElementById("pRX");
-        pRX.innerHTML = "$$\\underline{Z} = R + j \\cdot X$$"
-        pRX.style.color = "white";
+        pRX.innerHTML = "$$\\mathbf{Z} = R + j \\cdot X$$" +
+            "$$\\mathbf{Z} = R + j \\cdot \\sqrt{X_L - X_C}$$"
+        pRX.style.color = colors.currentForeground;
 
         whenAvailable("MathJax", () => {
             MathJax.typeset();
         });
+    }
+
+    setupAboutPage() {
+        languageManager.updateLanguageAboutPage();
+        updateAboutPageColors();
     }
 }

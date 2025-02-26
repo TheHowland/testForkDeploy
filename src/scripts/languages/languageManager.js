@@ -4,7 +4,9 @@ class LanguageManager {
     updatesLanguageFields() {
         this.updateLanguageLandingPage();
         this.updateLanguageSelectorPage();
+        this.updateLanguageSimplifierPage();
         this.updateLanguageCheatSheetPage();
+        this.updateLanguageAboutPage();
     }
 
     updateLanguageLandingPage() {
@@ -23,11 +25,27 @@ class LanguageManager {
     updateLanguageSelectorPage() {
         // circuit mapper is only instantiated in when start button pressed
         if (circuitMapper !== null) {
-            for (const circuitSet of circuitMapper.circuitSets) {
-                const heading = document.getElementById(`${circuitSet.identifier}-heading`);
-                heading.innerHTML = this.currentLang.carouselHeadings[circuitSet.identifier];
+            for (let circuitSet of circuitMapper.circuitSets) {
+                if (circuitSet.identifier === circuitMapper.selectorIds.quick) {
+                    const quickHeading = document.getElementById(`${circuitMapper.selectorIds.quick}-heading`);
+                    quickHeading.innerHTML = this.currentLang.selectorHeadings[circuitMapper.selectorIds.quick];
+                    continue;
+                }
+                const titleBtn = document.getElementById(`${circuitSet.identifier}-acc-btn`);
+                titleBtn.innerHTML = this.currentLang.selectorHeadings[circuitSet.identifier];
+                const overviewModalBtn = document.getElementById(`${circuitSet.identifier}-overviewModalBtn`);
+                overviewModalBtn.innerHTML = this.currentLang.overviewModalBtn;
             }
         }
+    }
+
+    updateLanguageSimplifierPage() {
+        const InfoGifCloseBtn = document.getElementById("info-gif-close-btn");
+        InfoGifCloseBtn.innerHTML = this.currentLang.closeBtn;
+        const infoGifHeading = document.getElementById("info-gif-title");
+        infoGifHeading.innerHTML = this.currentLang.infoGifHeading;
+        const infoGifText = document.getElementById("info-gif-text");
+        infoGifText.innerHTML = this.currentLang.infoGifText;
     }
 
     updateLanguageCheatSheetPage() {
@@ -58,13 +76,18 @@ class LanguageManager {
         ind.innerHTML = this.currentLang.inductorRowHeading;
     }
 
+    updateLanguageAboutPage() {
+        const aboutText = document.getElementById('about-text');
+        aboutText.innerHTML = this.currentLang.aboutText;
+    }
+
     updateDataPrivacyPage() {
-        const backBtn = document.getElementById('back-btn');
+        const backBtn = document.getElementById('back-btn-data-privacy');
         backBtn.innerHTML = this.currentLang.dataPrivacyBackBtn;
     }
 
     updateLegalNoticePage() {
-        const backBtn = document.getElementById('back-btn');
+        const backBtn = document.getElementById('back-btn-legal');
         backBtn.innerHTML = this.currentLang.dataPrivacyBackBtn;
         const legalNoticeHeading = document.getElementById('legal-notice-heading');
         legalNoticeHeading.innerHTML = this.currentLang.legalNoticeHeading;

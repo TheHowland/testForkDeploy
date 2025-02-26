@@ -1,7 +1,8 @@
-# for lcapy version: 1.24+inskale.0.33
+# for lcapy version: 1.24+inskale.0.36
 import os
 import shutil
 import sys
+import warnings
 
 if os.path.isfile(os.path.join(os.path.dirname(os.getcwd()), "solve.py")):
     os.chdir('../')
@@ -20,7 +21,12 @@ for path in os.listdir(folderPath):
 
 # create a folder to save the files in temporarily
 savePath = ".tmpSVGFiles"
-os.mkdir(savePath)
+if not os.path.exists(savePath):
+    os.mkdir(savePath)
+else:
+    shutil.rmtree(savePath)
+    os.mkdir(savePath)
+
 try:
     for folder in subFolderPaths:
 
@@ -35,10 +41,14 @@ try:
             os.remove(os.path.join(folder, file))
 
         for file in files:
-            if not os.path.isfile(os.path.join(folder, file)):
+            path = os.path.join(folder, file)
+            print(f"generating: {path.replace('.txt', '.svg')}")
+            if not os.path.isfile(path):
                 continue
-            solver = solve.SolveInUserOrder(file, filePath=folder, savePath=savePath)
-            solver.createInitialStep().toSVG(fileName=file, savePath=savePath)
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                solver = solve.SolveInUserOrder(file, filePath=folder, savePath=savePath)
+                solver.createInitialStep().toSVG(fileName=file, savePath=savePath)
 
         for file in os.listdir(savePath):
             if not file[-4::] == ".svg":

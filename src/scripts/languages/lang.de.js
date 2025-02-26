@@ -1,17 +1,4 @@
 const german = {
-    cookies: {
-        customize: "AUSWAHL",
-        applySome: "ANWENDEN",
-        rejectAll: "ABLEHNEN",
-        acceptAll: "AKZEPTIEREN",
-        title: "Cookie-Einstellungen",
-        text: "Wir verwenden Cookies, um dir die bestm&oumlgliche Erfahrung auf unserer Website zu bieten.",
-        necessary: "Notwendige",
-        analytics: "Analytische",
-        preferences: "Pr&aumlferenzen",
-        marketing: "Marketing"
-    },
-
     // Landing page text
     landingPageGreeting:
         "Ein kostenloses Browsertool um<br>" +
@@ -47,15 +34,41 @@ const german = {
         "nicht ver&aumlnderbar.",
 
     // Selector page text
-    carouselHeadings:
+    selectorHeadings:
         {
-            "sub":  "ERSATZSCHALTUNGEN",
-            "acdc": "GLEICH-/WECHSELSTROMKREISE",
+            "quick": "SCHNELLSTART",
+            "res":  "WIDERSTÄNDE",  // use the ä character because &auml is not rendered correctly here
+            "cap": "KONDENSATOREN",
+            "ind": "SPULEN",
             "mixed": "GEMISCHTE SCHALTUNGEN",
+            "sym": "SYMBOLISCHE RECHNUNG",
         },
+    overviewModalBtn:
+        "Übersicht",
 
+    // Loading messages
+    messages:
+        [
+            "Lade Schaltungen...",
+            "Lade Widerstände...",
+            "Lade Kondensatoren...",
+            "Lade Spulen...",
+            "Irgendwo waren doch noch Widerstände...",
+            "Suche Taschenrechner...",
+            "Geht ein Widerstand in eine Bar...",
+            "Widerstand ist zwecklos...",
+        ],
 
     // Simplifier page text
+    // info gif
+    closeBtn:
+        "Schlie&szligen",
+    infoGifHeading:
+        "Anleitung",
+    infoGifText:
+        "Klicke auf die Elemente die du vereinfachen m&oumlchtest und &uumlberpr&uumlfe deine Auswahl mit dem 'check' Button. " +
+        "Wenn die Elemente vereinfacht werden k&oumlnnen, siehst du den n&aumlchsten Schritt und kannst dort die n&aumlchsten Elemente ausw&aumlhlen.",
+    // next elements container and interactions
     nextElementsHeading:
         "N&aumlchste Elemente",
     showCalculationBtn:
@@ -80,6 +93,10 @@ const german = {
         "Bitte w&aumlhle genau 2 Elemente",
     alertCanNotSimplify:
         "Diese Elemente k&oumlnnen nicht vereinfacht werden",
+    alertChooseAtLeastOneElement:
+        "W&aumlhle mindestens ein Element",
+    alertNotToggleable:
+        "Komplexe Elemente k&oumlnnen hier nicht dargestellt werden, siehe Rechnungen",
 
     // Calculation text
     relationTextParallel:
@@ -94,20 +111,20 @@ const german = {
         "U",
     totalSuffix:
         "ges",
-    calcBeforeFirstElement:
+    effectiveSuffix:
+        "eff",
+    theElements:
         "Die Elemente",
-    calcBetweenElements:
-        "und",
-    calcAfterSecondElement:
-        "wurden zu",
-    calcAfterSimplifiedElement:
-        "vereinfacht",
+    areSimplifiedTo:
+        "wurden vereinfacht zu",
     calculationHeading:
         "Rechnung",
+    complexImpedanceHeading:
+        "Komplexer Widerstand f&uumlr",
 
     // Voltage Current text
     currentCalcHeading:
-        "Berechnen des Stroms f&uuml",
+        "Berechnen des Stroms f&uumlr",
     currentStaysTheSame:
         "Der Strom bleibt gleich",
     voltageSplits:
@@ -117,7 +134,9 @@ const german = {
     currentSplits:
         "Der Strom teilt sich auf",
     backBtn:
-        "zur&uumlck zur Auswahl",
+        "zur&uumlck",
+    onlyImaginaryPart:
+        "Rein imagin&aumlr, zur&uumlck zu ",
 
     // Cheat sheet
     resistanceColHeading:
@@ -149,5 +168,19 @@ const german = {
         "",
     legalNoticeHeading:
         "Impressum",
+
+    /* About Page */
+    aboutText:
+        "<br><br>simplipfy wird von der Hochschule Pforzheim betrieben.<br>" +
+        "Die Software wird unter der Leitung von Prof.Dr. Stefan Kray entwickelt und von der Stiftung Innovation in der Hochschullehre gef&oumlrdert.<br>" +
+        "Das Tool soll Studierenden und Schülern beim Erlernen von Elektrotechnik-Themen helfen.<br><br>" +
+        "Das Projekt ist open-source und kann unter folgendem Link auf GitHub eingesehen werden: <a href='https://github.com/prof-sky/simplipfy'>Github-Repo</a><br><br>" +
+        "<h3>Benutzte Bibliotheken</h3>" +
+        "<ul>" +
+        "<li><a href='https://github.com/prof-sky/lcapy/tree/lcapy-inskale'>Lcapy (adaptiert)</a> [LGPL-2.1 Lizenz]</li>" +
+        "<li><a href='https://github.com/prof-sky/simplipfy/tree/main/Schemdraw'>SchemDraw (adaptiert)</a> [MIT Lizenz]</li>" +
+        "<li><a href='https://github.com/pyodide/pyodide'>Pyodide</a> [MPL-2.0 Lizenz]</li>" +
+        "</ul>"
+
 
 }

@@ -20,12 +20,14 @@
     <script src="src/scripts/utils/matomoHelper.js"></script>
     <script src="src/scripts/utils/loadFonts.js"></script>
 
+    <script src="src/scripts/definitions/toggleSymbolDefinition.js"></script>
+    <script src="src/scripts/definitions/allowedCircuitDirectories.js"></script>
+    <script src="src/scripts/definitions/colorDefinitions.js"></script>
+
     <script src="src/scripts/dataObjects/stateObject.js"></script>
-    <script src="src/scripts/dataObjects/stepDetails.js"></script>
-    <script src="src/scripts/dataObjects/solutionObject.js"></script>
-    <script src="src/scripts/dataObjects/solutionObject_VC.js"></script>
+    <script src="src/scripts/dataObjects/stepObject.js"></script>
+
     <script src="src/scripts/visualisation/emojis.js"></script>
-    <script src="src/scripts/visualisation/colorDefinitions.js"></script>
     <script src="src/scripts/visualisation/darkModeFunctions.js"></script>
     <script src="src/scripts/visualisation/selectorBuilder.js"></script>
     <script src="src/scripts/visualisation/pageManager.js"></script>
@@ -49,7 +51,27 @@
 </head>
 
 <body id="bootstrap-overrides" class="bg-dark">
-    <nav class="navbar navbar-dark bg-dark p-2" id="navbar">
+
+    <!-- Info Gif Modal, needs to be on top level (child of body) for display purposes -->
+    <div class="modal modal-sm fade" id="infoGif" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header justify-content-center" id="info-gif-header">
+                    <h5 class="modal-title" id="info-gif-title"></h5>
+                </div>
+                <div class="modal-body" id="info-gif-body">
+                    <p id="info-gif-text" class="text-center"></p>
+                    <img class="img-fluid rounded mx-auto d-block" src="./src/resources/simplifier/howto.gif" alt="click on two elements and then on check two simplify these two elements">
+                </div>
+                <div class="modal-footer justify-content-center" id="info-gif-footer">
+                    <button id="info-gif-close-btn" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Schlie&szligen</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navbar Navigation -->
+    <nav class="navbar fixed-top navbar-dark bg-dark p-2" id="navbar">
         <button id="nav-toggler" class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -65,9 +87,12 @@
                 <li class="nav-item">
                     <a class="nav-link m-0 p-0" id="nav-cheat">CHEAT SHEET</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link m-0 p-0" id="nav-about">ABOUT</a>
+                </li>
                 <li style="margin-top: 30px;">
                     <div class="form-check form-switch" id="darkmode-div">
-                        <input class="form-check-input" type="checkbox" id="darkmode-switch" checked>
+                        <input class="form-check-input" type="checkbox" id="darkmode-switch">
                         <label class="form-check-label" for="darkmode-switch" id="darkmode-label">DARKMODE</label>
                     </div>
                 </li>
@@ -155,7 +180,7 @@
     </div>
 
     <!--####################################################################################################
-    ###################################           Editor page        #########################################
+    ###################################           Simplifier page        #########################################
     #####################################################################################################-->
     <div class="container-fluid m-0 p-0 text-center justify-content-center bg-dark" id="simplifier-page-container">
         <div class="container-fluid pb-5 mb-5">
@@ -232,6 +257,16 @@
                 </table>
             </div>
             <p id="pRX"></p>
+        </div>
+    </div>
+
+    <!--####################################################################################################
+   ###################################           ABOUT           #########################################
+   #####################################################################################################-->
+    <div class="container-fluid m-0 p-0 text-center justify-content-center bg-dark" id="about-page-container">
+        <div class="container-fluid pb-5 mb-5" style="max-width: 600px;">
+            <h1 style="color: #ffc107">simpliPFy</h1>
+            <p id="about-text"></p>
         </div>
     </div>
 
