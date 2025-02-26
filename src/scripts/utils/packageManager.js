@@ -136,7 +136,11 @@ class PackageManager {
 
     async #fetchGitHubDirectoryContents(path, extension) {
 
-        const url = `https://api.github.com/repos/${conf.gitHubUser}${conf.gitHubProject}contents/${path}`;
+        let url = `https://api.github.com/repos/${conf.gitHubUser}${conf.gitHubProject}contents/${path}`;
+        if (!(await fetch(url+"/.htaccess")).ok) {
+            url = `https://api.github.com/repos/${conf.gitHubUser}${conf.gitHubProject}contents/Pyodide/${path}`;
+        }
+
         try {
             const response = await fetch(url, {
                 headers: {
