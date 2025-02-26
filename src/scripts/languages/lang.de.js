@@ -178,7 +178,7 @@ const german = {
         "<h3>Benutzte Bibliotheken</h3>" +
         "<ul>" +
         "<li><a href='https://github.com/prof-sky/lcapy/tree/lcapy-inskale'>Lcapy (adaptiert)</a> [LGPL-2.1 Lizenz]</li>" +
-        "<li><a href='https://github.com/cdelker/schemdraw'>SchemDraw (adaptiert)</a> [MIT Lizenz]</li>" +
+        "<li><a href='https://github.com/prof-sky/simplipfy/tree/main/Schemdraw'>SchemDraw (adaptiert)</a> [MIT Lizenz]</li>" +
         "<li><a href='https://github.com/pyodide/pyodide'>Pyodide</a> [MPL-2.0 Lizenz]</li>" +
         "</ul>"
 

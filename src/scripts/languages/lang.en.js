@@ -174,7 +174,7 @@ const english = {
         "<h3>Used Libraries</h3>" +
         "<ul>" +
         "<li><a href='https://github.com/prof-sky/lcapy/tree/lcapy-inskale'>Lcapy (adapted)</a> [LGPL-2.1 license]</li>" +
-        "<li><a href='https://github.com/cdelker/schemdraw'>SchemDraw (adapted)</a> [MIT license]</li>" +
+        "<li><a href='https://github.com/prof-sky/simplipfy/tree/main/Schemdraw'>SchemDraw (adapted)</a> [MIT license]</li>" +
         "<li><a href='https://github.com/pyodide/pyodide'>Pyodide</a> [MPL-2.0 license]</li>" +
         "</ul>"
 

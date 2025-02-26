@@ -181,7 +181,7 @@ class CircuitMapper {
         await state.pyodide.unpackArchive(cirArrBuff, ".zip");
 
         this.circuitDirs = state.pyodide.FS.readdir(this._circuitsPath);
-        this.circuitDirs = this.circuitDirs.filter((file) => file !== "." && file !== "..");
+        this.circuitDirs = this.circuitDirs.filter((file) => file !== "." && file !== ".." && file !== "readme.md");
         this.files = {};
         for (let dir of this.circuitDirs) {
             let circuits = state.pyodide.FS.readdir(this._circuitsPath + "/" + dir);
