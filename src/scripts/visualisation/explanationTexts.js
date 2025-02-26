@@ -95,11 +95,11 @@ function getComplexAdditionCalculation(stepObject) {
     // At this point we know we simplify to a complex impedance, if however we find that simplifiedTo.Z.name
     // contains either L or C, we know that we can calculate the complex value back to L or C
     if (stepObject.simplifiedTo.Z.name.includes("L")) {
-        str += `${languageManager.currentLang.onlyImaginaryPart}${stepObject.simplifiedTo.Z.name}`;
+        str += `${languageManager.currentLang.onlyImaginaryPart}\\(${stepObject.simplifiedTo.Z.name}\\)`;
         str += `$$(${stepObject.simplifiedTo.Z.name} = \\frac{\\mathbf{${stepObject.simplifiedTo.Z.name}}}{j2\\pi f} = ${stepObject.simplifiedTo.Z.val})$$<br>`;
     }
     if (stepObject.simplifiedTo.Z.name.includes("C")) {
-        str += `${languageManager.currentLang.onlyImaginaryPart}${stepObject.simplifiedTo.Z.name}`;
+        str += `${languageManager.currentLang.onlyImaginaryPart}\\(${stepObject.simplifiedTo.Z.name}\\)`;
         str += `$$(${stepObject.simplifiedTo.Z.name} = \\frac{-j}{2\\pi f \\mathbf{${stepObject.simplifiedTo.Z.name}}} = ${stepObject.simplifiedTo.Z.val})$$<br>`;
     }
 
@@ -408,9 +408,9 @@ function getComplexNonSymbolicParallelVC(stepObject) {
     // Calculate current
     str += `${languageManager.currentLang.currentCalcHeading} \\(${stepObject.simplifiedTo.Z.name}\\)<br>`;
     if (stepObject.simplifiedTo.Z.name.includes("R") || stepObject.simplifiedTo.Z.name.includes("Z")) {
-        str += `$$\\mathbf{${stepObject.simplifiedTo.I.name}} = \\frac{\\bf{${stepObject.simplifiedTo.U.name}}}{\\textbf{${stepObject.simplifiedTo.Z.name}}}$$`;
+        str += `$$\\mathbf{${stepObject.simplifiedTo.I.name}} = \\frac{\\mathbf{${stepObject.simplifiedTo.U.name}}}{\\mathbf{${stepObject.simplifiedTo.Z.name}}}$$`;
     } else {
-        str += `$$\\boldsymbol{${stepObject.simplifiedTo.I.name}} = \\frac{\\boldsymbol{${stepObject.simplifiedTo.U.name}}}{\\boldsymbol{Z_{${stepObject.simplifiedTo.Z.name}}}}$$`;
+        str += `$$\\mathbf{${stepObject.simplifiedTo.I.name}} = \\frac{\\mathbf{${stepObject.simplifiedTo.U.name}}}{\\mathbf{Z_{${stepObject.simplifiedTo.Z.name}}}}$$`;
     }
     str += `$$\\mathbf{${stepObject.simplifiedTo.I.name}} = \\frac{${stepObject.simplifiedTo.U.val}}{${SimplifiedZinPolar}}$$`;
     str += `$$\\mathbf{${stepObject.simplifiedTo.I.name}} = ${toPolar(stepObject.simplifiedTo.I.val, stepObject.simplifiedTo.I.phase)}$$<br>`;
@@ -453,9 +453,9 @@ function getComplexNonSymbolicSeriesVC(stepObject) {
     // Calculate current
     str += `${languageManager.currentLang.currentCalcHeading} \\(${stepObject.simplifiedTo.Z.name}\\)<br>`;
     if (stepObject.simplifiedTo.Z.name.includes("R") || stepObject.simplifiedTo.Z.name.includes("Z")) {
-        str += `$$\\mathbf{${stepObject.simplifiedTo.I.name}} = \\frac{\\bf{${stepObject.simplifiedTo.U.name}}}{\\textbf{${stepObject.simplifiedTo.Z.name}}}$$`;
+        str += `$$\\mathbf{${stepObject.simplifiedTo.I.name}} = \\frac{\\mathbf{${stepObject.simplifiedTo.U.name}}}{\\mathbf{${stepObject.simplifiedTo.Z.name}}}$$`;
     } else {
-        str += `$$\\boldsymbol{${stepObject.simplifiedTo.I.name}} = \\frac{\\boldsymbol{${stepObject.simplifiedTo.U.name}}}{\\boldsymbol{Z_{${stepObject.simplifiedTo.Z.name}}}}$$`;
+        str += `$$\\mathbf{${stepObject.simplifiedTo.I.name}} = \\frac{\\mathbf{${stepObject.simplifiedTo.U.name}}}{\\mathbf{Z_{${stepObject.simplifiedTo.Z.name}}}}$$`;
     }
     str += `$$\\mathbf{${stepObject.simplifiedTo.I.name}} = \\frac{${stepObject.simplifiedTo.U.val}}{${SimplifiedZinPolar}}$$`;
     str += `$$\\mathbf{${stepObject.simplifiedTo.I.name}} = ${toPolar(stepObject.simplifiedTo.I.val, stepObject.simplifiedTo.I.phase)}$$<br>`;

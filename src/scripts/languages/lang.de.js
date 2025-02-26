@@ -89,12 +89,10 @@ const german = {
         "Probiere selbst die Spannungen und Str&oumlme auszurechnen, mit der Annahme, dass",
     msgCongratsFinishedCircuit:
         "Bravo, du hast die Schaltung vereinfacht",
-    alertChooseTwoElements:
-        "Bitte w&aumlhle genau 2 Elemente",
     alertCanNotSimplify:
         "Diese Elemente k&oumlnnen nicht vereinfacht werden",
     alertChooseAtLeastOneElement:
-        "W&aumlhle mindestens ein Element",
+        "W&aumlhle mindestens zwei Elemente",
     alertNotToggleable:
         "Komplexe Elemente k&oumlnnen hier nicht dargestellt werden, siehe Rechnungen",
 

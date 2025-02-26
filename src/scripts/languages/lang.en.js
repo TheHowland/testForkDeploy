@@ -86,12 +86,10 @@ const english = {
         "See if you can calculate the voltages and currents yourself, assuming that",
     msgCongratsFinishedCircuit:
         "Well done, you finished the circuit!",
-    alertChooseTwoElements:
-        "Please choose exactly 2 elements",
     alertCanNotSimplify:
         "Can not simplify those elements",
     alertChooseAtLeastOneElement:
-        "Choose at least one element",
+        "Choose at least two elements",
     alertNotToggleable:
         "Complex elements can not be toggled here, see calculations",
 
