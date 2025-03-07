@@ -115,7 +115,6 @@ class PackageManager {
 
     async #fetchDirectoryListing(path, extension = "") {
         try {
-            throw new Error("Test error nothing is wrong but forgot to remove")
             const response = await fetch(path);
             if (!response.ok) {
                 console.log(response)
